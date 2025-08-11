@@ -5,33 +5,37 @@ const scertificateSchema = new mongoose.Schema({
         type: String,
         required: true,
         enum: ["Olevel", "Alevel", "Poly", "University", "Other"],
-        default: "Other",
-        required: true
+        default: "Other"
     },
       lastName: {
         type: String,
         required: true,
-        maxlength: 100
+        maxlength: 100,
+        trim: true
     },
     firstName: {
         type: String,
         required: true,
-        maxlength: 100
+        maxlength: 100,
+        trim: true
     },
     docLocation: {
         type: String,
         required: true,
-        maxlength: 200
+        maxlength: 200,
+        trim: true
     },
     finderContact: {
         type: String,
         required: true,
-        maxlength: 200
+        maxlength: 200,
+        trim: true
     },
     status: {
         type: String,
         enum: ["lost", "claimed"],
-        default: "lost"
+        default: "lost",
+        index: true
     },
 
 }, {timestamps: true},
