@@ -1,13 +1,14 @@
 import mongoose from "mongoose";
 
-const dLicenceSchema = new mongoose.Schema({
-    licenceNumber: {
+const scertificateSchema = new mongoose.Schema({
+    certificateType: {
         type: String,
         required: true,
-        unique: true,
-        maxlength: 8
+        enum: ["Olevel", "Alevel", "Poly", "University", "Other"],
+        default: "Other",
+        required: true
     },
-    lastName: {
+      lastName: {
         type: String,
         required: true,
         maxlength: 100
@@ -16,12 +17,6 @@ const dLicenceSchema = new mongoose.Schema({
         type: String,
         required: true,
         maxlength: 100
-    },
-    idNumber: {
-        type: String,
-        required: true,
-        unique: true,
-        maxlength: 14
     },
     docLocation: {
         type: String,
@@ -40,9 +35,8 @@ const dLicenceSchema = new mongoose.Schema({
     },
 
 }, {timestamps: true},
-    
 );
 
-const DLicence = mongoose.model("DLicence", dLicenceSchema);
+const Scertificate = mongoose.model("Scertificate", scertificateSchema);
 
-export default DLicence;
+export default Scertificate;
