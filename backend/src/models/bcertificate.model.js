@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
-const dLicenceSchema = new mongoose.Schema({
-    licenceNumber: {
+const bcertificateSchema = new mongoose.Schema({
+    certificateNumber: {
         type: String,
         required: true,
         unique: true,
@@ -39,10 +39,9 @@ const dLicenceSchema = new mongoose.Schema({
         default: "lost"
     },
 
-}, {timestamps: true},
-    
+}, {timestamps: true}
 );
 
-const DLicence = mongoose.model("DLicence", dLicenceSchema);
+const BCertificate = mongoose.model("BCertificate", bcertificateSchema);
 
-export default DLicence;
+export default BCertificate;
