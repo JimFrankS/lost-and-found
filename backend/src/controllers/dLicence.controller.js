@@ -1,7 +1,10 @@
 import asyncHandler from "express-async-handler";
 import DLicence from "../models/dLicence.model.js";
 import Stats from "../models/stats.model.js";
-import { isValidZimbabweIdNumber, idNumberRegex } from "../utility/idValidation.utility.js";
+import isValidZimbabweIdNumber, { idNumberRegex } from "../utility/idValidation.utility.js";
+
+// Helper function to escape regex special characters
+const escapeRegex = (str) => String(str).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 export const foundLicence = asyncHandler(async (req, res) => {
     const { licenceNumber, lastName, firstName, idNumber, docLocation, finderContact } = req.body;
@@ -25,7 +28,7 @@ export const foundLicence = asyncHandler(async (req, res) => {
     }
 
     const existingLicence = await DLicence.findOne({
-        licenceNumber: { $regex: `^${licenceNumber}$`, $options: 'i' }
+        licenceNumber: { $regex: `^${escapeRegex(licenceNumber)}$`, $options: 'i' }
     });
     if (existingLicence) {
         return res.status(400).json({ message: "Licence already exists with this licence number." });
@@ -40,7 +43,7 @@ export const foundLicence = asyncHandler(async (req, res) => {
         finderContact
     });
     await newLicence.save();
-    await Stats.findOneAndUpdate({}, { $inc: { totalDocuments: 1 } });
+    await Stats.findOneAndUpdate({}, { $inc: { totalDocuments: 1 } }, { upsert: true });
 
     res.status(201).json({
         message: "Licence added successfully"
@@ -65,7 +68,7 @@ export const claimLicence = asyncHandler(async (req, res) => {
         });
     } else {
         licence = await DLicence.findOne({
-            lastName: { $regex: `^${identifier}$`, $options: 'i' },
+            lastName: { $regex: `^${escapeRegex(identifier)}$`, $options: 'i' },
             status: { $in: ["lost", "found"] }
         });
     }
@@ -74,15 +77,19 @@ export const claimLicence = asyncHandler(async (req, res) => {
         return res.status(404).json({ message: "Licence not found" });
     }
 
-    if (licence.status !== "found") {
-        licence.status = "found";
-    }
+    const updated = await DLicence.findOneAndUpdate(
+        { _id: licence._id, claimed: false },
+        { $set: { claimed: true, claimedAt: new Date(), status: 'found' } },
+        { new: true }
+    );
 
-    if (!licence.claimed){
-        licence.claimed = true;
-        licence.claimedAt = new Date();
-        await licence.save();
-        await Stats.findOneAndUpdate({}, { $inc: { claimedDocuments: 1 } });
+    if (updated) {
+        await Stats.findOneAndUpdate({}, { $inc: { claimedDocuments: 1 } }, { upsert: true });
+        licence = updated;
+    } else if (licence.status !== 'found') {
+        // If already claimed but status hasn't been updated, correct it
+        await DLicence.updateOne({ _id: licence._id, status: { $ne: 'found' } }, { $set: { status: 'found' } });
+        licence.status = 'found';
     }
 
     const { licenceNumber, lastName, firstName, idNumber, docLocation, finderContact } = licence;

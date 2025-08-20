@@ -6,8 +6,9 @@ import logger from '../utility/logger.utility.js';
  * @returns {object} metadata clone with sensitive fields masked
  */
 function maskSensitiveInfo(meta) {
-  // Add or remove sensitive fields as needed
-  const clone = { ...meta };
+  // Use JSON stringify and parse for a deep clone. This is safe for the
+  // metadata object and prevents mutating the original request object.
+  const clone = JSON.parse(JSON.stringify(meta));
   if (clone.body) {
     if (clone.body.password) clone.body.password = '[HIDDEN]';
     if (clone.body.token) clone.body.token = '[HIDDEN]';

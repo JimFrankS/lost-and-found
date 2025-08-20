@@ -24,9 +24,9 @@
  *         description:
  *           type: string
  *           description: Detailed description of the baggage
- *         bagType:
+ *         baggageType:
  *           type: string
- *           enum: [suitcase, backpack, handbag, laptop_bag, other]
+ *           enum: [purse, wallet, handbag, hustlebag, laptopbag, briefcase, satchel, travelingbag, changanibag, monarch, plasticbag, tsaga, box, other]
  *           description: Type of baggage
  *         color:
  *           type: string
@@ -91,10 +91,10 @@
  *           enum: [lost, found, claimed]
  *         description: Filter by status
  *       - in: query
- *         name: bagType
+ *         name: baggageType
  *         schema:
  *           type: string
- *           enum: [suitcase, backpack, handbag, laptop_bag, other]
+ *           enum: [purse, wallet, handbag, hustlebag, laptopbag, briefcase, satchel, travelingbag, changanibag, monarch, plasticbag, tsaga, box, other]
  *         description: Filter by baggage type
  *       - in: query
  *         name: color
@@ -210,9 +210,9 @@
  *                 type: string
  *               description:
  *                 type: string
- *               bagType:
+ *               baggageType:
  *                 type: string
- *                 enum: [suitcase, backpack, handbag, laptop_bag, other]
+ *                 enum: [purse, wallet, handbag, hustlebag, laptopbag, briefcase, satchel, travelingbag, changanibag, monarch, plasticbag, tsaga, box, other]
  *               color:
  *                 type: string
  *               brand:
@@ -289,9 +289,9 @@
  *                 type: string
  *               description:
  *                 type: string
- *               bagType:
+ *               baggageType:
  *                 type: string
- *                 enum: [suitcase, backpack, handbag, laptop_bag, other]
+ *                 enum: [purse, wallet, handbag, hustlebag, laptopbag, briefcase, satchel, travelingbag, changanibag, monarch, plasticbag, tsaga, box, other]
  *               color:
  *                 type: string
  *               brand:

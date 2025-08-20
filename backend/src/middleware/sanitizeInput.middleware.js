@@ -4,17 +4,21 @@
  * @param {*} obj - The object, array, or primitive to recursively trim
  * @returns {*} - The trimmed object, array, or value
  */
+// Only traverse plain objects/arrays; preserve Dates, Buffers, RegExPs, etc.
+const isPlainObject = (val) => Object.prototype.toString.call(val) === '[object Object]';
 function deepTrim(obj) {
+  if (typeof obj === 'string') {
+    return obj.trim();
+  }
   if (Array.isArray(obj)) {
     return obj.map(deepTrim);
-  } else if (obj && typeof obj === 'object' && obj !== null) {
+  }
+  if (obj && isPlainObject(obj)) {
     const cleaned = {};
     for (const key of Object.keys(obj)) {
       cleaned[key] = deepTrim(obj[key]);
     }
     return cleaned;
-  } else if (typeof obj === 'string') {
-    return obj.trim();
   }
   return obj;
 }

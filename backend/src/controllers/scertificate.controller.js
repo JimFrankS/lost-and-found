@@ -5,6 +5,9 @@ import { getCanonical } from "../utility/canonical.utility.js";
 
 const ALLOWED_CERTIFICATE_TYPES = ["Olevel", "Alevel", "Poly", "University", "Other"];
 
+// Helper function to escape regex special characters
+const escapeRegex = (str) => String(str).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
 export const foundScertificate = asyncHandler(async (req, res) => { // Renamed for consistency
     const { certificateType, lastName, firstName, docLocation, finderContact } = req.body;
     const phoneNumberRegex = /^07(?:8[0-9]{7}|[137][1-9][0-9]{6})$/;
@@ -22,10 +25,11 @@ export const foundScertificate = asyncHandler(async (req, res) => { // Renamed f
 
     const existingCertificate = await Scertificate.findOne({
         certificateType: canonicalType,
-        lastName: { $regex: `^${lastName}$`, $options: 'i' }
+        lastName: { $regex: `^${escapeRegex(lastName)}$`, $options: 'i' },
+        firstName: { $regex: `^${escapeRegex(firstName)}$`, $options: 'i' }
     });
     if (existingCertificate) {
-        return res.status(400).json({ message: "Certificate already exists with this type and last name." });
+        return res.status(400).json({ message: "Certificate already exists with this type, last name, and first name." });
     }
     const newCertificate = new Scertificate({
         certificateType: canonicalType,
@@ -35,7 +39,7 @@ export const foundScertificate = asyncHandler(async (req, res) => { // Renamed f
         finderContact
     });
     await newCertificate.save();
-    await Stats.findOneAndUpdate({}, { $inc: { totalDocuments: 1 } });
+    await Stats.findOneAndUpdate({}, { $inc: { totalDocuments: 1 } }, { upsert: true });
     res.status(201).json({
         message: "Certificate added successfully"
     });
@@ -51,23 +55,27 @@ export const claimScertificate = asyncHandler(async (req, res) => { // Renamed f
     if (certTypeResult.error) return res.status(400).json({ message: certTypeResult.error });
     const canonicalType = certTypeResult.canonical;
 
-    const certificate = await Scertificate.findOne({
-        lastName: { $regex: `^${lastName}$`, $options: 'i' },
+    let certificate = await Scertificate.findOne({
+        lastName: { $regex: `^${escapeRegex(lastName)}$`, $options: 'i' },
         certificateType: canonicalType,
         status: { $in: ["lost", "found"] }
     });
     if (!certificate) {
         return res.status(404).json({ message: "Certificate not found" });
     }
-    if (certificate.status !== "found") {
-        certificate.status = "found";
-    }
 
-    if (!certificate.claimed) {
-        certificate.claimed = true;
-        certificate.claimedAt = new Date();
-        await certificate.save();
-        await Stats.findOneAndUpdate({}, { $inc: { claimedDocuments: 1 } });
+    const updated = await Scertificate.findOneAndUpdate(
+        { _id: certificate._id, claimed: false },
+        { $set: { claimed: true, claimedAt: new Date(), status: 'found' } },
+        { new: true }
+    );
+
+    if (updated) {
+        await Stats.findOneAndUpdate({}, { $inc: { claimedDocuments: 1 } }, { upsert: true });
+        certificate = updated;
+    } else if (certificate.status !== 'found') {
+        await Scertificate.updateOne({ _id: certificate._id, status: { $ne: 'found' } }, { $set: { status: 'found' } });
+        certificate.status = 'found';
     }
 
     const { lastName: ln, firstName, certificateType: ct, docLocation, finderContact } = certificate;

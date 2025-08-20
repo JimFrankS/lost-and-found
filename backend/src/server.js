@@ -77,8 +77,13 @@ const startServer = async () => {
     try {
         await connectDB();
         const stats = await ensureStatsInitialized();
-        console.log("Total lost documented: ", stats.totalDocuments, "Total claimed: ", stats.claimedDocuments);
-        server = app.listen(ENV.PORT, () => console.log("Server is running on port", ENV.PORT)); 
+        logger.info('Initial stats loaded', {
+            totalDocuments: stats.totalDocuments,
+            claimedDocuments: stats.claimedDocuments
+        });
+        server = app.listen(ENV.PORT, () =>
+            logger.info(`Server is running on port ${ENV.PORT}`)
+        );
     } catch (error) {
         logger.error("Error starting server:", error);
         process.exit(1); 
@@ -86,14 +91,39 @@ const startServer = async () => {
 };
 
 const gracefulShutdown = (signal) => {
-  logger.info(`${signal} received. Shutting down gracefully...`);
-  server.close(() => {
-    logger.info('HTTP server closed.');
-    mongoose.connection.close(false, () => {
-      logger.info('MongoDB connection closed.');
-      process.exit(0);
-    });
-  });
+    logger.info(`${signal} received. Shutting down gracefully...`);
+
+    // Fallback timeout to ensure the process exits even if shutdown hangs
+    const timeout = setTimeout(() => {
+        logger.error('Could not close connections in time, forcefully shutting down');
+        process.exit(1);
+    }, 10000); // 10 seconds
+
+    const closeMongooseConnection = () => {
+        mongoose.connection.close(false, (err) => {
+            if (err) {
+                logger.error('Error closing MongoDB connection:', err);
+                process.exit(1);
+            }
+            logger.info('MongoDB connection closed.');
+            clearTimeout(timeout);
+            process.exit(0);
+        });
+    };
+
+    if (server) {
+        server.close((err) => {
+            if (err) {
+                logger.error('Error closing HTTP server:', err);
+                return process.exit(1);
+            }
+            logger.info('HTTP server closed.');
+            closeMongooseConnection();
+        });
+    } else {
+        logger.info('HTTP server not started, shutting down MongoDB directly.');
+        closeMongooseConnection();
+    }
 };
 
 // Listen for termination signals

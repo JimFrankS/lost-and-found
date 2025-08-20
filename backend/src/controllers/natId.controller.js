@@ -1,7 +1,10 @@
 import asyncHandler from "express-async-handler";
 import NatId from "../models/natId.model.js";
 import Stats from "../models/stats.model.js";
-import { isValidZimbabweIdNumber, idNumberRegex } from "../utility/idValidation.utility.js";
+import isValidZimbabweIdNumber, { idNumberRegex } from "../utility/idValidation.utility.js";
+
+// Helper function to escape regex special characters
+const escapeRegex = (str) => String(str).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 export const foundId = asyncHandler(async (req, res) => {
     const { lastName, firstName, idNumber, docLocation, finderContact } = req.body;
@@ -20,7 +23,7 @@ export const foundId = asyncHandler(async (req, res) => {
     }
 
     const existingNatId = await NatId.findOne({
-        idNumber: { $regex: `^${idNumber}$`, $options: 'i' }
+        idNumber: { $regex: `^${escapeRegex(idNumber)}$`, $options: 'i' }
     });
 
     if (existingNatId) {
@@ -35,7 +38,7 @@ export const foundId = asyncHandler(async (req, res) => {
         finderContact
     });
     await newNatId.save();
-    await Stats.findOneAndUpdate({}, { $inc: { totalDocuments: 1 } });
+    await Stats.findOneAndUpdate({}, { $inc: { totalDocuments: 1 } }, { upsert: true });
 
     res.status(201).json({
         message: "National ID added successfully."
@@ -57,7 +60,7 @@ export const claimId = asyncHandler(async (req, res) => {
 
     if (!isIdNumber) {
         idDocument = await NatId.findOne({
-            lastName: { $regex: `^${identifier}$`, $options: 'i' },
+            lastName: { $regex: `^${escapeRegex(identifier)}$`, $options: 'i' },
             status: { $in: ["lost", "found"] }
         });
     }
@@ -66,17 +69,20 @@ export const claimId = asyncHandler(async (req, res) => {
         return res.status(404).json({ message: "National ID not found" });
     }
 
-    if (idDocument.status !== "found") {
-        idDocument.status = "found";
-    }
+    const updated = await NatId.findOneAndUpdate(
+        { _id: idDocument._id, claimed: false },
+        { $set: { claimed: true, claimedAt: new Date(), status: 'found' } },
+        { new: true }
+    );
 
-    if (!idDocument.claimed){
-         idDocument.claimed = true;
-        idDocument.claimedAt = new Date();
-        await idDocument.save();
-        await Stats.findOneAndUpdate({}, { $inc: { claimedDocuments: 1 } });
+    if (updated) {
+        await Stats.findOneAndUpdate({}, { $inc: { claimedDocuments: 1 } }, { upsert: true });
+        idDocument = updated;
+    } else if (idDocument.status !== 'found') {
+        // If already claimed but status hasn't been updated, correct it
+        await NatId.updateOne({ _id: idDocument._id, status: { $ne: 'found' } }, { $set: { status: 'found' } });
+        idDocument.status = 'found';
     }
-
     const { lastName: ln, firstName, idNumber, docLocation, finderContact } = idDocument;
     let response = {
         lastName: ln,

@@ -1,16 +1,16 @@
 import expressAsyncHandler from "express-async-handler";
 
 const allowedMap = {
-  "harare": ["harare"],
+  "harare": ["harare", "chitungwiza", "epworth"],
   "bulawayo": ["bulawayo"],
   "manicaland": ["buhera", "chimanimani", "chipinge", "makoni", "mutare", "nyanga", "mutasa"],
-  "mashonaland east": ["chokomba", "goromonzi", "marondera", "murehwa", "mutoko", "seke", "uzumba maramba pfungwe"],
-  "mashonaland west": [ "chegutu", "chinhoyi", "hurungwe", "kariba", "makonde", "mhondoro ngezi", "zvimba"],
-  "masvingo": ["bikita", "chiredzi", "gutu", "masvingo", "mwenezi", "zaka"],
-  "matabeleland north": [ "binga", "buluwayo", "hwange", "lupane", "nkayi", "tsholotsho"],
-  "matabeleland south": [ "gwanda", "insiza", "matobo","umzingwane", "beitbridge" ],
-  "midlands": [ "gweru", "kwekwe", "lower gweru", "mkoba", "mberengwa", "shurugwi", "zvishavane" ],
-  "mashonaland central": [ "bindura", "guruve", "mt. darwin", "muzarabani", "shamva" ]
+  "mashonaland east": ["chikomba", "goromonzi", "marondera", "mudzi", "murehwa", "mutoko", "seke", "uzumba maramba pfungwe", "wedza"],
+  "mashonaland west": ["chegutu", "hurungwe", "kariba", "makonde", "mhondoro ngezi", "sanyati", "zvimba"],
+  "masvingo": ["bikita", "chiredzi", "chivi", "gutu", "masvingo", "mwenezi", "zaka"],
+  "matabeleland north": ["binga", "bubi", "hwange", "lupane", "nkayi", "tsholotsho", "umguza"],
+  "matabeleland south": ["beitbridge", "bulilima", "gwanda", "insiza", "mangwe", "matobo", "umzingwane"],
+  "midlands": ["chirumhanzu", "gokwe north", "gokwe south", "gweru", "kwekwe", "mberengwa", "shurugwi", "zvishavane"],
+  "mashonaland central": ["bindura", "guruve", "mazowe", "mbire", "mount darwin", "muzarabani", "rushinga", "shamva"]
 };
 
 const allowedProvinces = Object.keys(allowedMap);

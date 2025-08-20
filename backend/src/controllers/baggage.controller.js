@@ -3,6 +3,9 @@ import Baggage, { BAGGAGE_TYPES } from "../models/baggage.model.js";
 import Stats from "../models/stats.model.js";
 import { getCanonical } from "../utility/canonical.utility.js";
 
+// Helper function to escape regex special characters
+const escapeRegex = (str) => String(str).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
 const allowedTransportTypes = ["bus", "kombi", "mushikashika", "private"];
 const allowedRouteTypes = ["local", "intercity"];
 
@@ -34,9 +37,9 @@ export const lostBaggage = expressAsyncHandler(async (req, res) => {
         baggageType: canonicalBagType,
         transportType: canonicalTransportType,
         routeType: canonicalRouteType,
-        destinationProvince,
-        destinationDistrict,
-        destination: { $regex: `^${destination}$`, $options: 'i' }
+        destinationProvince: String(destinationProvince).toLowerCase(),
+        destinationDistrict: String(destinationDistrict).toLowerCase(),
+        destination: { $regex: `^${escapeRegex(destination)}$`, $options: 'i' }
     });
     if (existingBaggage) {
         return res.status(400).json({ message: "Baggage already registered with these details." });
@@ -46,14 +49,14 @@ export const lostBaggage = expressAsyncHandler(async (req, res) => {
         baggageType: canonicalBagType,
         transportType: canonicalTransportType,
         routeType: canonicalRouteType,
-        destinationProvince,
-        destinationDistrict,
-        destination,
+        destinationProvince: String(destinationProvince).trim().toLowerCase(),
+        destinationDistrict: String(destinationDistrict).trim().toLowerCase(),
+        destination: String(destination).trim().toLowerCase(),
         docLocation,
         finderContact
     });
     await newBaggage.save();
-    await Stats.findOneAndUpdate({}, { $inc: { totalDocuments: 1 } });
+    await Stats.findOneAndUpdate({}, { $inc: { totalDocuments: 1 } }, { upsert: true });
     res.status(201).json({ message: "Lost baggage registered successfully." });
 });
 
@@ -77,26 +80,31 @@ export const claimBaggage = expressAsyncHandler(async (req, res) => {
     const canonicalRouteType = routeTypeResult.canonical;
 
     // Find the baggage by all key fields
-    const baggage = await Baggage.findOne({
+    let baggage = await Baggage.findOne({
         baggageType: canonicalBagType,
         transportType: canonicalTransportType,
         routeType: canonicalRouteType,
-        destinationProvince: destinationProvince.toLowerCase(),
-        destinationDistrict: destinationDistrict.toLowerCase(),
-        destination: { $regex: `^${destination}$`, $options: 'i' },
+        destinationProvince: String(destinationProvince).toLowerCase(),
+        destinationDistrict: String(destinationDistrict).toLowerCase(),
+        destination: { $regex: `^${escapeRegex(destination)}$`, $options: 'i' },
         status: { $in: ["lost", "found"] }
     });
     if (!baggage) {
         return res.status(404).json({ message: "Baggage not found" });
     }
-    if (baggage.status !== "found") {
-        baggage.status = "found";
-    }
-    if (!baggage.claimed) {
-        baggage.claimed = true;
-        baggage.claimedAt = new Date();
-        await baggage.save();
-        await Stats.findOneAndUpdate({}, { $inc: { claimedDocuments: 1 } });
+    
+    const updated = await Baggage.findOneAndUpdate(
+        { _id: baggage._id, claimed: false },
+        { $set: { claimed: true, claimedAt: new Date(), status: 'found' } },
+        { new: true }
+    );
+
+    if (updated) {
+        await Stats.findOneAndUpdate({}, { $inc: { claimedDocuments: 1 } }, { upsert: true });
+        baggage = updated;
+    } else if (baggage.status !== 'found') {
+        await Baggage.updateOne({ _id: baggage._id, status: { $ne: 'found' } }, { $set: { status: 'found' } });
+        baggage.status = 'found';
     }
    const {
     baggageType: bType,

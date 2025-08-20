@@ -1,7 +1,10 @@
 import asyncHandler from "express-async-handler";
 import Passport from "../models/passport.model.js";
 import Stats from "../models/stats.model.js";
-import { isValidZimbabweIdNumber, idNumberRegex } from "../utility/idValidation.utility.js";
+import isValidZimbabweIdNumber, { idNumberRegex } from "../utility/idValidation.utility.js";
+
+// Helper function to escape regex special characters
+const escapeRegex = (str) => String(str).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 export const lostPassport = asyncHandler(async (req, res) => {
     const { passportNumber, lastName, firstName, idNumber, docLocation, finderContact } = req.body;
@@ -25,7 +28,7 @@ export const lostPassport = asyncHandler(async (req, res) => {
         }
 
     const existingPassport = await Passport.findOne({
-        passportNumber: { $regex: `^${passportNumber}$`, $options: 'i' }
+        passportNumber: { $regex: `^${escapeRegex(passportNumber)}$`, $options: 'i' }
     });
     if (existingPassport) {
         return res.status(400).json({ message: "Passport already exists with this passport number." });
@@ -40,7 +43,7 @@ export const lostPassport = asyncHandler(async (req, res) => {
         finderContact
     });
     await newPassport.save();
-    await Stats.findOneAndUpdate({}, { $inc: { totalDocuments: 1 } });
+    await Stats.findOneAndUpdate({}, { $inc: { totalDocuments: 1 } }, { upsert: true });
 
     res.status(201).json({
         message: "Passport created successfully."
@@ -71,7 +74,7 @@ export const claimPassport = asyncHandler(async (req, res) => {
 
     if (!isPassportNumber && !isIdNumber) {
         passportDoc = await Passport.findOne({
-            lastName: { $regex: `^${identifier}$`, $options: 'i' },
+            lastName: { $regex: `^${escapeRegex(identifier)}$`, $options: 'i' },
             status: { $in: ["lost", "found"] }
         });
     }
@@ -80,12 +83,18 @@ export const claimPassport = asyncHandler(async (req, res) => {
         return res.status(404).json({ message: "Passport not found" });
     }
 
-    if (!passportDoc.claimed) {
-        passportDoc.status = "found"; // Also mark as found when claimed
-        passportDoc.claimed = true;
-        passportDoc.claimedAt = new Date();
-        await passportDoc.save();
-        await Stats.findOneAndUpdate({}, { $inc: { claimedDocuments: 1 } });
+    const updated = await Passport.findOneAndUpdate(
+        { _id: passportDoc._id, claimed: false },
+        { $set: { claimed: true, claimedAt: new Date(), status: 'found' } },
+        { new: true }
+    );
+
+    if (updated) {
+        await Stats.findOneAndUpdate({}, { $inc: { claimedDocuments: 1 } }, { upsert: true });
+        passportDoc = updated;
+    } else if (passportDoc.status !== 'found') {
+        await Passport.updateOne({ _id: passportDoc._id, status: { $ne: 'found' } }, { $set: { status: 'found' } });
+        passportDoc.status = 'found';
     }
 
     const { passportNumber, lastName, firstName, idNumber, docLocation, finderContact} = passportDoc;

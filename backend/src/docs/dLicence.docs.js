@@ -11,409 +11,126 @@
  *   schemas:
  *     DriverLicence:
  *       type: object
- *       required:
- *         - ownerName
- *         - licenceNumber
- *         - expiryDate
+ *       description: Represents a found Driver's Licence.
  *       properties:
  *         _id:
  *           type: string
  *           description: MongoDB ObjectId
- *         ownerName:
- *           type: string
- *           description: Full name of the licence holder
  *         licenceNumber:
  *           type: string
- *           description: Unique driver's licence number
- *         expiryDate:
+ *           description: The unique driver's licence number.
+ *           example: "123456AB"
+ *         lastName:
  *           type: string
- *           format: date
- *           description: Licence expiry date
- *         issueDate:
+ *           description: The last name of the licence holder.
+ *           example: "Chauke"
+ *         firstName:
  *           type: string
- *           format: date
- *           description: Licence issue date
- *         issuingAuthority:
+ *           description: The first name of the licence holder.
+ *           example: "Vongai"
+ *         idNumber:
  *           type: string
- *           description: Authority that issued the licence
- *         licenceClass:
+ *           description: The national ID number of the licence holder.
+ *           example: "29-1234567B29"
+ *         docLocation:
  *           type: string
- *           enum: [A, B, C, D, E, F, G]
- *           description: Licence class/category
- *         dateOfBirth:
+ *           description: The location where the document can be collected.
+ *           example: "Masvingo Central Police"
+ *         finderContact:
  *           type: string
- *           format: date
- *           description: Date of birth of the licence holder
- *         address:
- *           type: string
- *           description: Address of the licence holder
- *         bloodGroup:
- *           type: string
- *           enum: [A+, A-, B+, B-, AB+, AB-, O+, O-]
- *           description: Blood group of the licence holder
- *         contactInfo:
- *           type: object
- *           properties:
- *             email:
- *               type: string
- *               format: email
- *             phone:
- *               type: string
- *             emergencyContact:
- *               type: string
+ *           description: The contact number of the person who found the document.
+ *           example: "0782123456"
  *         status:
  *           type: string
- *           enum: [lost, found, claimed]
- *           default: lost
- *         locationFound:
- *           type: string
- *           description: Location where licence was found
- *         dateFound:
- *           type: string
- *           format: date-time
- *           description: Date and time when licence was found
- *         reportedBy:
- *           type: string
- *           description: User who reported the licence
- *         images:
- *           type: array
- *           items:
- *             type: string
- *           description: Array of image URLs (front and back of licence)
- *         additionalNotes:
- *           type: string
- *           description: Additional notes or observations
+ *           enum: [lost, found]
+ *           description: The status of the document.
+ *         claimed:
+ *           type: boolean
+ *           description: Whether the document has been claimed.
  *         createdAt:
  *           type: string
  *           format: date-time
+ *           description: The date and time the record was created.
  *         updatedAt:
  *           type: string
  *           format: date-time
+ *           description: The date and time the record was last updated.
+ *
+ *     DriverLicenceInput:
+ *       type: object
+ *       required:
+ *         - licenceNumber
+ *         - lastName
+ *         - firstName
+ *         - idNumber
+ *         - docLocation
+ *         - finderContact
+ *       properties:
+ *         licenceNumber:
+ *           type: string
+ *           description: The unique driver's licence number.
+ *           example: "123456AB"
+ *         lastName:
+ *           type: string
+ *           description: The last name of the licence holder.
+ *           example: "Chauke"
+ *         firstName:
+ *           type: string
+ *           description: The first name of the licence holder.
+ *           example: "Vongai"
+ *         idNumber:
+ *           type: string
+ *           description: The national ID number of the licence holder.
+ *           example: "29-1234567B29"
+ *         docLocation:
+ *           type: string
+ *           description: The location where the document can be collected.
+ *           example: "Masvingo Central Police"
+ *         finderContact:
+ *           type: string
+ *           description: The contact number of the person who found the document.
+ *           example: "0782123456"
  */
 
 /**
  * @swagger
- * /api/dlicence:
- *   get:
- *     summary: Get all driver's licence records
- *     tags: [Driver's Licence]
- *     parameters:
- *       - in: query
- *         name: status
- *         schema:
- *           type: string
- *           enum: [lost, found, claimed]
- *         description: Filter by status
- *       - in: query
- *         name: licenceClass
- *         schema:
- *           type: string
- *           enum: [A, B, C, D, E, F, G]
- *         description: Filter by licence class
- *       - in: query
- *         name: bloodGroup
- *         schema:
- *           type: string
- *           enum: [A+, A-, B+, B-, AB+, AB-, O+, O-]
- *         description: Filter by blood group
- *       - in: query
- *         name: page
- *         schema:
- *           type: integer
- *           default: 1
- *         description: Page number for pagination
- *       - in: query
- *         name: limit
- *         schema:
- *           type: integer
- *           default: 10
- *         description: Number of items per page
- *     responses:
- *       200:
- *         description: List of driver's licence records
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
- *                 data:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/DriverLicence'
- *                 pagination:
- *                   type: object
- *                   properties:
- *                     page:
- *                       type: integer
- *                     limit:
- *                       type: integer
- *                     total:
- *                       type: integer
- *       500:
- *         description: Server error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
- */
-
-/**
- * @swagger
- * /api/dlicence/{id}:
- *   get:
- *     summary: Get a driver's licence record by ID
- *     tags: [Driver's Licence]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: Driver's licence record ID
- *     responses:
- *       200:
- *         description: Driver's licence record details
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
- *                 data:
- *                   $ref: '#/components/schemas/DriverLicence'
- *       404:
- *         description: Driver's licence record not found
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
- *       500:
- *         description: Server error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
- */
-
-/**
- * @swagger
- * /api/dlicence:
+ * /api/dLicence/found:
  *   post:
- *     summary: Create a new driver's licence record
+ *     summary: Report a found driver's licence
  *     tags: [Driver's Licence]
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required:
- *               - ownerName
- *               - licenceNumber
- *               - expiryDate
- *             properties:
- *               ownerName:
- *                 type: string
- *               licenceNumber:
- *                 type: string
- *               expiryDate:
- *                 type: string
- *                 format: date
- *               issueDate:
- *                 type: string
- *                 format: date
- *               issuingAuthority:
- *                 type: string
- *               licenceClass:
- *                 type: string
- *                 enum: [A, B, C, D, E, F, G]
- *               dateOfBirth:
- *                 type: string
- *                 format: date
- *               address:
- *                 type: string
- *               bloodGroup:
- *                 type: string
- *                 enum: [A+, A-, B+, B-, AB+, AB-, O+, O-]
- *               contactInfo:
- *                 type: object
- *               status:
- *                 type: string
- *                 enum: [lost, found, claimed]
- *               locationFound:
- *                 type: string
- *               dateFound:
- *                 type: string
- *                 format: date-time
- *               images:
- *                 type: array
- *                 items:
- *                   type: string
- *               additionalNotes:
- *                 type: string
+ *             $ref: '#/components/schemas/DriverLicenceInput'
  *     responses:
  *       201:
- *         description: Driver's licence record created successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
- *                 message:
- *                   type: string
- *                   example: Driver's licence record created successfully
- *                 data:
- *                   $ref: '#/components/schemas/DriverLicence'
+ *         description: Licence added successfully.
  *       400:
- *         description: Bad request
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
- *       500:
- *         description: Server error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
- */
-
-/**
- * @swagger
- * /api/dlicence/{id}:
- *   put:
- *     summary: Update a driver's licence record
+ *         description: Bad request (e.g., invalid input, duplicate entry).
+ *
+ * /api/dLicence/claim/{identifier}:
+ *   get:
+ *     summary: Claim a found driver's licence
  *     tags: [Driver's Licence]
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: identifier
  *         required: true
  *         schema:
  *           type: string
- *         description: Driver's licence record ID
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               ownerName:
- *                 type: string
- *               licenceNumber:
- *                 type: string
- *               expiryDate:
- *                 type: string
- *                 format: date
- *               issueDate:
- *                 type: string
- *                 format: date
- *               issuingAuthority:
- *                 type: string
- *               licenceClass:
- *                 type: string
- *                 enum: [A, B, C, D, E, F, G]
- *               dateOfBirth:
- *                 type: string
- *                 format: date
- *               address:
- *                 type: string
- *               bloodGroup:
- *                 type: string
- *                 enum: [A+, A-, B+, B-, AB+, AB-, O+, O-]
- *               contactInfo:
- *                 type: object
- *               status:
- *                 type: string
- *                 enum: [lost, found, claimed]
- *               locationFound:
- *                 type: string
- *               dateFound:
- *                 type: string
- *                 format: date-time
- *               images:
- *                 type: array
- *                 items:
- *                   type: string
- *               additionalNotes:
- *                 type: string
+ *         description: Licence number, national ID number, or last name to search for.
+ *         example: "123456AB"
  *     responses:
  *       200:
- *         description: Driver's licence record updated successfully
+ *         description: Successfully found the driver's licence.
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
- *                 message:
- *                   type: string
- *                   example: Driver's licence record updated successfully
- *                 data:
- *                   $ref: '#/components/schemas/DriverLicence'
+ *               $ref: '#/components/schemas/DriverLicence'
  *       404:
- *         description: Driver's licence record not found
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
- *       500:
- *         description: Server error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
- */
-
-/**
- * @swagger
- * /api/dlicence/{id}:
- *   delete:
- *     summary: Delete a driver's licence record
- *     tags: [Driver's Licence]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: Driver's licence record ID
- *     responses:
- *       200:
- *         description: Driver's licence record deleted successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
- *                 message:
- *                   type: string
- *                   example: Driver's licence record deleted successfully
- *       404:
- *         description: Driver's licence record not found
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
- *       500:
- *         description: Server error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
+ *         description: Licence not found.
  */
 
 export default {};

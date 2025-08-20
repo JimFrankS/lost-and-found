@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { isValidZimbabweIdNumber } from "../utility/idValidation.utility.js";
+import isValidZimbabweIdNumber from "../utility/idValidation.utility.js";
 
 const natIdSchema = new mongoose.Schema({
     lastName: {

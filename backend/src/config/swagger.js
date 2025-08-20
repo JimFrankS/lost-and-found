@@ -1,6 +1,5 @@
 import swaggerJsdoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
-import { ENV } from "./env.js";
 
 const swaggerOptions = {
   definition: {
@@ -20,8 +19,8 @@ const swaggerOptions = {
     },
     servers: [
       { 
-        url: `http://localhost:${ENV.PORT}`,
-        description: "Development server"
+        url: "/",
+        description: "Relative server URL"
       }
     ],
     components: {

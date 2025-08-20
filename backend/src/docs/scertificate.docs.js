@@ -1,8 +1,8 @@
 /**
  * @swagger
  * tags:
- *   - name: School Certificate
- *     description: API endpoints for managing lost and found school certificates
+ *   name: School Certificate
+ *   description: API endpoints for managing found school certificates
  */
 
 /**
@@ -11,383 +11,122 @@
  *   schemas:
  *     SchoolCertificate:
  *       type: object
- *       required:
- *         - fullName
- *         - dateOfBirth
- *         - certificateNumber
- *         - schoolName
+ *       description: Represents a found School Certificate.
  *       properties:
  *         _id:
  *           type: string
  *           description: MongoDB ObjectId
- *         fullName:
+ *         certificateType:
  *           type: string
- *           description: Full name on the certificate
- *         dateOfBirth:
+ *           enum: [Olevel, Alevel, Poly, University, Other]
+ *           description: The type of the school certificate.
+ *           example: "Olevel"
+ *         lastName:
  *           type: string
- *           format: date
- *           description: Date of birth in YYYY-MM-DD format
- *         certificateNumber:
+ *           description: The last name of the certificate holder.
+ *           example: "Chauke"
+ *         firstName:
  *           type: string
- *           description: Unique certificate number
- *         schoolName:
+ *           description: The first name of the certificate holder.
+ *           example: "Vongai"
+ *         docLocation:
  *           type: string
- *           description: Name of the school
- *         grade:
+ *           description: The location where the document can be collected.
+ *           example: "Masvingo Central Police"
+ *         finderContact:
  *           type: string
- *           description: Grade or level achieved
- *         yearOfCompletion:
- *           type: string
- *           description: Year of completion
- *         issueDate:
- *           type: string
- *           format: date
- *           description: Certificate issue date
- *         placeOfIssue:
- *           type: string
- *           description: Place where certificate was issued
- *         contactInfo:
- *           type: object
- *           properties:
- *             email:
- *               type: string
- *               format: email
- *             phone:
- *               type: string
- *             address:
- *               type: string
+ *           description: The contact number of the person who found the document.
+ *           example: "0782123456"
  *         status:
  *           type: string
- *           enum: [lost, found, claimed]
- *           default: lost
- *         description:
- *           type: string
- *           description: Additional description or notes
- *         locationFound:
- *           type: string
- *           description: Location where certificate was found
- *         dateFound:
- *           type: string
- *           format: date-time
- *           description: Date and time when certificate was found
- *         reportedBy:
- *           type: string
- *           description: User who reported the certificate
- *         images:
- *           type: array
- *           items:
- *             type: string
- *           description: Array of image URLs
+ *           enum: [lost, found]
+ *           description: The status of the document.
+ *         claimed:
+ *           type: boolean
+ *           description: Whether the document has been claimed.
  *         createdAt:
  *           type: string
  *           format: date-time
+ *           description: The date and time the record was created.
  *         updatedAt:
  *           type: string
  *           format: date-time
- */
-
-/**
- * @swagger
- * /api/sCertificate:
- *   get:
- *     summary: Get all school certificates
- *     tags: [School Certificate]
- *     parameters:
- *       - in: query
- *         name: status
- *         schema:
+ *           description: The date and time the record was last updated.
+ *
+ *     SchoolCertificateInput:
+ *       type: object
+ *       required:
+ *         - certificateType
+ *         - lastName
+ *         - firstName
+ *         - docLocation
+ *         - finderContact
+ *       properties:
+ *         certificateType:
  *           type: string
- *           enum: [lost, found, claimed]
- *         description: Filter by status
- *       - in: query
- *         name: page
- *         schema:
- *           type: integer
- *           default: 1
- *         description: Page number for pagination
- *       - in: query
- *         name: limit
- *         schema:
- *           type: integer
- *           default: 10
- *         description: Number of items per page
- *     responses:
- *       200:
- *         description: List of school certificates
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
- *                 data:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/SchoolCertificate'
- *                 pagination:
- *                   type: object
- *                   properties:
- *                     page:
- *                       type: integer
- *                     limit:
- *                       type: integer
- *                     total:
- *                       type: integer
- *       500:
- *         description: Server error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
- */
-
-/**
- * @swagger
- * /api/sCertificate/{id}:
- *   get:
- *     summary: Get a school certificate by ID
- *     tags: [School Certificate]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
+ *           enum: [Olevel, Alevel, Poly, University, Other]
+ *           example: "Olevel"
+ *         lastName:
  *           type: string
- *         description: School certificate ID
- *     responses:
- *       200:
- *         description: School certificate details
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
- *                 data:
- *                   $ref: '#/components/schemas/SchoolCertificate'
- *       404:
- *         description: School certificate not found
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
- *       500:
- *         description: Server error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
+ *           example: "Chauke"
+ *         firstName:
+ *           type: string
+ *           example: "Vongai"
+ *         docLocation:
+ *           type: string
+ *           example: "Masvingo Central Police"
+ *         finderContact:
+ *           type: string
+ *           example: "0782123456"
  */
 
 /**
  * @swagger
- * /api/sCertificate:
+ * /api/sCertificate/found:
  *   post:
- *     summary: Create a new school certificate record
+ *     summary: Report a found school certificate
  *     tags: [School Certificate]
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required:
- *               - fullName
- *               - dateOfBirth
- *               - certificateNumber
- *               - schoolName
- *             properties:
- *               fullName:
- *                 type: string
- *               dateOfBirth:
- *                 type: string
- *                 format: date
- *               certificateNumber:
- *                 type: string
- *               schoolName:
- *                 type: string
- *               grade:
- *                 type: string
- *               yearOfCompletion:
- *                 type: string
- *               issueDate:
- *                 type: string
- *                 format: date
- *               placeOfIssue:
- *                 type: string
- *               contactInfo:
- *                 type: object
- *               status:
- *                 type: string
- *                 enum: [lost, found, claimed]
- *               description:
- *                 type: string
- *               locationFound:
- *                 type: string
- *               dateFound:
- *                 type: string
- *                 format: date-time
- *               images:
- *                 type: array
- *                 items:
- *                   type: string
+ *             $ref: '#/components/schemas/SchoolCertificateInput'
  *     responses:
  *       201:
- *         description: School certificate created successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
- *                 message:
- *                   type: string
- *                   example: School certificate created successfully
- *                 data:
- *                   $ref: '#/components/schemas/SchoolCertificate'
+ *         description: Certificate added successfully.
  *       400:
- *         description: Bad request
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
- *       500:
- *         description: Server error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
- */
-
-/**
- * @swagger
- * /api/sCertificate/{id}:
- *   put:
- *     summary: Update a school certificate
+ *         description: Bad request (e.g., invalid input, duplicate entry).
+ *
+ * /api/sCertificate/claim:
+ *   get:
+ *     summary: Claim a found school certificate
  *     tags: [School Certificate]
  *     parameters:
- *       - in: path
- *         name: id
+ *       - in: query
+ *         name: lastName
  *         required: true
  *         schema:
  *           type: string
- *         description: School certificate ID
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               fullName:
- *                 type: string
- *               dateOfBirth:
- *                 type: string
- *                 format: date
- *               certificateNumber:
- *                 type: string
- *               schoolName:
- *                 type: string
- *               grade:
- *                 type: string
- *               yearOfCompletion:
- *                 type: string
- *               issueDate:
- *                 type: string
- *                 format: date
- *               placeOfIssue:
- *                 type: string
- *               contactInfo:
- *                 type: object
- *               status:
- *                 type: string
- *                 enum: [lost, found, claimed]
- *               description:
- *                 type: string
- *               locationFound:
- *                 type: string
- *               dateFound:
- *                 type: string
- *                 format: date-time
- *               images:
- *                 type: array
- *                 items:
- *                   type: string
- *     responses:
- *       200:
- *         description: School certificate updated successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
- *                 message:
- *                   type: string
- *                   example: School certificate updated successfully
- *                 data:
- *                   $ref: '#/components/schemas/SchoolCertificate'
- *       404:
- *         description: School certificate not found
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
- *       500:
- *         description: Server error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
- */
-
-/**
- * @swagger
- * /api/sCertificate/{id}:
- *   delete:
- *     summary: Delete a school certificate
- *     tags: [School Certificate]
- *     parameters:
- *       - in: path
- *         name: id
+ *         description: The last name of the certificate holder.
+ *         example: "Chauke"
+ *       - in: query
+ *         name: certificateType
  *         required: true
  *         schema:
  *           type: string
- *         description: School certificate ID
+ *           enum: [Olevel, Alevel, Poly, University, Other]
+ *         description: The type of the school certificate.
+ *         example: "Olevel"
  *     responses:
  *       200:
- *         description: School certificate deleted successfully
+ *         description: Successfully found the school certificate.
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
- *                 message:
- *                   type: string
- *                   example: School certificate deleted successfully
+ *               $ref: '#/components/schemas/SchoolCertificate'
  *       404:
- *         description: School certificate not found
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
- *       500:
- *         description: Server error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
+ *         description: Certificate not found.
  */
 
 export default {};

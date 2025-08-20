@@ -2,6 +2,9 @@ import asyncHandler from "express-async-handler";
 import Bcertificate from "../models/bcertificate.model.js";
 import Stats from "../models/stats.model.js";
 
+// Helper function to escape regex special characters
+const escapeRegex = (str) => String(str).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
 export const foundbCertificate = asyncHandler(async (req, res) => {
     const { motherLastName, lastName, firstName, secondName, docLocation, finderContact } = req.body;
     const phoneNumberRegex = /^07(?:8[0-9]{7}|[137][1-9][0-9]{6})$/;
@@ -15,9 +18,9 @@ export const foundbCertificate = asyncHandler(async (req, res) => {
     }
 
     const existingCertificate = await Bcertificate.findOne({
-        lastName: { $regex: `^${lastName}$`, $options: 'i' },
-        firstName: { $regex: `^${firstName}$`, $options: 'i' },
-        motherLastName: { $regex: `^${motherLastName}$`, $options: 'i' }
+        lastName: { $regex: `^${escapeRegex(lastName)}$`, $options: 'i' },
+        firstName: { $regex: `^${escapeRegex(firstName)}$`, $options: 'i' },
+        motherLastName: { $regex: `^${escapeRegex(motherLastName)}$`, $options: 'i' }
     });
 
     if (existingCertificate) {
@@ -34,7 +37,7 @@ export const foundbCertificate = asyncHandler(async (req, res) => {
     });
 
     await newCertificate.save();
-    await Stats.findOneAndUpdate({}, { $inc: { totalDocuments: 1 } });
+    await Stats.findOneAndUpdate({}, { $inc: { totalDocuments: 1 } }, { upsert: true });
 
     res.status(201).json({
         message: "Certificate added successfully",
@@ -48,9 +51,9 @@ export const claimbCertificate = asyncHandler(async (req, res) => {
         return res.status(400).json({ message: "Both Child's lastName and motherLastName are required" });
     }
 
-    const certificate = await Bcertificate.findOne({
-        lastName: { $regex: `^${lastName}$`, $options: 'i' },
-        motherLastName: { $regex: `^${motherLastName}$`, $options: 'i' },
+    let certificate = await Bcertificate.findOne({
+        lastName: { $regex: `^${escapeRegex(lastName)}$`, $options: 'i' },
+        motherLastName: { $regex: `^${escapeRegex(motherLastName)}$`, $options: 'i' },
         status: { $in: ["lost", "found"] }
     });
 
@@ -58,16 +61,17 @@ export const claimbCertificate = asyncHandler(async (req, res) => {
         return res.status(404).json({ message: "Certificate not found" });
     }
 
-    if (certificate.status !== "found") {
-        certificate.status = "found";
-    }
-
-    if (!certificate.claimed){
-        certificate.claimed = true;
-        certificate.claimedAt = new Date();
-        await certificate.save();
-
-        await Stats.findOneAndUpdate({}, { $inc: { claimedDocuments: 1 } });
+    const updated = await Bcertificate.findOneAndUpdate(
+        { _id: certificate._id, claimed: false },
+        { $set: { claimed: true, claimedAt: new Date(), status: 'found' } },
+        { new: true }
+    );
+    if (updated) {
+        await Stats.findOneAndUpdate({}, { $inc: { claimedDocuments: 1 } }, { upsert: true });
+        certificate = updated;
+    } else if (certificate.status !== 'found') {
+        await Bcertificate.updateOne({ _id: certificate._id, status: { $ne: 'found' } }, { $set: { status: 'found' } });
+        certificate.status = 'found';
     }
     
 

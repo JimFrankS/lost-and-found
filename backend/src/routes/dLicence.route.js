@@ -1,6 +1,6 @@
 import express from "express";
 import { claimLicence, foundLicence } from "../controllers/dLicence.controller.js";
-import sanitizeInput from "../middleware/sanitizeInput.middleware.js";
+import { sanitizeInput } from "../middleware/sanitizeInput.middleware.js";
 
 const router = express.Router();
 
