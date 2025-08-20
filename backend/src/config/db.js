@@ -2,6 +2,12 @@ import mongoose from 'mongoose';
 import { ENV } from './env.js';
 export const connectDB = async () => {
     try {
+        // Mongoose connection states:
+        // 0: disconnected
+        // 1: connected
+        // 2: connecting
+        // 3: disconnecting
+        if (mongoose.connection.readyState >= 1) return;
 
         if (!ENV.MONGO_URI) {
             console.error("MongoDB URI is not set. Define it in your environment, or set it in the .env file.");
