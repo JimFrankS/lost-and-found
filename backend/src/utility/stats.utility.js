@@ -1,5 +1,13 @@
 import Stats from '../models/stats.model.js';
 import mongoose from "mongoose";
+/**
+ * Ensure the Stats collection has an initial document and return current counts.
+ *
+ * If the collection is empty, creates a Stats document with { totalDocuments: 0, claimedDocuments: 0 }.
+ * Always returns an object with the shape { totalDocuments: number, claimedDocuments: number } reflecting the stored values (or zeros if none found).
+ *
+ * @return {{ totalDocuments: number, claimedDocuments: number }} Current stats values.
+ */
 export async function ensureStatsInitialized() {
     const count = await Stats.countDocuments();
     if (count === 0) {

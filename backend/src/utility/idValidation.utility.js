@@ -36,10 +36,14 @@ const codeGroup = allowedCodes.join('|');
 const idNumberRegex = new RegExp(`^(${codeGroup})-(\\d{6,7})([A-HJ-NP-TV-Z])(${codeGroup})$`);
 
 /**
- * Validates a Zimbabwean ID number using modulus 23 calculation.
- * The check letter is derived from the first district code and the serial number.
- * @param {string} str - The ID number to validate
- * @returns {boolean} - True if valid, false otherwise
+ * Validate a Zimbabwe national ID number using the modulus-23 check letter.
+ *
+ * The function expects an ID matching the module's regex: a valid two-digit district
+ * code, a hyphen, a 6–7 digit serial, a check letter, and a trailing valid district code.
+ * Non-string inputs or strings that don't match the expected pattern return false.
+ *
+ * @param {string} str - ID string to validate (e.g., "02-123456A02").
+ * @returns {boolean} True if the ID's format is valid and the check letter matches the modulus-23 calculation; otherwise false.
  */
 export function isValidZimbabweIdNumber(str) {
   if (typeof str !== 'string') {

@@ -1,9 +1,16 @@
 import logger from '../utility/logger.utility.js';
 
 /**
- * Mask sensitive information in error metadata before logging.
- * @param {object} meta 
- * @returns {object} metadata clone with sensitive fields masked
+ * Return a shallow-cloned metadata object with common sensitive fields masked.
+ *
+ * Masks common secrets found in meta.body and meta.headers so they are safe for logging.
+ * Note: cloning is shallow — nested objects (e.g., meta.body, meta.headers) are not deep-copied,
+ * so their properties may be mutated on the original object.
+ *
+ * @param {object} meta - Metadata object that may contain `body` and `headers`.
+ * @returns {object} A shallow clone of `meta` with sensitive fields replaced by `"[HIDDEN]"`.
+ *                  Fields masked: body.password, body.token, body.email, body.authorization,
+ *                  and headers.authorization.
  */
 function maskSensitiveInfo(meta) {
   // Add or remove sensitive fields as needed

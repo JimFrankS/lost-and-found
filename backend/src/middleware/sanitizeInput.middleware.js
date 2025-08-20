@@ -1,8 +1,13 @@
 /**
- * Recursively trims all string values in an object or array.
- * Leaves non-string values untouched.
- * @param {*} obj - The object, array, or primitive to recursively trim
- * @returns {*} - The trimmed object, array, or value
+ * Recursively trims whitespace from all string values inside an object or array.
+ *
+ * Traverses arrays and plain objects and returns a new structure with every string
+ * value trimmed via String.prototype.trim(). Non-string primitives (number, boolean,
+ * null, undefined), functions, and other non-plain-object values are returned unchanged.
+ * The original input is not mutated for objects or arrays.
+ *
+ * @param {*} obj - Value to process (array, plain object, string, or any primitive).
+ * @returns {*} A new array/object with trimmed strings, a trimmed string, or the original value.
  */
 function deepTrim(obj) {
   if (Array.isArray(obj)) {
@@ -20,9 +25,12 @@ function deepTrim(obj) {
 }
 
 /**
- * Express middleware to sanitize (trim) all input in req.body, req.query, and req.params.
- * Applies deepTrim to all relevant input sources.
- * Exports for easy use and unit testing.
+ * Express middleware that recursively trims all string values in req.body, req.query, and req.params.
+ *
+ * If req.body is a non-null object it is replaced with the result of deepTrim(req.body).
+ * For req.query and req.params (when objects) each value is replaced with deepTrim(value).
+ * Non-string values are preserved as-is by deepTrim. The middleware mutates the request object
+ * (updates req.body, req.query, req.params) and then calls next().
  */
 export function sanitizeInput(req, res, next) {
   // Uncomment for debugging:
