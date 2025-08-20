@@ -38,9 +38,23 @@ const swaggerOptions = {
           type: "object",
           properties: {
             _id: { type: "string", description: "MongoDB ObjectId" },
-            documentType: { type: "string", enum: ["passport", "national_id", "drivers_license", "birth_certificate", "school_certificate", "baggage"] },
+            documentType: {
+              type: "string",
+              enum: [
+                "passport",
+                "national_id",
+                "drivers_license",
+                "birth_certificate",
+                "school_certificate",
+                "baggage"
+              ]
+            },
             fullName: { type: "string", description: "Full name of the document holder" },
-            dateOfBirth: { type: "string", format: "date", description: "Date of birth in YYYY-MM-DD format" },
+            dateOfBirth: {
+              type: "string",
+              format: "date",
+              description: "Date of birth in YYYY-MM-DD format"
+            },
             documentNumber: { type: "string", description: "Unique document number" },
             issueDate: { type: "string", format: "date", description: "Document issue date" },
             expiryDate: { type: "string", format: "date", description: "Document expiry date" },
@@ -54,10 +68,25 @@ const swaggerOptions = {
                 address: { type: "string" }
               }
             },
-            status: { type: "string", enum: ["lost", "found", "claimed"], default: "lost" },
+            status: { type: "string", enum: ["lost", "found"], default: "lost" },
+            claimed: {
+              type: "boolean",
+              default: false,
+              description: "Whether the item has been claimed"
+            },
+            claimedAt: {
+              type: "string",
+              format: "date-time",
+              nullable: true,
+              description: "Timestamp when the item was claimed; subject to TTL as configured in the DB"
+            },
             description: { type: "string", description: "Additional description or notes" },
             locationFound: { type: "string", description: "Location where item was found" },
-            dateFound: { type: "string", format: "date-time", description: "Date and time when item was found" },
+            dateFound: {
+              type: "string",
+              format: "date-time",
+              description: "Date and time when item was found"
+            },
             reportedBy: { type: "string", description: "User who reported the item" },
             images: {
               type: "array",
