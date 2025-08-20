@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import isValidZimbabweIdNumber from "../utility/idValidation.utility.js";
 
 const passportSchema = new mongoose.Schema({
     passportNumber: {
@@ -15,6 +16,7 @@ const passportSchema = new mongoose.Schema({
         type: String,
         required: true,
         maxlength: 100,
+        index: true, 
         trim: true
     },
     firstName: {
@@ -23,14 +25,15 @@ const passportSchema = new mongoose.Schema({
         maxlength: 100,
         trim: true
     },
-   idNumber: {
+idNumber: {
     type: String,
     required: true,
     unique: true,
-    match: /^\d{2}-\d{6,7}[A-Z]\d{2}$/,
-    maxlength: 13, 
-    minlength: 12,
-    trim: true
+    trim: true,
+    validate: {
+        validator: isValidZimbabweIdNumber,
+        message: "Invalid Zimbabwean ID number."
+    }
 },
     docLocation: {
         type: String,
@@ -38,20 +41,31 @@ const passportSchema = new mongoose.Schema({
         maxlength: 200,
         trim: true
     },
-    finderContact: {
+   finderContact: {
         type: String,
         required: true,
-        maxlength: 200,
+        match: /^07(?:8[0-9]{7}|[137][1-9][0-9]{6})$/,
+        maxlength: 10,
         trim: true
     },
     status: {
         type: String,
-        enum: ["lost", "claimed"],
+        enum: ["lost", "found"],
         default: "lost",
         index: true 
     },
+    claimed: {
+        type: Boolean,
+        default: false
+    },
+    claimedAt: {
+        type: Date,
+        default: null
+    }
 },  {timestamps: true},
 );
+
+passportSchema.index({ claimedAt: 1 }, { expireAfterSeconds: 60 }); // Add TTL index to auto-delete claimed documents after 60 seconds
 
 const Passport = mongoose.model("Passport", passportSchema);
 

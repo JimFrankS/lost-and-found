@@ -2,4 +2,7 @@
 node_modules
 .env
 notes.txt
-
+todonotes.txt
+backup.txt
+notes+.txt
+logs
