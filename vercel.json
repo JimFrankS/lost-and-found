@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "routes": [
+    { "src": "/(favicon\\.ico|robots\\.txt|sitemap\\.xml|static/.*)", "dest": "/$1" },
+    { "src": "/(.*)", "dest": "/backend/src/server.js" }
+  ],
+  "functions": {
+    "backend/src/server.js": {
+      "runtime": "nodejs20.x",
+      "memory": 1024,
+      "maxDuration": 30
+    }
+  }
+}
