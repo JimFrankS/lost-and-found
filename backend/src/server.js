@@ -130,8 +130,8 @@ const gracefulShutdown = (signal) => {
 process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
 process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 
-// Only start the server if the file is run directly (i.e. not imported by a test runner)
-if (process.env.JEST_WORKER_ID === undefined) {
+// Only start the server if the file is run directly (i.e. not imported by a test runner or Vercel)
+if (!process.env.VERCEL && process.env.JEST_WORKER_ID === undefined) {
   startServer();
 }
 
