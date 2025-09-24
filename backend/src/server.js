@@ -130,8 +130,19 @@ const gracefulShutdown = (signal) => {
 process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
 process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 
-// Only start the server if the file is run directly (i.e. not imported by a test runner or Vercel)
-if (!process.env.VERCEL && process.env.JEST_WORKER_ID === undefined) {
+// Only start the server locally; on Vercel, perform cold-start initialization.
+if (process.env.VERCEL) {
+  // Initialize DB and stats once per cold start
+  void (async () => {
+    try {
+      await connectDB();
+      await ensureStatsInitialized();
+      logger.info('Serverless initialization complete');
+    } catch (err) {
+      logger.error('Error during serverless initialization:', err);
+    }
+  })();
+} else if (process.env.JEST_WORKER_ID === undefined) {
   startServer();
 }
 
