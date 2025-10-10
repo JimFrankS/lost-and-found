@@ -1,14 +1,18 @@
 {
   "version": 2,
-  "routes": [
-    { "src": "/(favicon\\.ico|robots\\.txt|sitemap\\.xml|static/.*)", "dest": "/$1" },
-    { "src": "/(.*)", "dest": "/backend/src/server.js" }
-  ],
-  "functions": {
-    "backend/src/server.js": {
-      "runtime": "nodejs20.x",
-      "memory": 1024,
-      "maxDuration": 30
+  "builds": [
+    {
+      "src": "src/server.js",
+      "use": "@vercel/node"
     }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/src/server.js"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "production"
   }
 }
