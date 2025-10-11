@@ -2,7 +2,17 @@ import { View, Text } from 'react-native'
 import React from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
-const search = () => {
+const Search = () => {
+  return (
+    <SafeAreaView className='flex-1 items-center'>
+      <View>
+        {/* component content */}
+      </View>
+    </SafeAreaView>
+  )
+}
+
+export default Search
   return (
     <SafeAreaView className='flex-1 items-center'>
     <View>
