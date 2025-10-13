@@ -17,8 +17,8 @@ export interface Baggage {
 
 
 export interface Bcertificate {
-    _id: string;
-    mothersLastName: string;
+    _id: string,
+    mothersLastName: string,
     lastName: string,
     firstName: string,
     secondName?: string,
@@ -37,8 +37,8 @@ export interface DLicence {
 
 export interface NatId {
     _id: string,
-    lastname: string,
-    firstname: string,
+    lastName: string,
+    firstName: string,
     idNumber: string,
     docLocation: string,
     finderContact: string
