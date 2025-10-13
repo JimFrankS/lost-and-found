@@ -1,13 +1,13 @@
 export const BAGGAGE_TYPES = [
   "purse", "wallet", "handbag", "hustlebag", "laptopbag", "briefcase", "satchel",
   "travelingbag", "changanibag", "monarch", "plasticbag", "tsaga", "box", "other"
-];
+] as const; // Make this a readonly tuple
 
 export interface Baggage {
     _id: string,
-    baggageType: (typeof BAGGAGE_TYPES), // Ensures baggageType is one of the predefined types
-    transportType: string,
-    routeType: string,
+    baggageType: (typeof BAGGAGE_TYPES)[number], // Restrict to one of the predefined strings
+    transportType: "bus" | "kombi" | "mushikashika" | "private",
+    routeType: "local" | "intercity",
     destinationProvince: string,
     destinationDistrict: string,
     destination: string,
