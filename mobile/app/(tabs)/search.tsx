@@ -1,12 +1,17 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import BackGroundCard from '@/components/BackGroundCard'
+import { tabStyles } from '@/styles/tabStyles'
 
 const Search = () => {
   return (
-    <SafeAreaView className='flex-1 items-center'>
-      <View>
-        <Text>Search Yeipapo</Text>
+    <SafeAreaView style={tabStyles.safeArea}>
+      <View style={tabStyles.container}>
+        <BackGroundCard />
+        <View style={tabStyles.content}>
+
+        </View>
       </View>
     </SafeAreaView>
   )
