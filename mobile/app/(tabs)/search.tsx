@@ -6,20 +6,10 @@ const Search = () => {
   return (
     <SafeAreaView className='flex-1 items-center'>
       <View>
-        {/* component content */}
+        <Text>Search Yeipapo</Text>
       </View>
     </SafeAreaView>
   )
 }
 
 export default Search
-  return (
-    <SafeAreaView className='flex-1 items-center'>
-    <View>
-      <Text>search</Text>
-    </View>
-    </SafeAreaView>
-  )
-}
-
-export default search
