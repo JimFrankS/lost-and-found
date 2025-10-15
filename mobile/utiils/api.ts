@@ -1,6 +1,21 @@
 import axios, { AxiosInstance } from "axios"; // 
+import { Platform } from "react-native"; 
 
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || "https://lost-and-found-opal.vercel.app/";
+const DEFAULT_BASE_URL = "https://lost-and-found-opal.vercel.app/";
+let API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || DEFAULT_BASE_URL;
+
+// In web development, avoid calling the production backend from a localhost origin to prevent CORS issues.
+// If no explicit API base URL is provided and the app runs on localhost in the browser, default to a local backend.
+if (!process.env.EXPO_PUBLIC_API_URL && Platform.OS === 'web') {
+    try {
+        const origin = typeof window !== 'undefined' ? window.location.origin : '';
+        if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\\d+)?$/.test(origin)) {
+            API_BASE_URL = 'http://localhost:5001';
+        }
+    } catch {
+        // no-op: conservative fallback to DEFAULT_BASE_URL
+    }
+}
 
 export const TIMEOUT_ERROR_MESSAGE = "Request timed out. Please check your network connection and try again.";
 

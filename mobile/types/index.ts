@@ -1,13 +1,10 @@
-export const BAGGAGE_TYPES = [
-  "purse", "wallet", "handbag", "hustlebag", "laptopbag", "briefcase", "satchel",
-  "travelingbag", "changanibag", "monarch", "plasticbag", "tsaga", "box", "other"
-] as const; // Make this a readonly tuple
+import { BAGGAGE_TYPES, ROUTE_TYPES, SCERTIFICATE_TYPES, TRANSPORT_TYPES } from "@/constants/allowedValues"
 
 export interface Baggage {
     _id: string,
     baggageType: (typeof BAGGAGE_TYPES)[number], // Restrict to one of the predefined strings
-    transportType: "bus" | "kombi" | "mushikashika" | "private",
-    routeType: "local" | "intercity",
+    transportType: (typeof TRANSPORT_TYPES) [number], // Restrict to one of the predefined strings
+    routeType: (typeof ROUTE_TYPES)[number], 
     destinationProvince: string,
     destinationDistrict: string,
     destination: string,
@@ -56,7 +53,7 @@ export interface Passport {
 
 export interface Scertificate {
     _id: string,
-    certificateType: "Olevel" | "Alevel" | "Poly" | "University" | "Other",
+    certificateType: (typeof SCERTIFICATE_TYPES) [number],
     lastName: string,
     firstName: string,
     docLocation: string,
