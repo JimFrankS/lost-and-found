@@ -52,17 +52,26 @@ export function showError(message: string) {
 // I created this function to handle alerts in a way that works for both web and native platforms. Specifially, for handling the cancel alert in the reportBaggageModal.tsx component.
 export function showAlerts(title: string, message: string, buttons?: any[]) {
   if (Platform.OS === 'web' && typeof window !== 'undefined') {
-    window.alert(`${title}: ${message}`);
-    // Find the "Yes" or destructive button and call its onPress if present
-    if (buttons && Array.isArray(buttons)) {
-      const yesBtn = buttons.find(
-        btn => btn.text?.toLowerCase() === "yes" || btn.style === "destructive"
-      );
-      if (yesBtn && typeof yesBtn.onPress === "function") {
-        yesBtn.onPress();
+    if (buttons && buttons.length > 0) {
+      // Use window.confirm for confirmation dialogs (OK = Yes/destructive, Cancel = No)
+      const confirmed = window.confirm(`${title}: ${message}`);
+      if (confirmed) {
+        // OK clicked, call the "Yes" button's onPress
+        if (buttons[1]?.onPress) buttons[1].onPress();
+      } else {
+        // Cancel clicked, call the "No" button's onPress
+        if (buttons[0]?.onPress) buttons[0].onPress();
       }
+    } else {
+      // No buttons, use alert
+      window.alert(`${title}: ${message}`);
     }
   } else {
-    Alert.alert(title, message, buttons);
+    // Native: map buttons to Cancel (non-destructive) and OK (destructive)
+    const nativeButtons = buttons && buttons.length > 0 ? [
+      { text: "Cancel", onPress: buttons[0]?.onPress },
+      { text: "OK", onPress: buttons[1]?.onPress }
+    ] : undefined;
+    Alert.alert(title, message, nativeButtons);
   }
 }
