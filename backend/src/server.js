@@ -30,8 +30,20 @@ app.use(attachRequestId);
 app.use(helmet()); 
 
 
+const allowedOrigins = [
+    'https://your-frontend-app.com',
+];
+
 const corsOptions = {
-    origin: ENV.NODE_ENV === 'production' ? ['https://your-frontend-app.com'] : '*',
+    origin: (origin, callback) => {
+        // Allow non-browser requests (no Origin header) such as mobile/native or curl.
+        if (!origin) return callback(null, true);
+        // Allow explicitly whitelisted origins
+        if (allowedOrigins.includes(origin)) return callback(null, true);
+        // Allow any localhost/127.0.0.1 with any port during development only
+        if (process.env.NODE_ENV === 'development' && /^https?:\/\/(localhost|127\.0\.0\.1)(:\\d+)?$/.test(origin)) return callback(null, true);
+        return callback(new Error('Not allowed by CORS'), false);
+    },
     optionsSuccessStatus: 200
 };
 app.use(cors(corsOptions)); 
