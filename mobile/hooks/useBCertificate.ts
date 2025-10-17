@@ -1,14 +1,23 @@
 import { useQueryClient, useMutation } from "@tanstack/react-query";
-import { bcertificateApi } from "@/utiils/api";
+import { bcertificateApi } from "@/utils/api";
 import { useState } from "react";
-import { extractErrorMessage, extractSuccessMessage, showError, showSuccess } from "@/utiils/alerts";
+import { extractErrorMessage, extractSuccessMessage, showError, showSuccess } from "@/utils/alerts";
+
+export interface BirthCertificateFormData {
+    motherLastName: string;
+    lastName: string;
+    firstName: string;
+    secondName: string;
+    docLocation: string;
+    finderContact: string;
+}
 
 export const useBCertificate = () => {
     const queryClient = useQueryClient();
 
     const [isBCertificateModalVisible, setIsBCertificateModalVisible] = useState(false); // state for holding modal visibility
 
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<BirthCertificateFormData>({
         motherLastName: "",
         lastName: "",
         firstName: "",
@@ -18,21 +27,21 @@ export const useBCertificate = () => {
     }); // State for holding the form data for enter birthcertiface details.
 
     const enterBCertificateMutation = useMutation({
-        mutationFn: (bcertifacteData: any) => bcertificateApi.foundbCertificate(bcertifacteData), // Api Call to report lost baggage
+        mutationFn: (bcertificateData: any) => bcertificateApi.foundbCertificate(bcertificateData), // Api Call to report lost birth certificate
 
         onSuccess: (response) => {
             queryClient.invalidateQueries({ queryKey: ["bcertificate"] }); // Invalidate bcertificate queries to refetch updated data.
             setIsBCertificateModalVisible(false); // Close the modal
-            const message = extractSuccessMessage(response, "Birth Certificate reported succesfully");
+            const message = extractSuccessMessage(response, "Birth Certificate reported successfully");
             showSuccess(message);
         },
 
         onError: (error: any) => {
-            console.error("Error Reporting Birth Certificate: ", error) // log full error for debugging.
-            const message = extractErrorMessage(error, "An error occured whilst reporting lost birthcertificate.");
+            console.error("Error Reporting Birth Certificate: ", error); // log full error for debugging.
+            const message = extractErrorMessage(error, "An error occurred whilst reporting lost birth certificate.");
             showError(message)
         },
-    }); // end of the mutation for reporting lost birthcertificate.
+    }); // end of the mutation for reporting lost birth certificate.
 
     const openBCertificateModal = () => {
         setFormData({

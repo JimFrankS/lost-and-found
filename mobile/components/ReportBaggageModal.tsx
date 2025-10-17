@@ -3,9 +3,9 @@ import React, { useMemo, useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 
-import { BAGGAGE_TYPES, TRANSPORT_TYPES, ROUTE_TYPES, PROVINCES, PROVINCE_DISTRICT_MAP, PHONE_NUMBER_REGEX } from "@/constants/allowedValues";
+import { BAGGAGE_TYPES, TRANSPORT_TYPES, ROUTE_TYPES, PROVINCES, PROVINCE_DISTRICT_MAP, PHONE_NUMBER_REGEX, PHONE_EXAMPLE } from "@/constants/allowedValues";
 import { OptionPicker, SelectField, toTitleCase } from "./FormsHelper";
-import { showAlerts } from "@/utiils/alerts";
+import { showAlerts } from "@/utils/alerts";
 
 interface ReportBaggageModalProps {
     isVisible: boolean;
@@ -54,7 +54,7 @@ const ReportBaggageModal = ({ isVisible, onClose, formData, reportBaggage, updat
             return;
         }
         if (!isPhoneValid) {
-            Alert.alert("Error", "Invalid phone number format. Example: 0719729537");
+            Alert.alert("Error", `Invalid phone number format. Example: ${PHONE_EXAMPLE}`);
             return;
         }
         reportBaggage();
@@ -181,7 +181,7 @@ const ReportBaggageModal = ({ isVisible, onClose, formData, reportBaggage, updat
                         maxLength={10}
                     />
                     {formData.finderContact.length > 0 && !isPhoneValid && (
-                        <Text className="text-red-600 text-xs mb-7">Invalid phone number format. Example: 0712345678</Text>
+                        <Text className="text-red-600 text-xs mb-7">Invalid phone number format. Example: {PHONE_EXAMPLE}</Text>
                     )}
                     {formData.finderContact.length === 0 && (
                         <View className="mb-7" />

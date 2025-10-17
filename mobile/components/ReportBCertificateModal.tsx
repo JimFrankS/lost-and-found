@@ -2,7 +2,7 @@ import { Text, View, ScrollView, Modal, Alert, TouchableOpacity, TextInput, Acti
 import React from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { PHONE_NUMBER_REGEX } from "@/constants/allowedValues";
-import { showAlerts } from "@/utiils/alerts";
+import { showAlerts } from "@/utils/alerts";
 
 
 interface ReportBCertificateModalProps {

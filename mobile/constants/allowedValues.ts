@@ -3,6 +3,7 @@
 
 // Regex definitions
 export const PHONE_NUMBER_REGEX = /^07(?:8[0-9]{7}|[137][1-9][0-9]{6})$/;
+export const PHONE_EXAMPLE = "0719729537";
 
 export const BAGGAGE_TYPES = [
   "purse", "wallet", "handbag", "hustlebag", "laptopbag", "briefcase", "satchel",
