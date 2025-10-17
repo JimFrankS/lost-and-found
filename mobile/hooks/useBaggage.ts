@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { baggageApi } from "@/utiils/api";
+import { baggageApi } from "@/utils/api";
 import { useState } from "react";
-import { extractErrorMessage, extractSuccessMessage, showError, showSuccess } from "@/utiils/alerts";
+import { extractErrorMessage, extractSuccessMessage, showError, showSuccess } from "@/utils/alerts";
 
 export const useBaggage = () => {
     const queryClient = useQueryClient();

@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import BackGroundCard from '@/components/BackGroundCard';
 import { tabStyles } from '@/styles/tabStyles';
 import ReportBaggageCard from '@/components/ReportBaggageCard';
+import ReportBCertificateCard from '@/components/ReportBCertificateCard';
 
 
 const HomeScreen = () => {
@@ -11,7 +12,10 @@ const HomeScreen = () => {
     <SafeAreaView style={tabStyles.safeArea}>
       <View style={tabStyles.container}>
         <BackGroundCard />
+      
         <ReportBaggageCard />
+        <ReportBCertificateCard />
+        
       </View>
     </SafeAreaView>
   );
