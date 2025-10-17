@@ -54,7 +54,7 @@ const ReportBaggageModal = ({ isVisible, onClose, formData, reportBaggage, updat
             return;
         }
         if (!isPhoneValid) {
-            Alert.alert("Error", "Invalid phone number format. Example: 0712345678");
+            Alert.alert("Error", "Invalid phone number format. Example: 0719729537");
             return;
         }
         reportBaggage();
@@ -89,7 +89,6 @@ const ReportBaggageModal = ({ isVisible, onClose, formData, reportBaggage, updat
                     }}>
                         <Text className="text-red-500 font-semibold">Close</Text>
                     </TouchableOpacity>
-                    <Text className="text-lg font-semibold">Report Lost Baggage</Text>
                     <TouchableOpacity onPress={handleSave} disabled={isReporting || !isFormComplete || !isPhoneValid}>
                         {(!isFormComplete || !isPhoneValid) ? (
                             <Text className="text-gray-500 font-semibold">Upload</Text>
@@ -155,6 +154,8 @@ const ReportBaggageModal = ({ isVisible, onClose, formData, reportBaggage, updat
                         placeholder='Where was the vehicle "ending its trip"?'
                         value={formData.destination}
                         onChangeText={(value) => updateFormData('destination', value)}
+                        multiline
+                        maxLength={100}
                     />
 
                     <Text className="text-lg font-semibold text-gray-600 mb-2">Baggage Location</Text>
@@ -163,6 +164,8 @@ const ReportBaggageModal = ({ isVisible, onClose, formData, reportBaggage, updat
                         placeholder="Where can the owner come to collect the baggage?"
                         value={formData.docLocation}
                         onChangeText={(value) => updateFormData('docLocation', value)}
+                        multiline
+                        maxLength={200}
                     />
 
                     <Text className="text-lg font-semibold text-gray-600 mb-2">Finder Contact</Text>

@@ -24,7 +24,7 @@ const ReportBaggageCard = () => {
           className="m-4 p-4 bg-transparent rounded-lg shadow flex-row items-center justify-center"
         >
           <Feather name="plus" size={24} color="black" />
-          <Text className="ml-2 text-grey-600 font-bold text-lg">Report Lost Baggage</Text>
+          <Text className="ml-2 text-gray-600 font-bold text-lg">Report Lost Baggage</Text>
         </TouchableOpacity>
       </View>
       <ReportBaggageModal
