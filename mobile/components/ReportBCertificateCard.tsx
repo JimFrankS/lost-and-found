@@ -18,15 +18,13 @@ const ReportBCertificateCard = () => {
 
     return (
         <>
-            <View style={tabStyles.content}>
-                <TouchableOpacity
-                    onPress={openBCertificateModal}
-                    className='m-4 p-4 bg-transparent rounded-lg shadow flex-row items-center justify-center'
-                >
-                    <Feather name='plus' size={24} color={"black"} />
-                    <Text className="ml-2 text-gray-600 font-bold text-lg">Report Lost Birth Certificate</Text>
-                </TouchableOpacity>
-            </View>
+            <TouchableOpacity
+                onPress={openBCertificateModal}
+                className='m-4 p-4 bg-transparent rounded-lg shadow flex-row items-center justify-center'
+            >
+                <Feather name='plus' size={24} color={"black"} />
+                <Text className="ml-2 text-gray-600 font-bold text-lg">Report Lost Birth Certificate</Text>
+            </TouchableOpacity>
 
             <ReportBCertificateModal
                 isVisible={isBCertificateModalVisible}
