@@ -7,6 +7,7 @@ import ReportBaggageCard from '@/components/ReportBaggageCard';
 import ReportBCertificateCard from '@/components/ReportBCertificateCard';
 import ReportDLicenseCard from '@/components/ReportDLicenseCard';
 import ReportNatIdCard from '@/components/ReportNatIdCard';
+import ReportPassportCard from '@/components/ReportPassportCard';
 
 
 const HomeScreen = () => {
@@ -19,6 +20,7 @@ const HomeScreen = () => {
         <ReportBCertificateCard />
         <ReportDLicenseCard />
         <ReportNatIdCard />
+        <ReportPassportCard />
         
       </View>
     </SafeAreaView>
