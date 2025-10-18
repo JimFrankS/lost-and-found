@@ -37,9 +37,9 @@ export const useBCertificate = () => {
         },
 
         onError: (error: any) => {
-            console.error("Error Reporting Birth Certificate: ", error); // log full error for debugging.
             const message = extractErrorMessage(error, "An error occurred whilst reporting lost birth certificate.");
-            showError(message)
+            if (__DEV__) console.error("Error Reporting Birth Certificate:", message);
+            showError(message);
         },
     }); // end of the mutation for reporting lost birth certificate.
 

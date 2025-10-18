@@ -29,9 +29,9 @@ export const useBaggage = () => {
         },
 
         onError: (error: any) => {
-            console.error("Baggage reporting error:", error); // Log full error for debugging
             const message = extractErrorMessage(error, 'An error occurred while reporting baggage');
-            showError(message); // Show error alert with detailed message
+            if (__DEV__) console.error("Baggage reporting error:", message);
+            showError(message);
         },
     }); // Mutation hook for reporting lost baggage
 
@@ -64,5 +64,3 @@ export const useBaggage = () => {
         refetch: () => queryClient.invalidateQueries({ queryKey: ['baggage'] }) // Function to refetch baggage data
     };
 };
-
-

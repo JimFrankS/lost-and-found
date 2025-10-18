@@ -35,9 +35,9 @@ export const useSCertificate = () => {
         },
 
         onError: (error: any) => {
-            console.error("Error Reporting School Certificate: ", error); // log full error for debugging.
             const message = extractErrorMessage(error, "An error occurred whilst reporting found school certificate.");
-            showError(message)
+            if (__DEV__) console.error("Error Reporting School Certificate:", message);
+            showError(message);
         },
     }); // end of the mutation for reporting found school certificate.
 

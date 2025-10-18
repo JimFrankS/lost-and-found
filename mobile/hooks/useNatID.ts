@@ -35,9 +35,9 @@ export const useNatID = () => {
         },
 
         onError: (error: any) => {
-            console.error("Error Reporting National ID: ", error); // log full error for debugging.
             const message = extractErrorMessage(error, "An error occurred whilst reporting found national ID.");
-            showError(message)
+            if (__DEV__) console.error("Error Reporting National ID:", message);
+            showError(message);
         },
     }); // end of the mutation for reporting found national ID.
 
