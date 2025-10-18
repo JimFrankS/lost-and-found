@@ -56,8 +56,8 @@ export const useBCertificate = () => {
         setIsBCertificateModalVisible(true); // after reset is complete, make the modal to be visible
     };
 
-    const updateFormData =(field: string, value: string) => {
-        setFormData((prevData) => ({...prevData, [field]: value})); // Function to update the form data state
+    const updateFormData = (field: string, value: string) => {
+        setFormData((prevData) => ({ ...prevData, [field]: value })); // Function to update the form data state
     };
 
     return {
@@ -68,7 +68,7 @@ export const useBCertificate = () => {
         reportBCertificate: () => enterBCertificateMutation.mutate(formData), // Function to submit the collected birth certificate information
         updateFormData,
         isReporting: enterBCertificateMutation.isPending,
-        refetch: () => queryClient.invalidateQueries({ queryKey: ["bcertificate"]}) //function to refetch birth certificate data.
+        refetch: () => queryClient.invalidateQueries({ queryKey: ["bcertificate"] }) //function to refetch birth certificate data.
     };
 
 };

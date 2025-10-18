@@ -5,6 +5,7 @@ import BackGroundCard from '@/components/BackGroundCard';
 import { tabStyles } from '@/styles/tabStyles';
 import ReportBaggageCard from '@/components/ReportBaggageCard';
 import ReportBCertificateCard from '@/components/ReportBCertificateCard';
+import ReportDLicenseCard from '@/components/ReportDLicenseCard';
 
 
 const HomeScreen = () => {
@@ -15,6 +16,7 @@ const HomeScreen = () => {
       
         <ReportBaggageCard />
         <ReportBCertificateCard />
+        <ReportDLicenseCard />
         
       </View>
     </SafeAreaView>
