@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import ReportNatIdModal from './reportNatIdModal';
+import ReportNatIdModal from './ReportNatIdModal';
 import { useNatID } from '@/hooks/useNatID';
 
 const ReportNatIdCard = () => {
