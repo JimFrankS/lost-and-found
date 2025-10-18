@@ -2,35 +2,35 @@ import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { tabStyles } from '@/styles/tabStyles';
-import ReportDLicenseModal from './reportDLicenseModal';
-import { useDLicense } from '@/hooks/useDLicense';
+import ReportNatIdModal from './reportNatIdModal';
+import { useNatID } from '@/hooks/useNatID';
 
-const ReportDLicenseCard = () => {
+const ReportNatIdCard = () => {
     const {
-        isDLicenseModalVisible,
+        isNatIDModalVisible,
         formData,
-        openDLicenseModal,
-        closeDLicenseModal,
-        reportDLicense,
+        openNatIDModal,
+        closeNatIDModal,
+        reportNatID,
         updateFormData,
         isReporting,
-    } = useDLicense();
+    } = useNatID();
 
     return (
         <>
             <TouchableOpacity
-                onPress={openDLicenseModal}
+                onPress={openNatIDModal}
                 className='m-4 p-4 bg-transparent rounded-lg shadow flex-row items-center justify-center'
             >
                 <Feather name='plus' size={24} color={"black"} />
-                <Text className="ml-2 text-gray-600 font-bold text-lg">Report Found Driving Licence</Text>
+                <Text className="ml-2 text-gray-600 font-bold text-lg">Report Found National ID</Text>
             </TouchableOpacity>
 
-            <ReportDLicenseModal
-                isVisible={isDLicenseModalVisible}
-                onClose={closeDLicenseModal}
+            <ReportNatIdModal
+                isVisible={isNatIDModalVisible}
+                onClose={closeNatIDModal}
                 formData={formData}
-                reportDLicense={reportDLicense}
+                reportNatID={reportNatID}
                 updateFormData={updateFormData}
                 isReporting={isReporting}
             />
@@ -38,4 +38,4 @@ const ReportDLicenseCard = () => {
     );
 };
 
-export default ReportDLicenseCard;
+export default ReportNatIdCard;
