@@ -37,9 +37,9 @@ export const usePassport = () => {
         },
 
         onError: (error: any) => {
-            console.error("Error Reporting Passport: ", error); // log full error for debugging.
             const message = extractErrorMessage(error, "An error occurred whilst reporting lost passport.");
-            showError(message)
+            if (__DEV__) console.error("Error Reporting Passport:", message);
+            showError(message);
         },
     }); // end of the mutation for reporting lost passport.
 

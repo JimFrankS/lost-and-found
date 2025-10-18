@@ -37,9 +37,9 @@ export const useDLicense = () => {
         },
 
         onError: (error: any) => {
-            console.error("Error Reporting Driving License: ", error); // log full error for debugging.
             const message = extractErrorMessage(error, "An error occurred whilst reporting found driving license.");
-            showError(message)
+            if (__DEV__) console.error("Error Reporting Driving License:", message);
+            showError(message);
         },
     }); // end of the mutation for reporting found driving license.
 
