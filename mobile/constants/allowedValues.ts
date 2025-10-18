@@ -1,9 +1,16 @@
 // Predefined values mirrored from the backend for form dropdowns
 
+export const escapeRegex = (str: string): string => String(str).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 // Regex definitions
 export const PHONE_NUMBER_REGEX = /^07(?:8[0-9]{7}|[137][1-9][0-9]{6})$/;
 export const PHONE_EXAMPLE = "0719729537";
+
+export const licenceNumberRegex = /^\d{6}[A-Z]{2}$/;
+
+export const passportNumberRegex = /^[A-Z]{2}\d{6}$/;
+
+// Baggaage Definations
 
 export const BAGGAGE_TYPES = [
   "purse", "wallet", "handbag", "hustlebag", "laptopbag", "briefcase", "satchel",
