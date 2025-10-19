@@ -6,6 +6,7 @@ import { provinceValidator } from '../middleware/destinationValidator.middleware
 const router = express.Router();
 
 router.post("/found", sanitizeInput, provinceValidator, lostBaggage);
-router.get("/claim", sanitizeInput, provinceValidator, claimBaggage);
+router.get("/search", sanitizeInput, provinceValidator, searchBaggage);
+router.get("/claim/:id", sanitizeInput, claimBaggage);
 
 export default router;

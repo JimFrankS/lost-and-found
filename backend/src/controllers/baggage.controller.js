@@ -61,10 +61,10 @@ export const lostBaggage = expressAsyncHandler(async (req, res) => {
 });
 
 
-export const claimBaggage = expressAsyncHandler(async (req, res) => {
-    const { baggageType, transportType, routeType, destinationProvince, destinationDistrict, destination } = req.query;
-    if (!baggageType || !transportType || !routeType || !destinationProvince || !destinationDistrict || !destination) {
-        return res.status(400).json({ message: "All of baggageType, transportType, routeType, destinationProvince, destinationDistrict, and destination are required" });
+export const searchBaggage = expressAsyncHandler(async (req, res) => {
+    const { baggageType, transportType, routeType, destinationProvince, destinationDistrict } = req.query;
+    if (!baggageType || !transportType || !routeType || !destinationProvince || !destinationDistrict) {
+        return res.status(400).json({ message: "baggageType, transportType, routeType, destinationProvince, and destinationDistrict are required" });
     }
 
     const bagTypeResult = getCanonical(baggageType, BAGGAGE_TYPES, 'baggageType');
@@ -79,20 +79,34 @@ export const claimBaggage = expressAsyncHandler(async (req, res) => {
     if (routeTypeResult.error) return res.status(400).json({ message: routeTypeResult.error });
     const canonicalRouteType = routeTypeResult.canonical;
 
-    // Find the baggage by all key fields
-    let baggage = await Baggage.findOne({
+    // Find all matching baggage, including claimed ones
+    const baggageList = await Baggage.find({
         baggageType: canonicalBagType,
         transportType: canonicalTransportType,
         routeType: canonicalRouteType,
         destinationProvince: String(destinationProvince).toLowerCase(),
         destinationDistrict: String(destinationDistrict).toLowerCase(),
-        destination: { $regex: `^${escapeRegex(destination)}$`, $options: 'i' },
         status: { $in: ["lost", "found"] }
-    });
+    }).select('-docLocation -finderContact -claimed -claimedAt -status -createdAt -updatedAt');
+
+    res.status(200).json(baggageList);
+});
+
+export const claimBaggage = expressAsyncHandler(async (req, res) => {
+    const { id } = req.params;
+    if (!id) {
+        return res.status(400).json({ message: "Baggage ID is required" });
+    }
+
+    // Find the baggage by ID
+    let baggage = await Baggage.findById(id);
     if (!baggage) {
         return res.status(404).json({ message: "Baggage not found" });
     }
-    
+    if (baggage.claimed) {
+        return res.status(400).json({ message: "Baggage already claimed" });
+    }
+
     const updated = await Baggage.findOneAndUpdate(
         { _id: baggage._id, claimed: false },
         { $set: { claimed: true, claimedAt: new Date(), status: 'found' } },
@@ -106,25 +120,26 @@ export const claimBaggage = expressAsyncHandler(async (req, res) => {
         await Baggage.updateOne({ _id: baggage._id, status: { $ne: 'found' } }, { $set: { status: 'found' } });
         baggage.status = 'found';
     }
-   const {
-    baggageType: bType,
-    transportType: tType,
-    routeType: rType,
-    destinationProvince: p,
-    destinationDistrict: d,
-    destination: dest,
-    docLocation,
-    finderContact
-} = baggage;
-const response = {
-    baggageType: bType,
-    transportType: tType,
-    routeType: rType,
-    destinationProvince: p,
-    destinationDistrict: d,
-    destination: dest,
-    docLocation,
-    finderContact
-};
+
+    const {
+        baggageType: bType,
+        transportType: tType,
+        routeType: rType,
+        destinationProvince: p,
+        destinationDistrict: d,
+        destination: dest,
+        docLocation,
+        finderContact
+    } = baggage;
+    const response = {
+        baggageType: bType,
+        transportType: tType,
+        routeType: rType,
+        destinationProvince: p,
+        destinationDistrict: d,
+        destination: dest,
+        docLocation,
+        finderContact
+    };
     res.status(200).json(response);
 });
