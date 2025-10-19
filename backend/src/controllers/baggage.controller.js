@@ -92,6 +92,43 @@ export const searchBaggage = expressAsyncHandler(async (req, res) => {
     res.status(200).json(baggageList);
 });
 
+export const viewBaggage = expressAsyncHandler(async (req, res) => {
+    const { id } = req.params;
+    if (!id) {
+        return res.status(400).json({ message: "Baggage ID is required" });
+    }
+
+    // Find the baggage by ID
+    const baggage = await Baggage.findById(id);
+    if (!baggage) {
+        return res.status(404).json({ message: "Baggage not found" });
+    }
+
+    const {
+        baggageType: bType,
+        transportType: tType,
+        routeType: rType,
+        destinationProvince: p,
+        destinationDistrict: d,
+        destination: dest,
+        docLocation,
+        finderContact,
+        claimed
+    } = baggage;
+    const response = {
+        baggageType: bType,
+        transportType: tType,
+        routeType: rType,
+        destinationProvince: p,
+        destinationDistrict: d,
+        destination: dest,
+        docLocation,
+        finderContact,
+        claimed
+    };
+    res.status(200).json(response);
+});
+
 export const claimBaggage = expressAsyncHandler(async (req, res) => {
     const { id } = req.params;
     if (!id) {
@@ -139,7 +176,8 @@ export const claimBaggage = expressAsyncHandler(async (req, res) => {
         destinationDistrict: d,
         destination: dest,
         docLocation,
-        finderContact
+        finderContact,
+        claimed: true
     };
     res.status(200).json(response);
 });
