@@ -105,7 +105,10 @@ export const viewBaggage = expressAsyncHandler(async (req, res) => {
         { new: true }
     );
 
-    if (!baggage) {
+    if (baggage) {
+        // Successfully updated to found, increment claimed documents stats
+        await Stats.findOneAndUpdate({}, { $inc: { claimedDocuments: 1 } }, { upsert: true });
+    } else {
         // If not found with status 'lost', try to find it anyway (might already be 'found')
         const existingBaggage = await Baggage.findById(id);
         if (!existingBaggage) {
