@@ -98,10 +98,43 @@ export const viewBaggage = expressAsyncHandler(async (req, res) => {
         return res.status(400).json({ message: "Baggage ID is required" });
     }
 
-    // Find the baggage by ID
-    const baggage = await Baggage.findById(id);
+    // Find the baggage by ID and update status to 'found' if it's still 'lost'
+    const baggage = await Baggage.findOneAndUpdate(
+        { _id: id, status: 'lost' },
+        { $set: { status: 'found' } },
+        { new: true }
+    );
+
     if (!baggage) {
-        return res.status(404).json({ message: "Baggage not found" });
+        // If not found with status 'lost', try to find it anyway (might already be 'found')
+        const existingBaggage = await Baggage.findById(id);
+        if (!existingBaggage) {
+            return res.status(404).json({ message: "Baggage not found" });
+        }
+        // Return the existing baggage (already found or claimed)
+        const {
+            baggageType: bType,
+            transportType: tType,
+            routeType: rType,
+            destinationProvince: p,
+            destinationDistrict: d,
+            destination: dest,
+            docLocation,
+            finderContact,
+            claimed
+        } = existingBaggage;
+        const response = {
+            baggageType: bType,
+            transportType: tType,
+            routeType: rType,
+            destinationProvince: p,
+            destinationDistrict: d,
+            destination: dest,
+            docLocation,
+            finderContact,
+            claimed
+        };
+        return res.status(200).json(response);
     }
 
     const {
