@@ -39,7 +39,9 @@ apiClient.interceptors.response.use(
 // API calls (no authentication required)
 export const baggageApi = {
     lostBaggage: (data: any) => apiClient.post("/api/baggage/found", data),
-    claimBaggage: (params: any) => apiClient.get("/api/baggage/claim", {params}),
+    searchBaggage: (params: any) => apiClient.get("/api/baggage/search", {params}),
+    viewBaggage: (baggageId: string) => apiClient.get(`/api/baggage/view/${baggageId}`),
+    claimBaggage: (baggageId: string) => apiClient.get(`/api/baggage/claim/${baggageId}`),
 };
 
 export const bcertificateApi = {

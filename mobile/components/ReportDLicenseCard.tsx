@@ -1,8 +1,9 @@
 import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { Text } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import ReportDLicenseModal from './reportDLicenseModal';
 import { useDLicense } from '@/hooks/useDLicense';
+import CardWrapper from '@/styles/CardWrapper';
 
 const ReportDLicenseCard = () => {
     const {
@@ -17,13 +18,10 @@ const ReportDLicenseCard = () => {
 
     return (
         <>
-            <TouchableOpacity
-                onPress={openDLicenseModal}
-                className='m-4 p-4 bg-transparent rounded-lg shadow flex-row items-center justify-center'
-            >
+            <CardWrapper onPress={openDLicenseModal} accessibilityLabel="Report lost driving licence">
                 <Feather name='plus' size={24} color={"black"} />
                 <Text className="ml-2 text-gray-600 font-bold text-lg">Report Lost Driving Licence</Text>
-            </TouchableOpacity>
+            </CardWrapper>
 
             <ReportDLicenseModal
                 isVisible={isDLicenseModalVisible}

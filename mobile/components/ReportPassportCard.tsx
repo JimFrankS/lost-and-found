@@ -1,9 +1,10 @@
 import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { Text } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { tabStyles } from '@/styles/tabStyles';
 import ReportPassportModal from './ReportPassportModal';
 import { usePassport } from '@/hooks/usePassport';
+import CardWrapper from '@/styles/CardWrapper';
 
 const ReportPassportCard = () => {
     const {
@@ -18,13 +19,10 @@ const ReportPassportCard = () => {
 
     return (
         <>
-            <TouchableOpacity
-                onPress={openPassportModal}
-                className='m-4 p-4 bg-transparent rounded-lg shadow flex-row items-center justify-center'
-            >
+            <CardWrapper onPress={openPassportModal} accessibilityLabel="Report lost passport">
                 <Feather name='plus' size={24} color={"black"} />
                 <Text className="ml-2 text-gray-600 font-bold text-lg">Report Lost Passport</Text>
-            </TouchableOpacity>
+            </CardWrapper>
 
             <ReportPassportModal
                 isVisible={isPassportModalVisible}
