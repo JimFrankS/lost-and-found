@@ -13,19 +13,19 @@ import ReportSCertificateCard from '@/components/ReportSCertificateCard';
 
 const HomeScreen = () => {
   return (
-    <SafeAreaView style={tabStyles.safeArea}>
-      <View style={tabStyles.container}>
-        <BackGroundCard />
-      
-        <ReportBaggageCard />
-        <ReportBCertificateCard />
-        <ReportDLicenseCard />
-        <ReportNatIdCard />
-        <ReportPassportCard />
-        <ReportSCertificateCard />
-        
-      </View>
-    </SafeAreaView>
+    <View style={{ flex: 1 }}>
+      <BackGroundCard />
+      <SafeAreaView style={tabStyles.safeArea}>
+        <View style={tabStyles.container}>
+          <ReportBaggageCard />
+          <ReportBCertificateCard />
+          <ReportDLicenseCard />
+          <ReportNatIdCard />
+          <ReportPassportCard />
+          <ReportSCertificateCard />
+        </View>
+      </SafeAreaView>
+    </View>
   );
 };
 

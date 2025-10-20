@@ -1,9 +1,10 @@
 import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { Text } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { tabStyles } from '@/styles/tabStyles';
 import ReportSCertificateModal from './ReportSCertificateModal';
 import { useSCertificate } from '@/hooks/useSCertificate';
+import CardWrapper from '@/styles/CardWrapper';
 
 const ReportSCertificateCard = () => {
     const {
@@ -18,13 +19,10 @@ const ReportSCertificateCard = () => {
 
     return (
         <>
-            <TouchableOpacity
-                onPress={openSCertificateModal}
-                className='m-4 p-4 bg-transparent rounded-lg shadow flex-row items-center justify-center'
-            >
+            <CardWrapper onPress={openSCertificateModal} accessibilityLabel="Report lost school certificate">
                 <Feather name='plus' size={24} color={"black"} />
                 <Text className="ml-2 text-gray-600 font-bold text-lg">Report Lost School Certificate</Text>
-            </TouchableOpacity>
+            </CardWrapper>
 
             <ReportSCertificateModal
                 isVisible={isSCertificateModalVisible}
