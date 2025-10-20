@@ -101,7 +101,7 @@ export const viewBaggage = expressAsyncHandler(async (req, res) => {
     // Find the baggage by ID and update status to 'found' if it's still 'lost'
     const baggage = await Baggage.findOneAndUpdate(
         { _id: id, status: 'lost' },
-        { $set: { status: 'found' } },
+        { $set: { status: 'found', claimedAt: new Date() } },
         { new: true }
     );
 
