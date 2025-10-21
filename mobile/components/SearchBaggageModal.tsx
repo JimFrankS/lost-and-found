@@ -44,7 +44,7 @@ const SearchBaggageModal = ({ isVisible, onClose, formData, searchBaggage, updat
 
     const handleSearch = () => {
         if (!isFormComplete) {
-            Alert.alert("Error", "Please fill in all required fields.");
+            showAlerts("Error", "Please fill in all required fields.");
             return;
         }
         // Reset previous search results before searching
@@ -70,16 +70,10 @@ const SearchBaggageModal = ({ isVisible, onClose, formData, searchBaggage, updat
                 {/* Header */}
                 <View className='flex-row items-center justify-between px-4 py-3 border-b border-gray-100'>
                     <TouchableOpacity onPress={() => {
-                        if (Platform.OS === 'web' && typeof window !== 'undefined') {
-                          if (window.confirm('Cancel: Are you sure you want to cancel?')) {
-                            onClose();
-                          }
-                        } else {
-                          showAlerts("Cancel", "Are you sure you want to cancel?", [
+                        showAlerts("Cancel", "Are you sure you want to cancel?", [
                             { text: "No", style: "cancel" },
                             { text: "Yes", style: "destructive", onPress: onClose },
-                          ]);
-                        }
+                        ]);
                     }}>
                         <Text className="text-red-500 font-semibold">Close</Text>
                     </TouchableOpacity>

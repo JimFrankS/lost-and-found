@@ -29,6 +29,8 @@ const FoundBaggageCard = ({
   const insets = useSafeAreaInsets();
 
   if (!searchFound) return null;
+  
+  if (!foundBaggage) return null; // Safety check if foundBaggage is undefined or null to prevent errors in the render method
 
   // Check if we have no results (empty array)
   const hasNoResults = Array.isArray(foundBaggage) && foundBaggage.length === 0;
@@ -59,8 +61,6 @@ const FoundBaggageCard = ({
       </View>
     );
   }
-
-  if (!foundBaggage) return null; // Safety check if foundBaggage is undefined or null to prevent errors in the render method
 
 // Determine if foundBaggage is multiple results or a single item
   const isMultipleResults = Array.isArray(foundBaggage);
