@@ -1,7 +1,6 @@
 import React from 'react';
 import { Text } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import { tabStyles } from '@/styles/tabStyles';
 import ReportBCertificateModal from './ReportBCertificateModal';
 import { useBCertificate } from '@/hooks/useBCertificate';
 import CardWrapper from '@/styles/CardWrapper';
