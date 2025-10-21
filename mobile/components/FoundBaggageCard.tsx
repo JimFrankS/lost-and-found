@@ -4,16 +4,17 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { searchResultStyles } from "@/styles/searchResultStyles";
 import BackGroundCard from "@/components/BackGroundCard";
 import NothingFound from "@/components/NothingFound";
+import { Baggage } from "@/types";
 
 interface FoundBaggageCardProps {
   searchFound: boolean;
-  foundBaggage: any; // array or single object
+  foundBaggage: Baggage | Baggage[] | null;
   resetSearch: () => void;
   goBackToResults?: () => void;
   viewBaggage?: (baggageId: string) => void;
   isViewing?: boolean;
   viewingBaggageId?: string | null;
-  searchResults?: any[];
+  searchResults?: Baggage[];
 }
 
 const FoundBaggageCard = ({
@@ -29,7 +30,7 @@ const FoundBaggageCard = ({
   const insets = useSafeAreaInsets();
 
   if (!searchFound) return null;
-  
+
   if (!foundBaggage) return null; // Safety check if foundBaggage is undefined or null to prevent errors in the render method
 
   // Check if we have no results (empty array)
@@ -37,9 +38,6 @@ const FoundBaggageCard = ({
 
   if (hasNoResults) {
     return (
-
-      // No Results Found View
-
       <View style={{ flex: 1, position: "relative" }}>
         <View
           style={[
@@ -62,11 +60,9 @@ const FoundBaggageCard = ({
     );
   }
 
-// Determine if foundBaggage is multiple results or a single item
-  const isMultipleResults = Array.isArray(foundBaggage);
-  const isViewingSingleItem = !isMultipleResults && searchResults && searchResults.length > 0; // viewing a single item from multiple results
+  const isMultipleResults = Array.isArray(foundBaggage) && foundBaggage.length > 0;
+  const isViewingSingleItem = !isMultipleResults && !!searchResults && searchResults.length > 0;
 
-  // when user taps "View Details" trigger the find baggage by id functionality
   const handleViewDetails = (id?: string) => {
     if (!id || !viewBaggage) return;
     viewBaggage(id);
@@ -74,67 +70,67 @@ const FoundBaggageCard = ({
 
   return (
     <View style={{ flex: 1, position: "relative" }}>
-      <BackGroundCard />  {/* To ensure the background remains consistent*/}
-      {/* content layer above background */}
+      <BackGroundCard />
       <View
         style={[
           { flex: 1, zIndex: 1, paddingTop: insets.top, paddingBottom: 0 },
-        ]} // style to ensure content is above background
+        ]}
       >
           <View style={searchResultStyles.header}>
             <TouchableOpacity
               onPress={isViewingSingleItem ? (goBackToResults || resetSearch) : resetSearch}
               style={searchResultStyles.backButton}
-            > {/* Back button, that takes you back to all search results if you were viewing single item, or resets search field if one was viewing all the search results already*/}
-
+            >
               <Text style={searchResultStyles.backText}>Back</Text>
             </TouchableOpacity>
 
-            {/* Title */}
             <Text style={searchResultStyles.headerTitle}>
-              {isMultipleResults ? "Found Baggage Results" : (foundBaggage.claimed ? "Baggage Claimed Successfully!" : "Baggage Details")}
+              {isMultipleResults ? "Found Baggage Results" : (foundBaggage && !Array.isArray(foundBaggage) && foundBaggage.claimed ? "Baggage Claimed Successfully!" : "Baggage Details")}
             </Text>
             <View style={searchResultStyles.headerSpacer} />
           </View>
 
           {isMultipleResults ? (
-            <ScrollView contentContainerStyle={searchResultStyles.resultsContainer}> {/* List of the available search results, in cards, when there is more than one result */}
-              {foundBaggage.map((baggage: any, index: number) => (
-                <View key={baggage._id ?? `${index}`} style={searchResultStyles.card}>
-                  <Text style={searchResultStyles.cardTitle}>Baggage Type: {baggage.baggageType}</Text>
-                  <Text style={searchResultStyles.cardText}>Transport Type: {baggage.transportType}</Text>
-                  <Text style={searchResultStyles.cardText}>Route Type: {baggage.routeType}</Text>
-                  <Text style={searchResultStyles.cardText}>Province: {baggage.destinationProvince}</Text>
-                  <Text style={searchResultStyles.cardText}>District: {baggage.destinationDistrict}</Text>
-                  <Text style={searchResultStyles.cardText}>Destination: {baggage.destination}</Text>
+            <ScrollView contentContainerStyle={searchResultStyles.resultsContainer}>
+              {foundBaggage.map((baggage: any, index: number) => {
+                if (!baggage || typeof baggage !== 'object' || !baggage._id) return null;
+                return (
+                  <View key={String(baggage._id || index)} style={searchResultStyles.card}>
+                    <Text style={searchResultStyles.cardTitle}>Baggage Type: {String(baggage.baggageType || 'N/A')}</Text>
+                    <Text style={searchResultStyles.cardText}>Transport Type: {String(baggage.transportType || 'N/A')}</Text>
+                    <Text style={searchResultStyles.cardText}>Route Type: {String(baggage.routeType || 'N/A')}</Text>
+                    <Text style={searchResultStyles.cardText}>Province: {String(baggage.destinationProvince || 'N/A')}</Text>
+                    <Text style={searchResultStyles.cardText}>District: {String(baggage.destinationDistrict || 'N/A')}</Text>
+                    <Text style={searchResultStyles.cardText}>Destination: {String(baggage.destination || 'N/A')}</Text>
 
-                  <TouchableOpacity
-                    onPress={() => handleViewDetails(baggage._id)}
-                    disabled={isViewing && viewingBaggageId === baggage._id}
-                    style={[searchResultStyles.actionButton, searchResultStyles.viewButton]}
-                  >
-                    <Text style={searchResultStyles.actionText}>
-                      {isViewing && viewingBaggageId === baggage._id ? "Loading..." : "View Details"}
-                    </Text> {/* View Details button to see full details of selected baggage item */}
-                  </TouchableOpacity>
-                </View>
-              ))}
+                    <TouchableOpacity
+                      onPress={() => handleViewDetails(String(baggage._id || ''))}
+                      disabled={isViewing && viewingBaggageId === String(baggage._id || '')}
+                      style={[searchResultStyles.actionButton, searchResultStyles.viewButton]}
+                    >
+                      <Text style={searchResultStyles.actionText}>
+                        {isViewing && viewingBaggageId === String(baggage._id || '') ? "Loading..." : "View Details"}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                );
+              })}
             </ScrollView>
           ) : (
-            <ScrollView contentContainerStyle={searchResultStyles.singleContainer}> {/* Single baggage detail view, when only one result is found or when viewing a single item from multiple results */}
-              <View style={searchResultStyles.detailCard}>
-                <Text style={searchResultStyles.cardTitle}>Baggage Type: {foundBaggage.baggageType}</Text>
-                <Text style={searchResultStyles.cardText}>Transport Type: {foundBaggage.transportType}</Text>
-                <Text style={searchResultStyles.cardText}>Route Type: {foundBaggage.routeType}</Text>
-                <Text style={searchResultStyles.cardText}>Province: {foundBaggage.destinationProvince}</Text>
-                <Text style={searchResultStyles.cardText}>District: {foundBaggage.destinationDistrict}</Text>
-                <Text style={searchResultStyles.cardText}>Destination: {foundBaggage.destination}</Text>
-
-                {/* Full details */}
-                <Text style={searchResultStyles.cardText}>Baggage Location: {foundBaggage.docLocation}</Text>
-                <Text style={searchResultStyles.cardText}>Finder Contact: {foundBaggage.finderContact}</Text>
-
-              </View>
+            <ScrollView contentContainerStyle={searchResultStyles.singleContainer}>
+              {foundBaggage && !Array.isArray(foundBaggage) && (
+                <View style={searchResultStyles.detailCard}>
+                  <Text style={searchResultStyles.cardTitle}>Baggage Type: {String(foundBaggage.baggageType || 'N/A')}</Text>
+                  <Text style={searchResultStyles.cardText}>Transport Type: {String(foundBaggage.transportType || 'N/A')}</Text>
+                  <Text style={searchResultStyles.cardText}>Route Type: {String(foundBaggage.routeType || 'N/A')}</Text>
+                  <Text style={searchResultStyles.cardText}>Province: {String(foundBaggage.destinationProvince || 'N/A')}</Text>
+                  <Text style={searchResultStyles.cardText}>District: {String(foundBaggage.destinationDistrict || 'N/A')}</Text>
+                  <Text style={searchResultStyles.cardText}>Destination: {String(foundBaggage.destination || 'N/A')}</Text>
+  
+                  <Text style={searchResultStyles.cardText}>Baggage Location: {String(foundBaggage.docLocation || 'N/A')}</Text>
+                  <Text style={searchResultStyles.cardText}>Finder Contact: {String(foundBaggage.finderContact || 'N/A')}</Text>
+                </View>
+              )}
             </ScrollView>
           )}
         </View>

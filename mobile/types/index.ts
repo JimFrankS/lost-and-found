@@ -9,7 +9,8 @@ export interface Baggage {
     destinationDistrict: string,
     destination: string,
     docLocation: string,
-    finderContact: string
+    finderContact: string,
+    claimed?: boolean
 }
 
 
