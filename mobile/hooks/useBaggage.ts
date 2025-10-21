@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { baggageApi } from "@/utils/api";
 import { useState } from "react";
 import { extractErrorMessage, extractSuccessMessage, showError, showSuccess } from "@/utils/alerts";
+import { Baggage } from "@/types";
 
 export const useBaggage = () => {
     const queryClient = useQueryClient();
@@ -19,9 +20,9 @@ export const useBaggage = () => {
     });
 
     const [searchFound, setSearchFound] = useState(false); // whether search yielded results
-    const [foundBaggage, setFoundBaggage] = useState<any>(null); // found baggage details or list
+    const [foundBaggage, setFoundBaggage] = useState<Baggage | Baggage[] | null>(null); // found baggage details or list
     const [viewingBaggageId, setViewingBaggageId] = useState<string | null>(null); // currently viewing baggage ID
-    const [searchResults, setSearchResults] = useState<any[]>([]); // store search results list
+    const [searchResults, setSearchResults] = useState<Baggage[]>([]); // store search results list
     
     // helpers
     const openBaggageModal = () => setIsBaggageModalVisible(true);
