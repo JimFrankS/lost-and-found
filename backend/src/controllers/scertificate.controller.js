@@ -45,20 +45,19 @@ export const foundScertificate = asyncHandler(async (req, res) => { // Renamed f
 });
 
 export const searchScertificate = asyncHandler(async (req, res) => { // Renamed for consistency
-    const { lastName, certificateType } = req.query;
-    if (!lastName || !certificateType) {
-        return res.status(400).json({ message: "Both lastName and certificateType are required" });
+    const { certificateType } = req.query;
+    if (!certificateType) {
+        return res.status(400).json({ message: "Certificate type is required" });
     }
 
     const certTypeResult = getCanonical(certificateType, ALLOWED_CERTIFICATE_TYPES, 'certificateType');
     if (certTypeResult.error) return res.status(400).json({ message: certTypeResult.error });
     const canonicalType = certTypeResult.canonical;
 
-    // Find all school certificates that match the description, including claimed ones.
+    // Find all school certificates that match the certificate type, including claimed ones.
 
     const certificateList = await Scertificate.find({
         certificateType: canonicalType,
-        lastName: { $regex: `^${escapeRegex(lastName)}$`, $options: 'i' },
         status: { $in: ["lost", "found"] }
     }).select('-docLocation -finderContact -claimed -claimedAt -status -createdAt -updatedAt')
 
@@ -86,14 +85,8 @@ export const viewScertificate = asyncHandler(async (req, res) => {
     if (certificate) {
         // successfully updated to found and claimed — increment found and claimed documents stats
         await Stats.findOneAndUpdate({}, { $inc: { foundDocuments: 1, claimedDocuments: 1 } }, { upsert: true });
-    }
-        //if not found with the status lost, try to find it anyway ( might already be 'found')
-        const existingCertificate = await Scertificate.findById(id);
-        if (!existingCertificate) {
-            return res.status(404).json({ message: "School Certificate not found" });
-        }
 
-        // Return existing certificate (one which is already found or claimed)
+        // return updated certificate
         const {
             certificateType: cType,
             lastName,
@@ -101,7 +94,7 @@ export const viewScertificate = asyncHandler(async (req, res) => {
             docLocation,
             finderContact,
             claimed
-        } = existingCertificate;
+        } = certificate;
         const response = {
             certificateType: cType,
             lastName,
@@ -112,7 +105,14 @@ export const viewScertificate = asyncHandler(async (req, res) => {
         };
         return res.status(200).json(response);
     }
-    // return updated certificate
+
+    //if not found with the status lost, try to find it anyway ( might already be 'found')
+    const existingCertificate = await Scertificate.findById(id);
+    if (!existingCertificate) {
+        return res.status(404).json({ message: "School Certificate not found" });
+    }
+
+    // Return existing certificate (one which is already found or claimed)
     const {
         certificateType: cType,
         lastName,
@@ -120,7 +120,7 @@ export const viewScertificate = asyncHandler(async (req, res) => {
         docLocation,
         finderContact,
         claimed
-    } = certificate;
+    } = existingCertificate;
     const response = {
         certificateType: cType,
         lastName,
