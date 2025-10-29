@@ -55,4 +55,6 @@ scertificateSchema.index({ claimedAt: 1 }, { expireAfterSeconds: 60 }); // Add T
 
 const Scertificate = mongoose.model("Scertificate", scertificateSchema);
 
+export const ALLOWED_CERTIFICATE_TYPES = ["Olevel", "Alevel", "Poly", "University", "Other"];
+
 export default Scertificate;
