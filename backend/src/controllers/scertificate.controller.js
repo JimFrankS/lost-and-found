@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import asyncHandler from "express-async-handler";
 import Scertificate, { ALLOWED_CERTIFICATE_TYPES } from "../models/scertificate.model.js";
 import Stats from "../models/stats.model.js";
@@ -69,6 +70,10 @@ export const viewScertificate = asyncHandler(async (req, res) => {
 
     if (!id) {
         return res.status(400).json({ message: "Certificate ID is required" });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ message: "Invalid certificate ID" });
     }
 
     // Find the certificate by ID and update status to found, if it is still "lost".

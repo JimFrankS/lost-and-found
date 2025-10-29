@@ -1,10 +1,12 @@
 import mongoose from "mongoose";
 
+export const ALLOWED_CERTIFICATE_TYPES = ["Olevel", "Alevel", "Poly", "University", "Other"];
+
 const scertificateSchema = new mongoose.Schema({
     certificateType: {
         type: String,
         required: true,
-        enum: ["Olevel", "Alevel", "Poly", "University", "Other"],
+        enum: ALLOWED_CERTIFICATE_TYPES,
         default: "Other"
     },
       lastName: {
@@ -54,7 +56,5 @@ scertificateSchema.index({ lastName:1, certificateType: 1}); // Create a compoun
 scertificateSchema.index({ claimedAt: 1 }, { expireAfterSeconds: 60 }); // Add TTL index to auto-delete claimed documents after 60 seconds
 
 const Scertificate = mongoose.model("Scertificate", scertificateSchema);
-
-export const ALLOWED_CERTIFICATE_TYPES = ["Olevel", "Alevel", "Poly", "University", "Other"];
 
 export default Scertificate;
