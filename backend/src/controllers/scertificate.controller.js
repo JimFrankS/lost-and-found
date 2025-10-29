@@ -76,17 +76,17 @@ export const viewScertificate = asyncHandler(async (req, res) => {
         return res.status(400).json({ message: "Invalid certificate ID" });
     }
 
-    // Find the certificate by ID and update status to found, if it is still "lost".
+    // Find the certificate by ID and update status to found and claimed, if it is still "lost".
     const certificate = await Scertificate.findOneAndUpdate(
         { _id: id, status: "lost" },
-        { $set: { status: "found", foundAt: new Date() } },
+        { $set: { status: "found", claimed: true, claimedAt: new Date() } },
         { new: true }
     );
 
     if (certificate) {
-        // successfully updated to found — increment found documents stats
-        await Stats.findOneAndUpdate({}, { $inc: { foundDocuments: 1 } }, { upsert: true });
-    } else {
+        // successfully updated to found and claimed — increment found and claimed documents stats
+        await Stats.findOneAndUpdate({}, { $inc: { foundDocuments: 1, claimedDocuments: 1 } }, { upsert: true });
+    }
         //if not found with the status lost, try to find it anyway ( might already be 'found')
         const existingCertificate = await Scertificate.findById(id);
         if (!existingCertificate) {
