@@ -1,9 +1,8 @@
+import mongoose from "mongoose";
 import asyncHandler from "express-async-handler";
-import Scertificate from "../models/scertificate.model.js";
+import Scertificate, { ALLOWED_CERTIFICATE_TYPES } from "../models/scertificate.model.js";
 import Stats from "../models/stats.model.js";
 import { getCanonical } from "../utility/canonical.utility.js";
-
-const ALLOWED_CERTIFICATE_TYPES = ["Olevel", "Alevel", "Poly", "University", "Other"];
 
 // Helper function to escape regex special characters
 const escapeRegex = (str) => String(str).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -45,7 +44,7 @@ export const foundScertificate = asyncHandler(async (req, res) => { // Renamed f
     });
 });
 
-export const claimScertificate = asyncHandler(async (req, res) => { // Renamed for consistency
+export const searchScertificate = asyncHandler(async (req, res) => { // Renamed for consistency
     const { lastName, certificateType } = req.query;
     if (!lastName || !certificateType) {
         return res.status(400).json({ message: "Both lastName and certificateType are required" });
@@ -55,36 +54,81 @@ export const claimScertificate = asyncHandler(async (req, res) => { // Renamed f
     if (certTypeResult.error) return res.status(400).json({ message: certTypeResult.error });
     const canonicalType = certTypeResult.canonical;
 
-    let certificate = await Scertificate.findOne({
-        lastName: { $regex: `^${escapeRegex(lastName)}$`, $options: 'i' },
+    // Find all school certificates that match the description, including claimed ones.
+
+    const certificateList = await Scertificate.find({
         certificateType: canonicalType,
+        lastName: { $regex: `^${escapeRegex(lastName)}$`, $options: 'i' },
         status: { $in: ["lost", "found"] }
-    });
-    if (!certificate) {
-        return res.status(404).json({ message: "Certificate not found" });
+    }).select('-docLocation -finderContact -claimed -claimedAt -status -createdAt -updatedAt')
+
+    res.status(200).json(certificateList);
+});
+
+export const viewScertificate = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+
+    if (!id) {
+        return res.status(400).json({ message: "Certificate ID is required" });
     }
 
-    const updated = await Scertificate.findOneAndUpdate(
-        { _id: certificate._id, claimed: false },
-        { $set: { claimed: true, claimedAt: new Date(), status: 'found' } },
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ message: "Invalid certificate ID" });
+    }
+
+    // Find the certificate by ID and update status to found, if it is still "lost".
+    const certificate = await Scertificate.findOneAndUpdate(
+        { _id: id, status: "lost" },
+        { $set: { status: "found", foundAt: new Date() } },
         { new: true }
     );
 
-    if (updated) {
-        await Stats.findOneAndUpdate({}, { $inc: { claimedDocuments: 1 } }, { upsert: true });
-        certificate = updated;
-    } else if (certificate.status !== 'found') {
-        await Scertificate.updateOne({ _id: certificate._id, status: { $ne: 'found' } }, { $set: { status: 'found' } });
-        certificate.status = 'found';
-    }
+    if (certificate) {
+        // successfully updated to found — increment found documents stats
+        await Stats.findOneAndUpdate({}, { $inc: { foundDocuments: 1 } }, { upsert: true });
+    } else {
+        //if not found with the status lost, try to find it anyway ( might already be 'found')
+        const existingCertificate = await Scertificate.findById(id);
+        if (!existingCertificate) {
+            return res.status(404).json({ message: "School Certificate not found" });
+        }
 
-    const { lastName: ln, firstName, certificateType: ct, docLocation, finderContact } = certificate;
-    const response = {
-        lastName: ln,
+        // Return existing certificate (one which is already found or claimed)
+        const {
+            certificateType: cType,
+            lastName,
+            firstName,
+            docLocation,
+            finderContact,
+            claimed
+        } = existingCertificate;
+        const response = {
+            certificateType: cType,
+            lastName,
+            firstName,
+            docLocation,
+            finderContact,
+            claimed
+        };
+        return res.status(200).json(response);
+    }
+    // return updated certificate
+    const {
+        certificateType: cType,
+        lastName,
         firstName,
-        certificateType: ct,
         docLocation,
-        finderContact
+        finderContact,
+        claimed
+    } = certificate;
+    const response = {
+        certificateType: cType,
+        lastName,
+        firstName,
+        docLocation,
+        finderContact,
+        claimed
     };
-    res.status(200).json(response);
+    return res.status(200).json(response);
+
 });

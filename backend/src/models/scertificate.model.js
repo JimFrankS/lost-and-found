@@ -1,10 +1,12 @@
 import mongoose from "mongoose";
 
+export const ALLOWED_CERTIFICATE_TYPES = ["Olevel", "Alevel", "Poly", "University", "Other"];
+
 const scertificateSchema = new mongoose.Schema({
     certificateType: {
         type: String,
         required: true,
-        enum: ["Olevel", "Alevel", "Poly", "University", "Other"],
+        enum: ALLOWED_CERTIFICATE_TYPES,
         default: "Other"
     },
       lastName: {
