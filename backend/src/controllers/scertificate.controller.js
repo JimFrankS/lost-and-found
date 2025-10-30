@@ -45,21 +45,26 @@ export const foundScertificate = asyncHandler(async (req, res) => { // Renamed f
 });
 
 export const searchScertificate = asyncHandler(async (req, res) => { // Renamed for consistency
-    const { certificateType } = req.query;
-    if (!certificateType) {
-        return res.status(400).json({ message: "Certificate type is required" });
+    const { certificateType, lastName } = req.query;
+    if (!certificateType || !lastName) {
+        return res.status(400).json({ message: "Certificate type and last name are required" });
     }
 
     const certTypeResult = getCanonical(certificateType, ALLOWED_CERTIFICATE_TYPES, 'certificateType');
     if (certTypeResult.error) return res.status(400).json({ message: certTypeResult.error });
     const canonicalType = certTypeResult.canonical;
 
-    // Find all school certificates that match the certificate type, including claimed ones.
+    const lastNameResult = getCanonical(lastName, [], 'lastName'); // Assuming no fixed allowed values for lastName
+    if (lastNameResult.error) return res.status(400).json({ message: lastNameResult.error });
+    const canonicalLastName = lastNameResult.canonical;
+
+    // Find all school certificates that match the certificate type and last name, including claimed ones.
 
     const certificateList = await Scertificate.find({
         certificateType: canonicalType,
+        lastName: canonicalLastName,
         status: { $in: ["lost", "found"] }
-    }).select('-docLocation -finderContact -claimed -claimedAt -status -createdAt -updatedAt')
+    }).select('-docLocation -finderContact -claimed -claimedAt -status -createdAt -updatedAt').limit(10);
 
     res.status(200).json(certificateList);
 });
