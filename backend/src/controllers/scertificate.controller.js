@@ -54,9 +54,10 @@ export const searchScertificate = asyncHandler(async (req, res) => { // Renamed 
     if (certTypeResult.error) return res.status(400).json({ message: certTypeResult.error });
     const canonicalType = certTypeResult.canonical;
 
-    const lastNameResult = getCanonical(lastName, [], 'lastName'); // Assuming no fixed allowed values for lastName
-    if (lastNameResult.error) return res.status(400).json({ message: lastNameResult.error });
-    const canonicalLastName = lastNameResult.canonical;
+    if (!lastName || lastName.trim() === '') {
+        return res.status(400).json({ message: 'lastName is required' });
+    }
+    const canonicalLastName = lastName.trim().toLowerCase();
 
     // Find all school certificates that match the certificate type and last name, including claimed ones.
 
@@ -89,7 +90,7 @@ export const viewScertificate = asyncHandler(async (req, res) => {
 
     if (certificate) {
         // successfully updated to found and claimed — increment found and claimed documents stats
-        await Stats.findOneAndUpdate({}, { $inc: { foundDocuments: 1, claimedDocuments: 1 } }, { upsert: true });
+        await Stats.findOneAndUpdate({}, { $inc: { claimedDocuments: 1 } }, { upsert: true });
 
         // return updated certificate
         const {
