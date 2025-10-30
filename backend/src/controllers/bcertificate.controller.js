@@ -76,11 +76,11 @@ export const claimbCertificate = asyncHandler(async (req, res) => {
     }
     
 
-    const { lastName: ln, firstName, secondName, motherLastName: mln, docLocation, finderContact } = certificate;
+    const { lastName: ln, firstName: certFirstName, secondName, motherLastName: mln, docLocation, finderContact } = certificate;
 
     let response = {
         lastName: ln,
-        firstName,
+        firstName: certFirstName,
         motherLastName: mln,
         docLocation,
         finderContact
