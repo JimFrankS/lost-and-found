@@ -30,10 +30,10 @@ app.use(attachRequestId);
 app.use(helmet()); 
 
 
-// Replace 'https://your-frontend-app.com' with the actual URL of your deployed frontend application.
-const allowedOrigins = [
-    'https://your-frontend-app.com', // Example: 'https://lost-and-found-frontend.vercel.app'
-];
+// Load allowed origins from environment variable ALLOWED_ORIGINS (comma-separated URLs) or fallback to placeholder
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+    ? process.env.ALLOWED_ORIGINS.split(',').map(url => url.trim())
+    : ['https://your-frontend-app.com']; // Placeholder for development
 
 const corsOptions = {
     origin: (origin, callback) => {
@@ -47,7 +47,7 @@ const corsOptions = {
         return callback(new Error('Not allowed by CORS'), false);
     },
     optionsSuccessStatus: 200,
-    credentials: true, // Allow cookies/authorization headers
+    credentials: false, // Disabled to allow mobile client access without withCredentials
 };
 app.use(cors(corsOptions)); 
 
