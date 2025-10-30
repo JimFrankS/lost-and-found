@@ -30,21 +30,24 @@ app.use(attachRequestId);
 app.use(helmet()); 
 
 
+// Replace 'https://your-frontend-app.com' with the actual URL of your deployed frontend application.
 const allowedOrigins = [
-    'https://your-frontend-app.com',
+    'https://your-frontend-app.com', // Example: 'https://lost-and-found-frontend.vercel.app'
 ];
 
 const corsOptions = {
     origin: (origin, callback) => {
         // Allow non-browser requests (no Origin header) such as mobile/native or curl.
+        
         if (!origin) return callback(null, true);
         // Allow explicitly whitelisted origins
         if (allowedOrigins.includes(origin)) return callback(null, true);
         // Allow any localhost/127.0.0.1 with any port during development only
-        if (process.env.NODE_ENV === 'development' && /^https?:\/\/(localhost|127\.0\.0\.1)(:\\d+)?$/.test(origin)) return callback(null, true);
+        if (ENV.NODE_ENV === 'development' && /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) return callback(null, true);
         return callback(new Error('Not allowed by CORS'), false);
     },
-    optionsSuccessStatus: 200
+    optionsSuccessStatus: 200,
+    credentials: true, // Allow cookies/authorization headers
 };
 app.use(cors(corsOptions)); 
 

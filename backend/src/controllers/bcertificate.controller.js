@@ -45,15 +45,16 @@ export const foundbCertificate = asyncHandler(async (req, res) => {
 });
 
 export const claimbCertificate = asyncHandler(async (req, res) => {
-    const { lastName = "", motherLastName = "" } = req.query;
+    const { lastName = "", motherLastName = "", firstName = "" } = req.query;
 
-    if (!lastName || !motherLastName) {
-        return res.status(400).json({ message: "Both Child's lastName and motherLastName are required" });
+    if (!lastName || !motherLastName || !firstName) {
+        return res.status(400).json({ message: "Child's lastName, motherLastName, and firstName are required" });
     }
 
     let certificate = await Bcertificate.findOne({
         lastName: { $regex: `^${escapeRegex(lastName)}$`, $options: 'i' },
         motherLastName: { $regex: `^${escapeRegex(motherLastName)}$`, $options: 'i' },
+        firstName: { $regex: `^${escapeRegex(firstName)}$`, $options: 'i' },
         status: { $in: ["lost", "found"] }
     });
 
