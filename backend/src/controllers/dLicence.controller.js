@@ -2,9 +2,7 @@ import asyncHandler from "express-async-handler";
 import DLicence from "../models/dLicence.model.js";
 import Stats from "../models/stats.model.js";
 import isValidZimbabweIdNumber, { idNumberRegex } from "../utility/idValidation.utility.js";
-
-// Helper function to escape regex special characters
-const escapeRegex = (str) => String(str).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+import { escapeRegex } from "../utility/regex.utility.js";
 
 export const foundLicence = asyncHandler(async (req, res) => {
     const { licenceNumber, lastName, firstName, idNumber, docLocation, finderContact } = req.body;
@@ -48,6 +46,44 @@ export const foundLicence = asyncHandler(async (req, res) => {
     res.status(201).json({
         message: "Licence added successfully"
     });
+});
+
+export const searchDLicence = asyncHandler(async (req, res) => {
+    const { identifier = "" } = req.query;
+    if (!identifier) {
+        return res.status(400).json({ message: "Identifier required (licenceNumber, idNumber, or lastName)" });
+    }
+
+    let licences = null;
+    let isSingle = false;
+
+    if (/^\d{6}[A-Z]{2}$/i.test(identifier)) {
+        // Search by licenceNumber - single result
+        licences = await DLicence.findOne({
+            licenceNumber: { $regex: `^${identifier}$`, $options: 'i' },
+            status: { $in: ["lost", "found"] }
+        }).select('licenceNumber lastName firstName idNumber');
+        isSingle = true;
+    } else if (idNumberRegex.test(identifier)) {
+        // Search by idNumber - single result
+        licences = await DLicence.findOne({
+            idNumber: { $regex: `^${identifier}$`, $options: 'i' },
+            status: { $in: ["lost", "found"] }
+        }).select('licenceNumber lastName firstName idNumber');
+        isSingle = true;
+    } else {
+        // Search by lastName - multiple results
+        licences = await DLicence.find({
+            lastName: { $regex: `^${escapeRegex(identifier)}$`, $options: 'i' },
+            status: { $in: ["lost", "found"] }
+        }).select('licenceNumber lastName firstName idNumber').limit(10);
+    }
+
+    if (!licences || (Array.isArray(licences) && licences.length === 0)) {
+        return res.status(404).json({ message: "Licence not found" });
+    }
+
+    res.status(200).json(licences);
 });
 
 export const claimLicence = asyncHandler(async (req, res) => {

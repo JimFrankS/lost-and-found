@@ -2,9 +2,7 @@ import asyncHandler from "express-async-handler";
 import NatId from "../models/natId.model.js";
 import Stats from "../models/stats.model.js";
 import isValidZimbabweIdNumber, { idNumberRegex } from "../utility/idValidation.utility.js";
-
-// Helper function to escape regex special characters
-const escapeRegex = (str) => String(str).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+import { escapeRegex } from "../utility/regex.utility.js";
 
 export const foundId = asyncHandler(async (req, res) => {
     const { lastName, firstName, idNumber, docLocation, finderContact } = req.body;
@@ -45,6 +43,37 @@ export const foundId = asyncHandler(async (req, res) => {
     });
 });
 
+export const searchNatId = asyncHandler(async (req, res) => {
+    const { identifier = "" } = req.query;
+    if (!identifier) {
+        return res.status(400).json({ message: "Identifier required (idNumber or lastName)" });
+    }
+
+    let natIds = null;
+    let isSingle = false;
+
+    if (idNumberRegex.test(identifier)) {
+        // Search by idNumber - single result
+        natIds = await NatId.findOne({
+            idNumber: { $regex: `^${escapeRegex(identifier)}$`, $options: 'i' },
+            status: { $in: ["lost", "found"] }
+        }).select('lastName firstName idNumber');
+        isSingle = true;
+    } else {
+        // Search by lastName - multiple results
+        natIds = await NatId.find({
+            lastName: { $regex: `^${escapeRegex(identifier)}$`, $options: 'i' },
+            status: { $in: ["lost", "found"] }
+        }).select('lastName firstName idNumber').limit(10);
+    }
+
+    if (!natIds || (Array.isArray(natIds) && natIds.length === 0)) {
+        return res.status(404).json({ message: "National ID not found" });
+    }
+
+    res.status(200).json(natIds);
+});
+
 export const claimId = asyncHandler(async (req, res) => {
     const { identifier } = req.params;
     let isIdNumber = false;
@@ -53,7 +82,7 @@ export const claimId = asyncHandler(async (req, res) => {
     if (idNumberRegex.test(identifier)) {
         isIdNumber = true;
         idDocument = await NatId.findOne({
-            idNumber: { $regex: `^${identifier}$`, $options: 'i' },
+            idNumber: { $regex: `^${escapeRegex(identifier)}$`, $options: 'i' },
             status: { $in: ["lost", "found"] }
         });
     }
