@@ -50,6 +50,44 @@ export const foundLicence = asyncHandler(async (req, res) => {
     });
 });
 
+export const searchDLicence = asyncHandler(async (req, res) => {
+    const { identifier = "" } = req.query;
+    if (!identifier) {
+        return res.status(400).json({ message: "Identifier required (licenceNumber, idNumber, or lastName)" });
+    }
+
+    let licences = null;
+    let isSingle = false;
+
+    if (/^\d{6}[A-Z]{2}$/i.test(identifier)) {
+        // Search by licenceNumber - single result
+        licences = await DLicence.findOne({
+            licenceNumber: { $regex: `^${identifier}$`, $options: 'i' },
+            status: { $in: ["lost", "found"] }
+        }).select('licenceNumber lastName firstName idNumber');
+        isSingle = true;
+    } else if (idNumberRegex.test(identifier)) {
+        // Search by idNumber - single result
+        licences = await DLicence.findOne({
+            idNumber: { $regex: `^${identifier}$`, $options: 'i' },
+            status: { $in: ["lost", "found"] }
+        }).select('licenceNumber lastName firstName idNumber');
+        isSingle = true;
+    } else {
+        // Search by lastName - multiple results
+        licences = await DLicence.find({
+            lastName: { $regex: `^${escapeRegex(identifier)}$`, $options: 'i' },
+            status: { $in: ["lost", "found"] }
+        }).select('licenceNumber lastName firstName idNumber').limit(10);
+    }
+
+    if (!licences || (Array.isArray(licences) && licences.length === 0)) {
+        return res.status(404).json({ message: "Licence not found" });
+    }
+
+    res.status(200).json(licences);
+});
+
 export const claimLicence = asyncHandler(async (req, res) => {
     const { identifier = "" } = req.params;
     let licence = null;

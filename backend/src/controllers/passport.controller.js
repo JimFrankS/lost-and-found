@@ -50,6 +50,70 @@ export const lostPassport = asyncHandler(async (req, res) => {
     });
 });
 
+export const searchPassport = asyncHandler(async (req, res) => {
+    const { category, identifier } = req.query;
+
+    if (!category || !identifier) {
+        return res.status(400).json({ message: "Category and identifier are required" });
+    }
+
+    let query = { status: { $in: ["lost", "found"] } };
+
+    if (category === 'passportNumber') {
+        query.passportNumber = { $regex: `^${escapeRegex(identifier)}$`, $options: 'i' };
+    } else if (category === 'idNumber') {
+        query.idNumber = { $regex: `^${escapeRegex(identifier)}$`, $options: 'i' };
+    } else if (category === 'surname') {
+        query.lastName = { $regex: `^${escapeRegex(identifier)}$`, $options: 'i' };
+    } else {
+        return res.status(400).json({ message: "Invalid category" });
+    }
+
+    const passports = await Passport.find(query);
+
+    if (passports.length === 0) {
+        return res.status(404).json({ message: "No passports found" });
+    }
+
+    // If searching by passportNumber or idNumber, return single result or array
+    if (category === 'passportNumber' || category === 'idNumber') {
+        if (passports.length === 1) {
+            const { _id, passportNumber, lastName, firstName, idNumber, docLocation, finderContact } = passports[0];
+            return res.status(200).json({
+                _id,
+                passportNumber,
+                lastName,
+                firstName,
+                idNumber,
+                docLocation,
+                finderContact
+            });
+        } else {
+            // Should not happen for unique fields, but handle just in case
+            return res.status(200).json(passports.map(passport => ({
+                _id: passport._id,
+                passportNumber: passport.passportNumber,
+                lastName: passport.lastName,
+                firstName: passport.firstName,
+                idNumber: passport.idNumber,
+                docLocation: passport.docLocation,
+                finderContact: passport.finderContact
+            })));
+        }
+    } else {
+        // For surname, return array of results
+        return res.status(200).json(passports.map(passport => ({
+            _id: passport._id,
+            passportNumber: passport.passportNumber,
+            lastName: passport.lastName,
+            firstName: passport.firstName,
+            idNumber: passport.idNumber,
+            docLocation: passport.docLocation,
+            finderContact: passport.finderContact
+        })));
+    }
+});
+
 export const claimPassport = asyncHandler(async (req, res) => {
     const { identifier } = req.params;
     let isPassportNumber = false;
