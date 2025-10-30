@@ -13,13 +13,15 @@ const scertificateSchema = new mongoose.Schema({
         type: String,
         required: true,
         maxlength: 100,
-        trim: true
+        trim: true,
+        set: (v) => v && typeof v === 'string' ? v.toLowerCase() : v
     },
     firstName: {
         type: String,
         required: true,
         maxlength: 100,
-        trim: true
+        trim: true,
+        set: (v) => v && typeof v === 'string' ? v.toLowerCase() : v
     },
     docLocation: {
         type: String,

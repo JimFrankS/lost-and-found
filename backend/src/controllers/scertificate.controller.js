@@ -57,7 +57,7 @@ export const searchScertificate = asyncHandler(async (req, res) => { // Renamed 
     if (!lastName || lastName.trim() === '') {
         return res.status(400).json({ message: 'lastName is required' });
     }
-    const canonicalLastName = lastName.trim().toLowerCase();
+    const canonicalLastName = lastName.trim().toLowerCase(); // Keep this to ensure search query is lowercase
 
     // Find all school certificates that match the certificate type and last name, including claimed ones.
 
