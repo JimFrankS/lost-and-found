@@ -2,9 +2,7 @@ import asyncHandler from "express-async-handler";
 import NatId from "../models/natId.model.js";
 import Stats from "../models/stats.model.js";
 import isValidZimbabweIdNumber, { idNumberRegex } from "../utility/idValidation.utility.js";
-
-// Helper function to escape regex special characters
-const escapeRegex = (str) => String(str).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+import { escapeRegex } from "../utility/regex.utility.js";
 
 export const foundId = asyncHandler(async (req, res) => {
     const { lastName, firstName, idNumber, docLocation, finderContact } = req.body;
