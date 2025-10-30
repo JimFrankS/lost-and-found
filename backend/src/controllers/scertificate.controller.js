@@ -45,22 +45,27 @@ export const foundScertificate = asyncHandler(async (req, res) => { // Renamed f
 });
 
 export const searchScertificate = asyncHandler(async (req, res) => { // Renamed for consistency
-    const { lastName, certificateType } = req.query;
-    if (!lastName || !certificateType) {
-        return res.status(400).json({ message: "Both lastName and certificateType are required" });
+    const { certificateType, lastName } = req.query;
+    if (!certificateType || !lastName) {
+        return res.status(400).json({ message: "Certificate type and last name are required" });
     }
 
     const certTypeResult = getCanonical(certificateType, ALLOWED_CERTIFICATE_TYPES, 'certificateType');
     if (certTypeResult.error) return res.status(400).json({ message: certTypeResult.error });
     const canonicalType = certTypeResult.canonical;
 
-    // Find all school certificates that match the description, including claimed ones.
+    if (!lastName || lastName.trim() === '') {
+        return res.status(400).json({ message: 'lastName is required' });
+    }
+    const canonicalLastName = lastName.trim().toLowerCase();
+
+    // Find all school certificates that match the certificate type and last name, including claimed ones.
 
     const certificateList = await Scertificate.find({
         certificateType: canonicalType,
-        lastName: { $regex: `^${escapeRegex(lastName)}$`, $options: 'i' },
+        lastName: canonicalLastName,
         status: { $in: ["lost", "found"] }
-    }).select('-docLocation -finderContact -claimed -claimedAt -status -createdAt -updatedAt')
+    }).select('-docLocation -finderContact -claimed -claimedAt -status -createdAt -updatedAt').limit(10);
 
     res.status(200).json(certificateList);
 });
@@ -76,24 +81,18 @@ export const viewScertificate = asyncHandler(async (req, res) => {
         return res.status(400).json({ message: "Invalid certificate ID" });
     }
 
-    // Find the certificate by ID and update status to found, if it is still "lost".
+    // Find the certificate by ID and update status to found and claimed, if it is still "lost".
     const certificate = await Scertificate.findOneAndUpdate(
         { _id: id, status: "lost" },
-        { $set: { status: "found", foundAt: new Date() } },
+        { $set: { status: "found", claimed: true, claimedAt: new Date() } },
         { new: true }
     );
 
     if (certificate) {
-        // successfully updated to found — increment found documents stats
-        await Stats.findOneAndUpdate({}, { $inc: { foundDocuments: 1 } }, { upsert: true });
-    } else {
-        //if not found with the status lost, try to find it anyway ( might already be 'found')
-        const existingCertificate = await Scertificate.findById(id);
-        if (!existingCertificate) {
-            return res.status(404).json({ message: "School Certificate not found" });
-        }
+        // successfully updated to found and claimed — increment found and claimed documents stats
+        await Stats.findOneAndUpdate({}, { $inc: { claimedDocuments: 1 } }, { upsert: true });
 
-        // Return existing certificate (one which is already found or claimed)
+        // return updated certificate
         const {
             certificateType: cType,
             lastName,
@@ -101,7 +100,7 @@ export const viewScertificate = asyncHandler(async (req, res) => {
             docLocation,
             finderContact,
             claimed
-        } = existingCertificate;
+        } = certificate;
         const response = {
             certificateType: cType,
             lastName,
@@ -112,7 +111,14 @@ export const viewScertificate = asyncHandler(async (req, res) => {
         };
         return res.status(200).json(response);
     }
-    // return updated certificate
+
+    //if not found with the status lost, try to find it anyway ( might already be 'found')
+    const existingCertificate = await Scertificate.findById(id);
+    if (!existingCertificate) {
+        return res.status(404).json({ message: "School Certificate not found" });
+    }
+
+    // Return existing certificate (one which is already found or claimed)
     const {
         certificateType: cType,
         lastName,
@@ -120,7 +126,7 @@ export const viewScertificate = asyncHandler(async (req, res) => {
         docLocation,
         finderContact,
         claimed
-    } = certificate;
+    } = existingCertificate;
     const response = {
         certificateType: cType,
         lastName,
