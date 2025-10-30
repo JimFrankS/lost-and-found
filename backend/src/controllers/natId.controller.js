@@ -55,7 +55,7 @@ export const searchNatId = asyncHandler(async (req, res) => {
     if (idNumberRegex.test(identifier)) {
         // Search by idNumber - single result
         natIds = await NatId.findOne({
-            idNumber: { $regex: `^${identifier}$`, $options: 'i' },
+            idNumber: { $regex: `^${escapeRegex(identifier)}$`, $options: 'i' },
             status: { $in: ["lost", "found"] }
         }).select('lastName firstName idNumber');
         isSingle = true;
@@ -82,7 +82,7 @@ export const claimId = asyncHandler(async (req, res) => {
     if (idNumberRegex.test(identifier)) {
         isIdNumber = true;
         idDocument = await NatId.findOne({
-            idNumber: { $regex: `^${identifier}$`, $options: 'i' },
+            idNumber: { $regex: `^${escapeRegex(identifier)}$`, $options: 'i' },
             status: { $in: ["lost", "found"] }
         });
     }
