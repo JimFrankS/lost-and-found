@@ -5,6 +5,15 @@ export const searchResultStyles =StyleSheet.create({
     flex: 1,
     backgroundColor: "transparent",
   },
+  container: {
+    flex: 1,
+    position: "relative"
+  },
+  contentWrapper: {
+    flex: 1,
+    zIndex: 1,
+    paddingBottom: 0
+  },
   header: {
     height: 56,
     flexDirection: "row",

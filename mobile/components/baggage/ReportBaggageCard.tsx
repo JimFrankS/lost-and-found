@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import ReportBaggageModal from '@/components/ReportBaggageModal';
+import ReportBaggageModal from '@/components/baggage/ReportBaggageModal';
 import { useBaggage } from '@/hooks/useBaggage';
 import CardWrapper from '@/styles/CardWrapper';
 

@@ -1,7 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { baggageApi } from "@/utils/api";
 import { useState } from "react";
-import { extractErrorMessage, extractSuccessMessage, showError, showSuccess } from "@/utils/alerts";
+import { extractErrorMessage, extractSuccessMessage, showError } from "@/utils/alerts";
+import { showSuccessToast, showErrorToast } from "@/utils/toasts";
 import { Baggage } from "@/types";
 
 export const useBaggage = () => {
@@ -35,33 +36,29 @@ export const useBaggage = () => {
             queryClient.invalidateQueries({ queryKey: ['baggage'] });
             setIsBaggageModalVisible(false);
             const message = extractSuccessMessage(response, 'Baggage reported successfully');
-            showSuccess(message);
+            showSuccessToast(message);
         },
         onError: (error: any) => {
             const message = extractErrorMessage(error, 'An error occurred while reporting baggage');
             if (__DEV__) console.error("Baggage reporting error:", message);
-            showError(message);
+            showErrorToast(message);
         },
     });
 
     const searchBaggageMutation = useMutation({
         mutationFn: (searchParams: any) => baggageApi.searchBaggage(searchParams),
         onSuccess: (response: any) => {
-            if (response.data && Array.isArray(response.data) && response.data.length > 0) {
-                setSearchResults(response.data);
-                setFoundBaggage(response.data);
-                setSearchFound(true);
-            } else {
-                setSearchResults([]);
-                setFoundBaggage([]);
-                setSearchFound(true);
-            }
+            setSearchFound(false);
+            setSearchResults([]);
+            setFoundBaggage(response.data);
+            setSearchResults(response.data);
+            setSearchFound(true);
             closeBaggageModal();
         },
         onError: (error: any) => {
             const message = extractErrorMessage(error, 'An error occurred while searching for baggage');
             if (__DEV__) console.error("Baggage search error:", message);
-            showError(message);
+            showErrorToast(message);
             setSearchFound(false);
             setFoundBaggage(null);
             setSearchResults([]);
@@ -84,7 +81,7 @@ export const useBaggage = () => {
             setViewingBaggageId(null);
             const message = extractErrorMessage(error, 'An error occurred while viewing baggage');
             if (__DEV__) console.error("Baggage view error:", message);
-            showError(message);
+            showErrorToast(message);
         },
     });
 
@@ -95,12 +92,12 @@ export const useBaggage = () => {
                 setFoundBaggage(response.data);
                 setSearchFound(true);
             }
-            showSuccess('Baggage claimed successfully!');
+            showSuccessToast('Baggage claimed successfully!');
         },
         onError: (error: any) => {
             const message = extractErrorMessage(error, 'An error occurred while claiming baggage');
             if (__DEV__) console.error("Baggage claim error:", message);
-            showError(message);
+            showErrorToast(message);
         },
     });
 
