@@ -25,6 +25,19 @@ export const foundId = asyncHandler(async (req, res) => {
     });
 
     if (existingNatId) {
+        // Validate submitted firstName and lastName against stored values (trimmed, case-insensitive)
+        const submittedFirstName = firstName.trim().toLowerCase();
+        const submittedLastName = lastName.trim().toLowerCase();
+        const storedFirstName = existingNatId.firstName.trim().toLowerCase();
+        const storedLastName = existingNatId.lastName.trim().toLowerCase();
+
+        if (submittedFirstName !== storedFirstName || submittedLastName !== storedLastName) {
+            // Log the mismatch for audit purposes
+            console.log(`Name mismatch for idNumber ${idNumber}: submitted ${submittedFirstName} ${submittedLastName}, stored ${storedFirstName} ${storedLastName}`);
+            return res.status(400).json({ message: "Name mismatch: provided names do not match the stored values." });
+        }
+
+        // Proceed to update docLocation and finderContact
         await NatId.findOneAndUpdate(
             { idNumber: { $regex: `^${escapeRegex(idNumber)}$`, $options: 'i' } },
             { docLocation, finderContact },
@@ -83,6 +96,10 @@ export const claimId = asyncHandler(async (req, res) => {
     const { identifier } = req.params;
     if (!identifier) {
         return res.status(400).json({ message: "Identifier required" });
+    }
+
+    if (!require('mongoose').Types.ObjectId.isValid(identifier)) {
+        return res.status(400).json({ message: "Invalid ID" });
     }
 
     let idDocument = await NatId.findById(identifier);

@@ -32,7 +32,7 @@ export const foundLicence = asyncHandler(async (req, res) => {
         // Update the location and contact information
         await DLicence.findOneAndUpdate(
             { licenceNumber: { $regex: `^${escapeRegex(licenceNumber)}$`, $options: 'i' } },
-            { docLocation, finderContact }
+            { lastName, firstName, idNumber, docLocation, finderContact }
         );
         return res.status(200).json({ message: "Licence information updated successfully" });
     }
@@ -95,6 +95,10 @@ export const claimLicence = asyncHandler(async (req, res) => {
     const { identifier } = req.params;
     if (!identifier) {
         return res.status(400).json({ message: "Identifier required" });
+    }
+
+    if (!require('mongoose').Types.ObjectId.isValid(identifier)) {
+        return res.status(400).json({ message: "Invalid licence ID" });
     }
 
     let licence = await DLicence.findById(identifier);

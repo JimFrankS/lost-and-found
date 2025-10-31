@@ -34,7 +34,7 @@ export const foundScertificate = asyncHandler(async (req, res) => { // Renamed f
                 lastName: { $regex: `^${escapeRegex(lastName)}$`, $options: 'i' },
                 firstName: { $regex: `^${escapeRegex(firstName)}$`, $options: 'i' }
             },
-            { docLocation, finderContact }
+            { lastName, firstName, docLocation, finderContact }
         );
         return res.status(200).json({ message: "Certificate information updated successfully." });
     }

@@ -31,7 +31,7 @@ export const lostPassport = asyncHandler(async (req, res) => {
     if (existingPassport) {
         await Passport.findOneAndUpdate(
             { passportNumber: { $regex: `^${escapeRegex(passportNumber)}$`, $options: 'i' } },
-            { docLocation, finderContact },
+            { lastName, firstName, idNumber, docLocation, finderContact },
             { new: true }
         );
         return res.status(200).json({ message: "Passport information updated successfully." });
@@ -91,6 +91,10 @@ export const claimPassport = asyncHandler(async (req, res) => {
     const { identifier } = req.params;
     if (!identifier) {
         return res.status(400).json({ message: "Identifier required" });
+    }
+
+    if (!require('mongoose').Types.ObjectId.isValid(identifier)) {
+        return res.status(400).json({ message: "Invalid passport ID" });
     }
 
     let passportDoc = await Passport.findById(identifier);

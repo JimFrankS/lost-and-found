@@ -30,7 +30,7 @@ export const foundbCertificate = asyncHandler(async (req, res) => {
                 firstName: { $regex: `^${escapeRegex(firstName)}$`, $options: 'i' },
                 motherLastName: { $regex: `^${escapeRegex(motherLastName)}$`, $options: 'i' }
             },
-            { docLocation, finderContact }
+            { motherLastName, lastName, firstName, secondName, docLocation, finderContact }
         );
         return res.status(200).json({ message: "Certificate information updated successfully." });
     }
@@ -56,6 +56,10 @@ export const claimbCertificate = asyncHandler(async (req, res) => {
     const { identifier } = req.params;
     if (!identifier) {
         return res.status(400).json({ message: "Identifier required" });
+    }
+
+    if (!require('mongoose').Types.ObjectId.isValid(identifier)) {
+        return res.status(400).json({ message: "Invalid certificate ID" });
     }
 
     let certificate = await Bcertificate.findById(identifier);
