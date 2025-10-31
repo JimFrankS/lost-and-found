@@ -25,7 +25,12 @@ export const foundId = asyncHandler(async (req, res) => {
     });
 
     if (existingNatId) {
-        return res.status(400).json({ message: "National ID already exists within the database." });
+        await NatId.findOneAndUpdate(
+            { idNumber: { $regex: `^${escapeRegex(idNumber)}$`, $options: 'i' } },
+            { docLocation, finderContact },
+            { new: true }
+        );
+        return res.status(200).json({ message: "National ID information updated successfully." });
     }
 
     const newNatId = new NatId({

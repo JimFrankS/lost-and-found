@@ -42,7 +42,18 @@ export const lostBaggage = expressAsyncHandler(async (req, res) => {
         destination: { $regex: `^${escapeRegex(destination)}$`, $options: 'i' }
     });
     if (existingBaggage) {
-        return res.status(400).json({ message: "Baggage already registered with these details." });
+        await Baggage.findOneAndUpdate(
+            {
+                baggageType: canonicalBagType,
+                transportType: canonicalTransportType,
+                routeType: canonicalRouteType,
+                destinationProvince: String(destinationProvince).toLowerCase(),
+                destinationDistrict: String(destinationDistrict).toLowerCase(),
+                destination: { $regex: `^${escapeRegex(destination)}$`, $options: 'i' }
+            },
+            { docLocation, finderContact }
+        );
+        return res.status(200).json({ message: "Baggage information updated successfully." });
     }
 
     const newBaggage = new Baggage({

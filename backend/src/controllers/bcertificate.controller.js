@@ -24,7 +24,15 @@ export const foundbCertificate = asyncHandler(async (req, res) => {
     });
 
     if (existingCertificate) {
-        return res.status(400).json({ message: "Certificate already exists with this mother's name, child's last name and first name." });
+        await Bcertificate.findOneAndUpdate(
+            {
+                lastName: { $regex: `^${escapeRegex(lastName)}$`, $options: 'i' },
+                firstName: { $regex: `^${escapeRegex(firstName)}$`, $options: 'i' },
+                motherLastName: { $regex: `^${escapeRegex(motherLastName)}$`, $options: 'i' }
+            },
+            { docLocation, finderContact }
+        );
+        return res.status(200).json({ message: "Certificate information updated successfully." });
     }
 
     const newCertificate = new Bcertificate({

@@ -29,7 +29,12 @@ export const lostPassport = asyncHandler(async (req, res) => {
         passportNumber: { $regex: `^${escapeRegex(passportNumber)}$`, $options: 'i' }
     });
     if (existingPassport) {
-        return res.status(400).json({ message: "Passport already exists with this passport number." });
+        await Passport.findOneAndUpdate(
+            { passportNumber: { $regex: `^${escapeRegex(passportNumber)}$`, $options: 'i' } },
+            { docLocation, finderContact },
+            { new: true }
+        );
+        return res.status(200).json({ message: "Passport information updated successfully." });
     }
 
     const newPassport = new Passport({

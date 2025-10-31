@@ -28,7 +28,15 @@ export const foundScertificate = asyncHandler(async (req, res) => { // Renamed f
         firstName: { $regex: `^${escapeRegex(firstName)}$`, $options: 'i' }
     });
     if (existingCertificate) {
-        return res.status(400).json({ message: "Certificate already exists with this type, last name, and first name." });
+        await Scertificate.findOneAndUpdate(
+            {
+                certificateType: canonicalType,
+                lastName: { $regex: `^${escapeRegex(lastName)}$`, $options: 'i' },
+                firstName: { $regex: `^${escapeRegex(firstName)}$`, $options: 'i' }
+            },
+            { docLocation, finderContact }
+        );
+        return res.status(200).json({ message: "Certificate information updated successfully." });
     }
     const newCertificate = new Scertificate({
         certificateType: canonicalType,

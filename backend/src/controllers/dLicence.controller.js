@@ -29,7 +29,12 @@ export const foundLicence = asyncHandler(async (req, res) => {
         licenceNumber: { $regex: `^${escapeRegex(licenceNumber)}$`, $options: 'i' }
     });
     if (existingLicence) {
-        return res.status(400).json({ message: "Licence already exists with this licence number." });
+        // Update the location and contact information
+        await DLicence.findOneAndUpdate(
+            { licenceNumber: { $regex: `^${escapeRegex(licenceNumber)}$`, $options: 'i' } },
+            { docLocation, finderContact }
+        );
+        return res.status(200).json({ message: "Licence information updated successfully" });
     }
 
     const newLicence = new DLicence({
