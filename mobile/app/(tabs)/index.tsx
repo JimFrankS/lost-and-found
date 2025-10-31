@@ -3,12 +3,12 @@ import React from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import BackGroundCard from '@/components/BackGroundCard';
 import { tabStyles } from '@/styles/tabStyles';
-import ReportBaggageCard from '@/components/ReportBaggageCard';
-import ReportBCertificateCard from '@/components/ReportBCertificateCard';
-import ReportDLicenseCard from '@/components/ReportDLicenseCard';
-import ReportNatIdCard from '@/components/ReportNatIdCard';
-import ReportPassportCard from '@/components/ReportPassportCard';
-import ReportSCertificateCard from '@/components/ReportSCertificateCard';
+import ReportBaggageCard from '@/components/baggage/ReportBaggageCard';
+import ReportBCertificateCard from '@/components/birthcertificate/ReportBCertificateCard';
+import ReportDLicenseCard from '@/components/dLicence/ReportDLicenseCard';
+import ReportNatIdCard from '@/components/natId/ReportNatIdCard';
+import ReportPassportCard from '@/components/passport/ReportPassportCard';
+import ReportSCertificateCard from '@/components/scertificate/ReportSCertificateCard';
 
 
 const HomeScreen = () => {

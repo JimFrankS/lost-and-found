@@ -4,16 +4,17 @@ import { Platform } from "react-native";
 const DEFAULT_BASE_URL = "https://lost-and-found-opal.vercel.app/";
 let API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || DEFAULT_BASE_URL;
 
-// In web development, avoid calling the production backend from a localhost origin to prevent CORS issues.
-// If no explicit API base URL is provided and the app runs on localhost in the browser, default to a local backend.
+// In web development, when running on localhost and no explicit API URL is set,
+// default to a local backend to avoid making production API calls and hitting CORS errors.
 if (!process.env.EXPO_PUBLIC_API_URL && Platform.OS === 'web') {
     try {
         const origin = typeof window !== 'undefined' ? window.location.origin : '';
-        if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\\d+)?$/.test(origin)) {
-            API_BASE_URL = 'http://localhost:5001';
+        if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) {
+            API_BASE_URL = 'http://localhost:5001'; // Default local backend URL
         }
     } catch {
-        // no-op: conservative fallback to DEFAULT_BASE_URL
+        // If window.location.origin is not available, fallback to the default.
+        // This is a conservative no-op.
     }
 }
 
@@ -47,24 +48,29 @@ export const baggageApi = {
 export const bcertificateApi = {
     foundbCertificate: (data: any) => apiClient.post("/api/bCertificate/found", data),
     claimbCertificate: (params: any) => apiClient.get("/api/bCertificate/claim", {params}),
+    viewBcertificate: (bcertificateId: string) => apiClient.get(`/api/bCertificate/view/${bcertificateId}`),
 };
 
 export const dLicenceApi = {
     foundLicence: (data: any) => apiClient.post("/api/dLicence/found", data),
+    searchDLicence: (params: any) => apiClient.get("/api/dLicence/search", {params}),
     claimLicence: (identifier: string) => apiClient.get(`/api/dLicence/claim/${identifier}`),
 };
 
 export const natIdApi = {
     foundId: (data: any) => apiClient.post("/api/natId/found", data),
+    searchNatId: (params: any) => apiClient.get("/api/natId/search", {params}),
     claimId: (identifier: string) => apiClient.get(`/api/natId/claim/${identifier}`),
 };
 
 export const passportApi = {
     lostPassport: (data: any) => apiClient.post("/api/passport/lost", data),
+    searchPassport: (params: any) => apiClient.get("/api/passport/search", {params}),
     claimPassport: (identifier: string) => apiClient.get(`/api/passport/claim/${identifier}`),
 };
 
 export const scertificateApi = {
     foundScertificate: (data: any) => apiClient.post("/api/sCertificate/found", data),
-    claimScertificate: (params: any) => apiClient.get("/api/sCertificate/claim", {params}),
+    searchScertificate: (params: any) => apiClient.get("/api/sCertificate/search", {params}),
+    viewScertificate: (scertificateId: string) => apiClient.get(`/api/sCertificate/view/${scertificateId}`)
 };

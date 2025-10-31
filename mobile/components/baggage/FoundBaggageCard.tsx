@@ -1,0 +1,130 @@
+import React from "react";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { View, Text, TouchableOpacity, ScrollView } from "react-native";
+
+import { searchResultStyles } from "@/styles/searchResultStyles";
+import NothingFound from "../NothingFound";
+import { Baggage } from "@/types";
+import { toTitleCase } from "@/utils/string.utility";
+
+interface FoundBaggageCardProps {
+    searchFound: boolean;
+    foundBaggage: Baggage | Baggage[] | null;
+    resetSearch: () => void;
+    goBackToResults?: () => void;
+    viewBaggage?: (baggageId: string) => void;
+    isViewing?: boolean;
+    viewingBaggageId?: string | null;
+    searchResults?: Baggage[];
+}
+
+const FoundBaggageCard = ({
+    searchFound,
+    foundBaggage,
+    goBackToResults,
+    resetSearch,
+    viewBaggage,
+    isViewing,
+    viewingBaggageId,
+    searchResults,
+}: FoundBaggageCardProps) => {
+    const insets = useSafeAreaInsets();
+
+    if (!searchFound || !foundBaggage) return null;
+
+    const hasNoResults = Array.isArray(foundBaggage) && foundBaggage.length === 0;
+
+    if (hasNoResults) {
+        return (
+            <View style={{ flex: 1, position: "relative" }}>
+                <View
+                    style={[
+                        { flex: 1, zIndex: 1, paddingTop: insets.top, paddingBottom: 0 },
+                    ]}
+                >
+                    <View style={searchResultStyles.header}>
+                        <TouchableOpacity
+                            onPress={resetSearch}
+                            style={searchResultStyles.backButton}
+                        >
+                            <Text style={searchResultStyles.backText}>Back</Text>
+                        </TouchableOpacity>
+                        <Text style={searchResultStyles.headerTitle}>No Results Found</Text>
+                        <View style={searchResultStyles.headerSpacer} />
+                    </View>
+                    <NothingFound />
+                </View>
+            </View>
+        );
+    }
+
+    const isMultipleResults = Array.isArray(foundBaggage) && foundBaggage.length > 0;
+    const isViewingSingleItem = !isMultipleResults && !!searchResults && searchResults.length > 0;
+
+    const handleViewDetails = (id?: string) => {
+        if (!id || !viewBaggage) return;
+        viewBaggage(id);
+    };
+
+    return (
+        <View style={{ flex: 1, position: "relative" }}>
+            <View
+                style={[
+                    { flex: 1, zIndex: 1, paddingTop: insets.top, paddingBottom: 0 },
+                ]}
+            >
+                <View style={searchResultStyles.header}>
+                    <TouchableOpacity
+                        onPress={isViewingSingleItem ? (goBackToResults || resetSearch) : resetSearch}
+                        style={searchResultStyles.backButton}
+                    >
+                        <Text style={searchResultStyles.backText}>Back</Text>
+                    </TouchableOpacity>
+
+                    <Text style={searchResultStyles.headerTitle}>
+                        {isMultipleResults ? "Found Baggage Results" : (foundBaggage && !Array.isArray(foundBaggage) ? "Found Baggage Result" : "NA")}
+                    </Text>
+                    <View style={searchResultStyles.headerSpacer} />
+                </View>
+
+                {isMultipleResults ? (
+                    <ScrollView contentContainerStyle={searchResultStyles.resultsContainer}>
+                        {foundBaggage.map((baggage: any, index: number) => {
+                            if (!baggage || typeof baggage !== 'object' || !baggage._id) return null;
+                            return (
+                                <View key={String(baggage._id || index)} style={searchResultStyles.card}>
+                                    <Text style={searchResultStyles.cardTitle}>Baggage Type: {toTitleCase(String(baggage.baggageType || 'NA'))}</Text>
+                                    <Text style={searchResultStyles.cardText}>Destination: {toTitleCase(String(baggage.destination || 'NA'))}</Text>
+
+                                    <TouchableOpacity
+                                        onPress={() => handleViewDetails(String(baggage._id || ''))}
+                                        disabled={isViewing && viewingBaggageId === String(baggage._id || '')}
+                                        style={[searchResultStyles.actionButton, searchResultStyles.viewButton]}>
+                                        <Text style={searchResultStyles.actionText}> {isViewing && viewingBaggageId === String(baggage._id || '') ? "Loading..." : "View Details"} </Text>
+                                    </TouchableOpacity>
+                                </View>
+                            );
+                        })}
+                    </ScrollView>
+                ) : (
+                    <ScrollView contentContainerStyle={searchResultStyles.singleContainer}>
+                        {foundBaggage && !Array.isArray(foundBaggage) && (
+                            <View style={searchResultStyles.detailCard}>
+                                <Text style={searchResultStyles.cardTitle}>Baggage Type: {toTitleCase(String(foundBaggage.baggageType || 'NA'))}</Text>
+                                <Text style={searchResultStyles.cardTitle}>Transport: {toTitleCase(String(foundBaggage.transportType || 'NA'))}</Text>
+                                <Text style={searchResultStyles.cardTitle}>Route: {toTitleCase(String(foundBaggage.routeType || 'NA'))}</Text>
+                                <Text style={searchResultStyles.cardTitle}>Province: {toTitleCase(String(foundBaggage.destinationProvince || 'NA'))}</Text>
+                                <Text style={searchResultStyles.cardTitle}>District: {toTitleCase(String(foundBaggage.destinationDistrict || 'NA'))}</Text>
+                                <Text style={searchResultStyles.cardTitle}>Destination: {toTitleCase(String(foundBaggage.destination || 'NA'))}</Text>
+                                <Text style={searchResultStyles.cardTitle}>Location: {toTitleCase(String(foundBaggage.docLocation || 'NA'))}</Text>
+                                <Text style={searchResultStyles.cardTitle}>Finder Contact: {String(foundBaggage.finderContact || 'NA')}</Text>
+                            </View>
+                        )}
+                    </ScrollView>
+                )}
+            </View>
+        </View>
+    );
+};
+
+export default FoundBaggageCard;

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import SearchBaggageModal from '@/components/SearchBaggageModal';
+import SearchBaggageModal from '@/components/baggage/SearchBaggageModal';
 import CardWrapper from '@/styles/CardWrapper';
 
 interface SearchBaggageCardProps {
@@ -37,7 +37,7 @@ const SearchBaggageCard = ({
   return (
     <>
       <CardWrapper onPress={openBaggageModal} accessibilityLabel="Search lost baggage">
-        <Feather name="plus" size={24} color="black" />
+        <Feather name="search" size={24} color="black" />
         <Text style={{ marginLeft: 8, color: '#4B5563', fontWeight: 'bold', fontSize: 18 }}>Search Lost Baggage</Text>
       </CardWrapper>
       <SearchBaggageModal
