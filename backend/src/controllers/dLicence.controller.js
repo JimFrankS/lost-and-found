@@ -92,28 +92,12 @@ export const searchDLicence = asyncHandler(async (req, res) => {
 });
 
 export const claimLicence = asyncHandler(async (req, res) => {
-    const { identifier = "" } = req.params;
-    let licence = null;
+    const { identifier } = req.params;
     if (!identifier) {
-        return res.status(400).json({ message: "Identifier required (licenceNumber, idNumber, or lastName)" });
-    }
-    if (/^\d{6}[A-Z]{2}$/i.test(identifier)) {
-        licence = await DLicence.findOne({
-            licenceNumber: { $regex: `^${identifier}$`, $options: 'i' },
-            status: { $in: ["lost", "found"] }
-        });
-    } else if (idNumberRegex.test(identifier)) {
-        licence = await DLicence.findOne({
-            idNumber: { $regex: `^${identifier}$`, $options: 'i' },
-            status: { $in: ["lost", "found"] }
-        });
-    } else {
-        licence = await DLicence.findOne({
-            lastName: { $regex: `^${escapeRegex(identifier)}$`, $options: 'i' },
-            status: { $in: ["lost", "found"] }
-        });
+        return res.status(400).json({ message: "Identifier required" });
     }
 
+    let licence = await DLicence.findById(identifier);
     if (!licence) {
         return res.status(404).json({ message: "Licence not found" });
     }

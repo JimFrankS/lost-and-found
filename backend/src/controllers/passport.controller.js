@@ -72,7 +72,7 @@ export const searchPassport = asyncHandler(async (req, res) => {
         return res.status(400).json({ message: "Invalid category" });
     }
 
-    const passports = await Passport.find(query);
+    const passports = await Passport.find(query).select('_id passportNumber lastName firstName idNumber');
 
     if (passports.length === 0) {
         return res.status(404).json({ message: "No passports found" });
@@ -81,71 +81,19 @@ export const searchPassport = asyncHandler(async (req, res) => {
     // If searching by passportNumber or idNumber, return single result or array
     if (category === 'passportNumber' || category === 'idNumber') {
         if (passports.length === 1) {
-            const { _id, passportNumber, lastName, firstName, idNumber, docLocation, finderContact } = passports[0];
-            return res.status(200).json({
-                _id,
-                passportNumber,
-                lastName,
-                firstName,
-                idNumber,
-                docLocation,
-                finderContact
-            });
-        } else {
-            // Should not happen for unique fields, but handle just in case
-            return res.status(200).json(passports.map(passport => ({
-                _id: passport._id,
-                passportNumber: passport.passportNumber,
-                lastName: passport.lastName,
-                firstName: passport.firstName,
-                idNumber: passport.idNumber,
-                docLocation: passport.docLocation,
-                finderContact: passport.finderContact
-            })));
+            return res.status(200).json(passports[0]);
         }
-    } else {
-        // For surname, return array of results
-        return res.status(200).json(passports.map(passport => ({
-            _id: passport._id,
-            passportNumber: passport.passportNumber,
-            lastName: passport.lastName,
-            firstName: passport.firstName,
-            idNumber: passport.idNumber,
-            docLocation: passport.docLocation,
-            finderContact: passport.finderContact
-        })));
     }
+    return res.status(200).json(passports);
 });
 
 export const claimPassport = asyncHandler(async (req, res) => {
     const { identifier } = req.params;
-    let isPassportNumber = false;
-    let isIdNumber = false;
-    let passportDoc;
-
-    if (/^[A-Z]{2}\d{6}$/i.test(identifier)) {
-        isPassportNumber = true;
-        passportDoc = await Passport.findOne({
-            passportNumber: { $regex: `^${identifier}$`, $options: 'i' },
-            status: { $in: ["lost", "found"] }
-        });
+    if (!identifier) {
+        return res.status(400).json({ message: "Identifier required" });
     }
 
-    if (idNumberRegex.test(identifier)) {
-        isIdNumber = true;
-        passportDoc = await Passport.findOne({
-            idNumber: { $regex: `^${identifier}$`, $options: 'i' },
-            status: { $in: ["lost", "found"] }
-        });
-    }
-
-    if (!isPassportNumber && !isIdNumber) {
-        passportDoc = await Passport.findOne({
-            lastName: { $regex: `^${escapeRegex(identifier)}$`, $options: 'i' },
-            status: { $in: ["lost", "found"] }
-        });
-    }
-
+    let passportDoc = await Passport.findById(identifier);
     if (!passportDoc) {
         return res.status(404).json({ message: "Passport not found" });
     }
@@ -160,6 +108,7 @@ export const claimPassport = asyncHandler(async (req, res) => {
         await Stats.findOneAndUpdate({}, { $inc: { claimedDocuments: 1 } }, { upsert: true });
         passportDoc = updated;
     } else if (passportDoc.status !== 'found') {
+        // If already claimed but status hasn't been updated, correct it
         await Passport.updateOne({ _id: passportDoc._id, status: { $ne: 'found' } }, { $set: { status: 'found' } });
         passportDoc.status = 'found';
     }

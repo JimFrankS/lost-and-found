@@ -53,19 +53,12 @@ export const foundbCertificate = asyncHandler(async (req, res) => {
 });
 
 export const claimbCertificate = asyncHandler(async (req, res) => {
-    const { lastName = "", motherLastName = "", firstName = "" } = req.query;
-
-    if (!lastName || !motherLastName || !firstName) {
-        return res.status(400).json({ message: "Child's lastName, motherLastName, and firstName are required" });
+    const { identifier } = req.params;
+    if (!identifier) {
+        return res.status(400).json({ message: "Identifier required" });
     }
 
-    let certificate = await Bcertificate.findOne({
-        lastName: { $regex: `^${escapeRegex(lastName)}$`, $options: 'i' },
-        motherLastName: { $regex: `^${escapeRegex(motherLastName)}$`, $options: 'i' },
-        firstName: { $regex: `^${escapeRegex(firstName)}$`, $options: 'i' },
-        status: { $in: ["lost", "found"] }
-    });
-
+    let certificate = await Bcertificate.findById(identifier);
     if (!certificate) {
         return res.status(404).json({ message: "Certificate not found" });
     }
@@ -79,10 +72,10 @@ export const claimbCertificate = asyncHandler(async (req, res) => {
         await Stats.findOneAndUpdate({}, { $inc: { claimedDocuments: 1 } }, { upsert: true });
         certificate = updated;
     } else if (certificate.status !== 'found') {
+        // If already claimed but status hasn't been updated, correct it
         await Bcertificate.updateOne({ _id: certificate._id, status: { $ne: 'found' } }, { $set: { status: 'found' } });
         certificate.status = 'found';
     }
-    
 
     const { lastName: ln, firstName: certFirstName, secondName, motherLastName: mln, docLocation, finderContact } = certificate;
 

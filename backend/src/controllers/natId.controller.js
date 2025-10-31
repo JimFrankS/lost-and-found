@@ -62,14 +62,14 @@ export const searchNatId = asyncHandler(async (req, res) => {
         natIds = await NatId.findOne({
             idNumber: { $regex: `^${escapeRegex(identifier)}$`, $options: 'i' },
             status: { $in: ["lost", "found"] }
-        }).select('lastName firstName idNumber');
+        }).select('_id lastName firstName idNumber');
         isSingle = true;
     } else {
         // Search by lastName - multiple results
         natIds = await NatId.find({
             lastName: { $regex: `^${escapeRegex(identifier)}$`, $options: 'i' },
             status: { $in: ["lost", "found"] }
-        }).select('lastName firstName idNumber').limit(10);
+        }).select('_id lastName firstName idNumber').limit(10);
     }
 
     if (!natIds || (Array.isArray(natIds) && natIds.length === 0)) {
@@ -81,24 +81,11 @@ export const searchNatId = asyncHandler(async (req, res) => {
 
 export const claimId = asyncHandler(async (req, res) => {
     const { identifier } = req.params;
-    let isIdNumber = false;
-    let idDocument;
-
-    if (idNumberRegex.test(identifier)) {
-        isIdNumber = true;
-        idDocument = await NatId.findOne({
-            idNumber: { $regex: `^${escapeRegex(identifier)}$`, $options: 'i' },
-            status: { $in: ["lost", "found"] }
-        });
+    if (!identifier) {
+        return res.status(400).json({ message: "Identifier required" });
     }
 
-    if (!isIdNumber) {
-        idDocument = await NatId.findOne({
-            lastName: { $regex: `^${escapeRegex(identifier)}$`, $options: 'i' },
-            status: { $in: ["lost", "found"] }
-        });
-    }
-
+    let idDocument = await NatId.findById(identifier);
     if (!idDocument) {
         return res.status(404).json({ message: "National ID not found" });
     }
@@ -117,6 +104,7 @@ export const claimId = asyncHandler(async (req, res) => {
         await NatId.updateOne({ _id: idDocument._id, status: { $ne: 'found' } }, { $set: { status: 'found' } });
         idDocument.status = 'found';
     }
+
     const { lastName: ln, firstName, idNumber, docLocation, finderContact } = idDocument;
     let response = {
         lastName: ln,
