@@ -1,11 +1,9 @@
-import { Dimensions } from "react-native";
-
-const screenHeight = Dimensions.get('window').height;
+import React from 'react';
+import { Dimensions, View, Text } from "react-native";
 
 export const toastConfig = {
   success: (props: any) => {
-    const React = require('react');
-    const { View, Text } = require('react-native');
+    const screenHeight = Dimensions.get('window').height;
     return React.createElement(View, {
       style: {
         height: screenHeight / 3,
@@ -27,8 +25,7 @@ export const toastConfig = {
     ]);
   },
   error: (props: any) => {
-    const React = require('react');
-    const { View, Text } = require('react-native');
+    const screenHeight = Dimensions.get('window').height;
     return React.createElement(View, {
       style: {
         height: screenHeight / 3,

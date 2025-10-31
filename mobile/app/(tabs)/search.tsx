@@ -5,7 +5,7 @@ import SearchBCertificate from '@/components/birthcertificate/SearchBCertificate
 import SearchDLicence from '@/components/dLicence/SearchDLicence'
 import SearchNatId from '@/components/natId/SearchNatId'
 import SearchPassport from '@/components/passport/SearchPassport'
-import { View } from 'react-native'
+import { View, ScrollView } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { tabStyles } from '@/styles/tabStyles';
 import BackGroundCard from '@/components/BackGroundCard'
@@ -31,7 +31,7 @@ const Search = () => {
       <BackGroundCard />
       <SafeAreaView style={tabStyles.safeArea}>
         {showFullScreenResults ? (
-          <View style={tabStyles.container}>
+          <ScrollView contentContainerStyle={tabStyles.container}>
             {baggageHook.searchFound && <SearchBaggage baggageHook={baggageHook} />}
             {scertificateHook.searchFound && (
               <SearchScertificate scertificateHook={scertificateHook} />
@@ -40,7 +40,7 @@ const Search = () => {
             {dlicenceHook.searchFound && <SearchDLicence dlicenceHook={dlicenceHook} />}
             {natIdHook.searchFound && <SearchNatId natIdHook={natIdHook} />}
             {passportHook.searchFound && <SearchPassport passportHook={passportHook} />}
-          </View>
+          </ScrollView>
         ) : (
           <View style={tabStyles.container}>
             <SearchBaggage baggageHook={baggageHook} />

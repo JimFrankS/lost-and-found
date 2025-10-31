@@ -89,7 +89,7 @@ const FoundBaggageCard = ({
 
                 {isMultipleResults ? (
                     <ScrollView contentContainerStyle={searchResultStyles.resultsContainer}>
-                        {foundBaggage.map((baggage: any, index: number) => {
+                        {foundBaggage.map((baggage: Baggage, index: number) => {
                             if (!baggage || typeof baggage !== 'object' || !baggage._id) return null;
                             return (
                                 <View key={String(baggage._id || index)} style={searchResultStyles.card}>
