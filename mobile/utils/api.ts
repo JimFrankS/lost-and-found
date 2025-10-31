@@ -3,11 +3,11 @@ import { Platform } from "react-native";
 
 // TypeScript interfaces for API params and data shapes
 export interface BaggageSearchParams {
-  baggageType: string;
-  transportType: string;
-  routeType: string;
-  destinationProvince: string;
-  destinationDistrict: string;
+  baggageType?: string;
+  transportType?: string;
+  routeType?: string;
+  destinationProvince?: string;
+  destinationDistrict?: string;
 }
 
 export interface BaggageFoundData {
