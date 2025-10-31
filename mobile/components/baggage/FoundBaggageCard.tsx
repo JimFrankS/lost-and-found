@@ -36,10 +36,11 @@ const FoundBaggageCard = ({
 
     if (hasNoResults) {
         return (
-            <View style={{ flex: 1, position: "relative" }}>
+            <View style={searchResultStyles.container}>
                 <View
                     style={[
-                        { flex: 1, zIndex: 1, paddingTop: insets.top, paddingBottom: 0 },
+                        searchResultStyles.contentWrapper,
+                        { paddingTop: insets.top },
                     ]}
                 >
                     <View style={searchResultStyles.header}>
@@ -114,7 +115,11 @@ const FoundBaggageCard = ({
                                     <TouchableOpacity
                                         onPress={() => handleViewDetails(baggage._id)}
                                         disabled={isViewing && viewingBaggageId === baggage._id}
-                                        style={[searchResultStyles.actionButton, searchResultStyles.viewButton]}>
+                                        style={[
+                                            searchResultStyles.actionButton,
+                                            searchResultStyles.viewButton,
+                                            (isViewing && viewingBaggageId === baggage._id) && { opacity: 0.5 }
+                                        ]}>
                                         <Text style={searchResultStyles.actionText}>{isViewing && viewingBaggageId === baggage._id ? "Loading..." : "View Details"}</Text>
                                     </TouchableOpacity>
                                 </View>
@@ -125,14 +130,38 @@ const FoundBaggageCard = ({
                     <ScrollView contentContainerStyle={searchResultStyles.singleContainer}>
                         {foundBaggage && !Array.isArray(foundBaggage) && (
                             <View style={searchResultStyles.detailCard}>
-                                <Text style={searchResultStyles.cardTitle}>Baggage Type: {toTitleCase(foundBaggage.baggageType)}</Text>
-                                <Text style={searchResultStyles.cardTitle}>Transport: {toTitleCase(foundBaggage.transportType)}</Text>
-                                <Text style={searchResultStyles.cardTitle}>Route: {toTitleCase(foundBaggage.routeType)}</Text>
-                                <Text style={searchResultStyles.cardTitle}>Province: {toTitleCase(foundBaggage.destinationProvince)}</Text>
-                                <Text style={searchResultStyles.cardTitle}>District: {toTitleCase(foundBaggage.destinationDistrict)}</Text>
-                                <Text style={searchResultStyles.cardTitle}>Destination: {toTitleCase(foundBaggage.destination)}</Text>
-                                <Text style={searchResultStyles.cardTitle}>Location: {toTitleCase(foundBaggage.docLocation)}</Text>
-                                <Text style={searchResultStyles.cardTitle}>Finder Contact: {foundBaggage.finderContact}</Text>
+                                <Text style={searchResultStyles.cardText}>
+                                    <Text style={searchResultStyles.cardTitle}>Baggage Type: </Text>
+                                    {toTitleCase(foundBaggage.baggageType)}
+                                </Text>
+                                <Text style={searchResultStyles.cardText}>
+                                    <Text style={searchResultStyles.cardTitle}>Transport: </Text>
+                                    {toTitleCase(foundBaggage.transportType)}
+                                </Text>
+                                <Text style={searchResultStyles.cardText}>
+                                    <Text style={searchResultStyles.cardTitle}>Route: </Text>
+                                    {toTitleCase(foundBaggage.routeType)}
+                                </Text>
+                                <Text style={searchResultStyles.cardText}>
+                                    <Text style={searchResultStyles.cardTitle}>Province: </Text>
+                                    {toTitleCase(foundBaggage.destinationProvince)}
+                                </Text>
+                                <Text style={searchResultStyles.cardText}>
+                                    <Text style={searchResultStyles.cardTitle}>District: </Text>
+                                    {toTitleCase(foundBaggage.destinationDistrict)}
+                                </Text>
+                                <Text style={searchResultStyles.cardText}>
+                                    <Text style={searchResultStyles.cardTitle}>Destination: </Text>
+                                    {toTitleCase(foundBaggage.destination)}
+                                </Text>
+                                <Text style={searchResultStyles.cardText}>
+                                    <Text style={searchResultStyles.cardTitle}>Location: </Text>
+                                    {toTitleCase(foundBaggage.docLocation)}
+                                </Text>
+                                <Text style={searchResultStyles.cardText}>
+                                    <Text style={searchResultStyles.cardTitle}>Finder Contact: </Text>
+                                    {foundBaggage.finderContact}
+                                </Text>
                             </View>
                         )}
                     </ScrollView>
