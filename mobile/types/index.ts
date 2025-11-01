@@ -21,7 +21,8 @@ export interface Bcertificate {
     firstName: string,
     secondName?: string,
     docLocation: string,
-    finderContact: string
+    finderContact: string,
+    claimed?: boolean
 }
 
 export interface DLicence {
@@ -31,7 +32,8 @@ export interface DLicence {
     firstName: string,
     idNumber: string,
     docLocation: string,
-    finderContact: string
+    finderContact: string,
+    claimed?: boolean
 }
 
 export interface NatId {
@@ -40,7 +42,8 @@ export interface NatId {
     firstName: string,
     idNumber: string,
     docLocation: string,
-    finderContact: string
+    finderContact: string,
+    claimed?: boolean
 }
 
 export interface Passport {
@@ -50,7 +53,8 @@ export interface Passport {
     firstName: string,
     idNumber: string,
     docLocation: string,
-    finderContact: string
+    finderContact: string,
+    claimed?: boolean
 }
 
 export interface Scertificate {
@@ -59,7 +63,8 @@ export interface Scertificate {
     lastName: string,
     firstName: string,
     docLocation: string,
-    finderContact: string
+    finderContact: string,
+    claimed?: boolean
 }
 
 export interface Stats {

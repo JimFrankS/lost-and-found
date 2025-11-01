@@ -56,17 +56,37 @@ export const foundbCertificate = asyncHandler(async (req, res) => {
     });
 });
 
+export const searchbCertificate = asyncHandler(async (req, res) => {
+    const { lastName, motherLastName, firstName } = req.query;
+    if (!lastName || !motherLastName || !firstName) {
+        return res.status(400).json({ message: "All search fields are required" });
+    }
+
+    const query = {
+        lastName: { $regex: `^${escapeRegex(lastName)}$`, $options: 'i' },
+        firstName: { $regex: `^${escapeRegex(firstName)}$`, $options: 'i' },
+        motherLastName: { $regex: `^${escapeRegex(motherLastName)}$`, $options: 'i' },
+        status: { $in: ["lost", "found"] }
+    };
+
+    const certificateList = await Bcertificate.find(query).select('_id lastName firstName motherLastName secondName');
+
+    res.status(200).json(certificateList);
+});
+
 export const claimbCertificate = asyncHandler(async (req, res) => {
-    const { identifier } = req.query;
-    if (!identifier) {
-        return res.status(400).json({ message: "Identifier required" });
+    const { lastName, motherLastName, firstName } = req.query;
+    if (!lastName || !motherLastName || !firstName) {
+        return res.status(400).json({ message: "All search fields are required" });
     }
 
-    if (!mongoose.Types.ObjectId.isValid(identifier)) {
-        return res.status(400).json({ message: "Invalid certificate ID" });
-    }
+    const query = {
+        lastName: { $regex: `^${escapeRegex(lastName)}$`, $options: 'i' },
+        firstName: { $regex: `^${escapeRegex(firstName)}$`, $options: 'i' },
+        motherLastName: { $regex: `^${escapeRegex(motherLastName)}$`, $options: 'i' }
+    };
 
-    let certificate = await Bcertificate.findById(identifier);
+    let certificate = await Bcertificate.findOne(query);
     if (!certificate) {
         return res.status(404).json({ message: "Certificate not found" });
     }

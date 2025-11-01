@@ -134,6 +134,7 @@ export const baggageApi = {
 
 export const bcertificateApi = {
     foundbCertificate: (data: BCertificateFoundData) => apiClient.post("/api/bCertificate/found", data),
+    searchbCertificate: (params: BCertificateClaimParams) => apiClient.get("/api/bCertificate/search", {params}),
     claimbCertificate: (params: BCertificateClaimParams) => apiClient.get("/api/bCertificate/claim", {params}),
     viewBcertificate: (bcertificateId: string) => apiClient.get(`/api/bCertificate/view/${bcertificateId}`),
 };
