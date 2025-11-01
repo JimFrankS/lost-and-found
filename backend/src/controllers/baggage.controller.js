@@ -1,4 +1,5 @@
 import expressAsyncHandler from "express-async-handler";
+import mongoose from 'mongoose';
 import Baggage, { BAGGAGE_TYPES } from "../models/baggage.model.js";
 import Stats from "../models/stats.model.js";
 import { getCanonical } from "../utility/canonical.utility.js";

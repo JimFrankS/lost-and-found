@@ -4,6 +4,7 @@ import NatId from "../models/natId.model.js";
 import Stats from "../models/stats.model.js";
 import isValidZimbabweIdNumber, { idNumberRegex } from "../utility/idValidation.utility.js";
 import { escapeRegex } from "../utility/regex.utility.js";
+import logger from "../utility/logger.utility.js";
 
 export const foundId = asyncHandler(async (req, res) => {
     const { lastName, firstName, idNumber, docLocation, finderContact } = req.body;
@@ -34,7 +35,7 @@ export const foundId = asyncHandler(async (req, res) => {
 
         if (submittedFirstName !== storedFirstName || submittedLastName !== storedLastName) {
             // Log the mismatch for audit purposes
-            console.log(`Name mismatch for idNumber ${idNumber}: submitted ${submittedFirstName} ${submittedLastName}, stored ${storedFirstName} ${storedLastName}`);
+            logger.info("Name mismatch detected for verification");
             return res.status(400).json({ message: "Name mismatch: provided names do not match the stored values." });
         }
 
