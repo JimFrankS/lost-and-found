@@ -55,9 +55,9 @@ export const foundScertificate = asyncHandler(async (req, res) => { // Renamed f
 });
 
 export const searchScertificate = asyncHandler(async (req, res) => { // Renamed for consistency
-    const { certificateType, lastName } = req.query;
-    if (!certificateType || !lastName) {
-        return res.status(400).json({ message: "Certificate type and last name are required" });
+    const { certificateType, lastName, firstName } = req.query;
+    if (!certificateType || !lastName || !firstName) {
+        return res.status(400).json({ message: "Certificate type, last name, and first name are required" });
     }
 
     const certTypeResult = getCanonical(certificateType, ALLOWED_CERTIFICATE_TYPES, 'certificateType');
@@ -67,15 +67,18 @@ export const searchScertificate = asyncHandler(async (req, res) => { // Renamed 
     if (!lastName || lastName.trim() === '') {
         return res.status(400).json({ message: 'lastName is required' });
     }
-    const canonicalLastName = lastName.trim().toLowerCase(); // Keep this to ensure search query is lowercase
+    if (!firstName || firstName.trim() === '') {
+        return res.status(400).json({ message: 'firstName is required' });
+    }
 
-    // Find all school certificates that match the certificate type and last name, including claimed ones.
+    // Find all school certificates that match the certificate type, last name, and first name, including claimed ones.
 
     const certificateList = await Scertificate.find({
         certificateType: canonicalType,
-        lastName: canonicalLastName,
+        lastName: { $regex: `^${escapeRegex(lastName)}$`, $options: 'i' },
+        firstName: { $regex: `^${escapeRegex(firstName)}$`, $options: 'i' },
         status: { $in: ["lost", "found"] }
-    }).select('_id certificateType lastName firstName docLocation finderContact').limit(10);
+    }).select('_id certificateType lastName firstName');
 
     res.status(200).json(certificateList);
 });
