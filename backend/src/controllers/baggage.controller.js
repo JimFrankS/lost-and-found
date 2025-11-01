@@ -52,7 +52,7 @@ export const lostBaggage = expressAsyncHandler(async (req, res) => {
                 destination: { $regex: `^${escapeRegex(destination)}$`, $options: 'i' },
                 claimed: { $ne: true }
             },
-            { baggageType: canonicalBagType, transportType: canonicalTransportType, routeType: canonicalRouteType, destinationProvince: String(destinationProvince).trim().toLowerCase(), destinationDistrict: String(destinationDistrict).trim().toLowerCase(), destination: String(destination).trim().toLowerCase(), docLocation, finderContact },
+            { $set: { baggageType: canonicalBagType, transportType: canonicalTransportType, routeType: canonicalRouteType, destinationProvince: String(destinationProvince).trim().toLowerCase(), destinationDistrict: String(destinationDistrict).trim().toLowerCase(), destination: String(destination).trim().toLowerCase(), docLocation, finderContact } },
             { new: true }
         );
         if (!updated) {
