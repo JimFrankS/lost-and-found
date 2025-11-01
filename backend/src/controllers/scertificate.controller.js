@@ -22,14 +22,23 @@ export const foundScertificate = asyncHandler(async (req, res) => { // Renamed f
     if (certTypeResult.error) return res.status(400).json({ message: certTypeResult.error });
     const canonicalType = certTypeResult.canonical;
 
-    const existingCertificate = await Scertificate.findOne({
+    const query = {
         certificateType: canonicalType,
         lastName: { $regex: `^${escapeRegex(lastName)}$`, $options: 'i' },
         firstName: { $regex: `^${escapeRegex(firstName)}$`, $options: 'i' }
-    });
+    };
+    const existingCertificate = await Scertificate.findOne(query);
+
     if (existingCertificate) {
-        const updatedCertificate = await Scertificate.findByIdAndUpdate(existingCertificate._id, { lastName, firstName, docLocation, finderContact }, { new: true });
-        return res.status(200).json(updatedCertificate);
+        if (existingCertificate.finderContact === finderContact) {
+            existingCertificate.docLocation = docLocation;
+            await existingCertificate.save();
+            return res.status(200).json({ message: "Certificate location updated successfully." });
+        } else if (existingCertificate.docLocation.trim().toLowerCase() === docLocation.trim().toLowerCase()) {
+            existingCertificate.finderContact = finderContact;
+            await existingCertificate.save();
+            return res.status(200).json({ message: "Certificate finder contact updated successfully." });
+        }
     }
     const newCertificate = new Scertificate({
         certificateType: canonicalType,
@@ -72,16 +81,16 @@ export const searchScertificate = asyncHandler(async (req, res) => { // Renamed 
 });
 
 export const viewScertificate = asyncHandler(async (req, res) => {
-    const { identifier } = req.params;
-    if (!identifier) {
-        return res.status(400).json({ message: "Identifier required" });
+    const { id } = req.params;
+    if (!id) {
+        return res.status(400).json({ message: "ID required" });
     }
 
-    if (!mongoose.Types.ObjectId.isValid(identifier)) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(400).json({ message: "Invalid certificate ID" });
     }
 
-    let certificate = await Scertificate.findById(identifier);
+    let certificate = await Scertificate.findById(id);
     if (!certificate) {
         return res.status(404).json({ message: "School Certificate not found" });
     }

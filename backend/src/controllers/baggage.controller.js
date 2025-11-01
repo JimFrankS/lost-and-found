@@ -33,33 +33,29 @@ export const lostBaggage = expressAsyncHandler(async (req, res) => {
     if (routeTypeResult.error) return res.status(400).json({ message: routeTypeResult.error });
     const canonicalRouteType = routeTypeResult.canonical;
 
-    // Duplicate check considers all keys
-    const existingBaggage = await Baggage.findOne({
+    // Check for existing baggage based on core fields
+    const query = {
         baggageType: canonicalBagType,
         transportType: canonicalTransportType,
         routeType: canonicalRouteType,
         destinationProvince: String(destinationProvince).toLowerCase(),
         destinationDistrict: String(destinationDistrict).toLowerCase(),
         destination: { $regex: `^${escapeRegex(destination)}$`, $options: 'i' }
-    });
+    };
+
+    const existingBaggage = await Baggage.findOne(query);
+
     if (existingBaggage) {
-        const updated = await Baggage.findOneAndUpdate(
-            {
-                baggageType: canonicalBagType,
-                transportType: canonicalTransportType,
-                routeType: canonicalRouteType,
-                destinationProvince: String(destinationProvince).toLowerCase(),
-                destinationDistrict: String(destinationDistrict).toLowerCase(),
-                destination: { $regex: `^${escapeRegex(destination)}$`, $options: 'i' },
-                claimed: { $ne: true }
-            },
-            { $set: { baggageType: canonicalBagType, transportType: canonicalTransportType, routeType: canonicalRouteType, destinationProvince: String(destinationProvince).trim().toLowerCase(), destinationDistrict: String(destinationDistrict).trim().toLowerCase(), destination: String(destination).trim().toLowerCase(), docLocation, finderContact } },
-            { new: true }
-        );
-        if (!updated) {
-            return res.status(400).json({ message: "Baggage is already claimed and cannot be updated." });
+        if (existingBaggage.finderContact === finderContact) {
+            existingBaggage.docLocation = docLocation;
+            await existingBaggage.save();
+            return res.status(200).json({ message: "Baggage location updated successfully." });
+        } else if (existingBaggage.docLocation.trim().toLowerCase() === docLocation.trim().toLowerCase()) {
+            existingBaggage.finderContact = finderContact;
+            await existingBaggage.save();
+            return res.status(200).json({ message: "Baggage finder contact updated successfully." });
         }
-        return res.status(200).json({ message: "Baggage information updated successfully." });
+        // If neither finderContact nor docLocation matches, fall through to create new
     }
 
     const newBaggage = new Baggage({
@@ -101,8 +97,8 @@ export const searchBaggage = expressAsyncHandler(async (req, res) => {
         baggageType: canonicalBagType,
         transportType: canonicalTransportType,
         routeType: canonicalRouteType,
-        destinationProvince: String(destinationProvince).toLowerCase(),
-        destinationDistrict: String(destinationDistrict).toLowerCase(),
+        destinationProvince: String(destinationProvince).trim().toLowerCase(),
+        destinationDistrict: String(destinationDistrict).trim().toLowerCase(),
         status: { $in: ["lost", "found"] }
     }).select('_id baggageType transportType routeType destinationProvince destinationDistrict destination');
 
@@ -183,17 +179,17 @@ export const viewBaggage = expressAsyncHandler(async (req, res) => {
 });
 
 export const claimBaggage = expressAsyncHandler(async (req, res) => {
-    const { id: identifier } = req.params;
-    if (!identifier) {
-        return res.status(400).json({ message: "Identifier required" });
+    const { id } = req.params;
+    if (!id) {
+        return res.status(400).json({ message: "ID required" });
     }
 
-    if (!mongoose.Types.ObjectId.isValid(identifier)) {
-        return res.status(400).json({ message: "Invalid identifier format" });
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ message: "Invalid ID format" });
     }
 
     // Find the baggage by ID
-    let baggage = await Baggage.findById(identifier);
+    let baggage = await Baggage.findById(id);
     if (!baggage) {
         return res.status(404).json({ message: "Baggage not found" });
     }
