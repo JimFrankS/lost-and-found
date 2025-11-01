@@ -81,16 +81,16 @@ export const searchScertificate = asyncHandler(async (req, res) => { // Renamed 
 });
 
 export const viewScertificate = asyncHandler(async (req, res) => {
-    const { identifier } = req.params;
-    if (!identifier) {
-        return res.status(400).json({ message: "Identifier required" });
+    const { id } = req.params;
+    if (!id) {
+        return res.status(400).json({ message: "ID required" });
     }
 
-    if (!mongoose.Types.ObjectId.isValid(identifier)) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(400).json({ message: "Invalid certificate ID" });
     }
 
-    let certificate = await Scertificate.findById(identifier);
+    let certificate = await Scertificate.findById(id);
     if (!certificate) {
         return res.status(404).json({ message: "School Certificate not found" });
     }

@@ -49,8 +49,22 @@ export const lostPassport = asyncHandler(async (req, res) => {
         return res.status(409).json({ message: "This passport has already been reported by someone else." });
     }
 
-    // If not exists, return 404
-    return res.status(404).json({ message: "Passport not found." });
+    // If not exists, create a new Passport document
+    const newPassport = new Passport({
+        passportNumber: passportNumber.toUpperCase(),
+        lastName,
+        firstName,
+        idNumber,
+        docLocation,
+        finderContact
+    });
+
+    await newPassport.save();
+
+    // Increment the Stats counter for reported passports
+    await Stats.findOneAndUpdate({}, { $inc: { totalDocuments: 1 } }, { upsert: true });
+
+    return res.status(201).json({ message: "Passport reported successfully." });
 });
 
 export const searchPassport = asyncHandler(async (req, res) => {

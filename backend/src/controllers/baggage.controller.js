@@ -179,17 +179,17 @@ export const viewBaggage = expressAsyncHandler(async (req, res) => {
 });
 
 export const claimBaggage = expressAsyncHandler(async (req, res) => {
-    const { id: identifier } = req.params;
-    if (!identifier) {
-        return res.status(400).json({ message: "Identifier required" });
+    const { id } = req.params;
+    if (!id) {
+        return res.status(400).json({ message: "ID required" });
     }
 
-    if (!mongoose.Types.ObjectId.isValid(identifier)) {
-        return res.status(400).json({ message: "Invalid identifier format" });
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ message: "Invalid ID format" });
     }
 
     // Find the baggage by ID
-    let baggage = await Baggage.findById(identifier);
+    let baggage = await Baggage.findById(id);
     if (!baggage) {
         return res.status(404).json({ message: "Baggage not found" });
     }
