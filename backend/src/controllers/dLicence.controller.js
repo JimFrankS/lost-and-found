@@ -1,4 +1,5 @@
 import asyncHandler from "express-async-handler";
+import mongoose from "mongoose";
 import DLicence from "../models/dLicence.model.js";
 import Stats from "../models/stats.model.js";
 import isValidZimbabweIdNumber, { idNumberRegex } from "../utility/idValidation.utility.js";
@@ -29,7 +30,9 @@ export const foundLicence = asyncHandler(async (req, res) => {
         licenceNumber: { $regex: `^${escapeRegex(licenceNumber)}$`, $options: 'i' }
     });
     if (existingLicence) {
-        return res.status(400).json({ message: "Licence already exists with this licence number." });
+        // Update the location and contact information
+        const updatedLicence = await DLicence.findByIdAndUpdate(existingLicence._id, { lastName, firstName, idNumber, docLocation, finderContact }, { new: true });
+        return res.status(200).json(updatedLicence);
     }
 
     const newLicence = new DLicence({
@@ -62,21 +65,21 @@ export const searchDLicence = asyncHandler(async (req, res) => {
         licences = await DLicence.findOne({
             licenceNumber: { $regex: `^${identifier}$`, $options: 'i' },
             status: { $in: ["lost", "found"] }
-        }).select('licenceNumber lastName firstName idNumber');
+        }).select('_id licenceNumber lastName firstName idNumber docLocation finderContact');
         isSingle = true;
     } else if (idNumberRegex.test(identifier)) {
         // Search by idNumber - single result
         licences = await DLicence.findOne({
             idNumber: { $regex: `^${identifier}$`, $options: 'i' },
             status: { $in: ["lost", "found"] }
-        }).select('licenceNumber lastName firstName idNumber');
+        }).select('_id licenceNumber lastName firstName idNumber docLocation finderContact');
         isSingle = true;
     } else {
         // Search by lastName - multiple results
         licences = await DLicence.find({
             lastName: { $regex: `^${escapeRegex(identifier)}$`, $options: 'i' },
             status: { $in: ["lost", "found"] }
-        }).select('licenceNumber lastName firstName idNumber').limit(10);
+        }).select('_id licenceNumber lastName firstName idNumber docLocation finderContact').limit(10);
     }
 
     if (!licences || (Array.isArray(licences) && licences.length === 0)) {
@@ -87,28 +90,16 @@ export const searchDLicence = asyncHandler(async (req, res) => {
 });
 
 export const claimLicence = asyncHandler(async (req, res) => {
-    const { identifier = "" } = req.params;
-    let licence = null;
+    const { identifier } = req.params;
     if (!identifier) {
-        return res.status(400).json({ message: "Identifier required (licenceNumber, idNumber, or lastName)" });
-    }
-    if (/^\d{6}[A-Z]{2}$/i.test(identifier)) {
-        licence = await DLicence.findOne({
-            licenceNumber: { $regex: `^${identifier}$`, $options: 'i' },
-            status: { $in: ["lost", "found"] }
-        });
-    } else if (idNumberRegex.test(identifier)) {
-        licence = await DLicence.findOne({
-            idNumber: { $regex: `^${identifier}$`, $options: 'i' },
-            status: { $in: ["lost", "found"] }
-        });
-    } else {
-        licence = await DLicence.findOne({
-            lastName: { $regex: `^${escapeRegex(identifier)}$`, $options: 'i' },
-            status: { $in: ["lost", "found"] }
-        });
+        return res.status(400).json({ message: "Identifier required" });
     }
 
+    if (!mongoose.Types.ObjectId.isValid(identifier)) {
+        return res.status(400).json({ message: "Invalid licence ID" });
+    }
+
+    let licence = await DLicence.findById(identifier);
     if (!licence) {
         return res.status(404).json({ message: "Licence not found" });
     }

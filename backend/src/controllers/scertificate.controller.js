@@ -28,7 +28,8 @@ export const foundScertificate = asyncHandler(async (req, res) => { // Renamed f
         firstName: { $regex: `^${escapeRegex(firstName)}$`, $options: 'i' }
     });
     if (existingCertificate) {
-        return res.status(400).json({ message: "Certificate already exists with this type, last name, and first name." });
+        const updatedCertificate = await Scertificate.findByIdAndUpdate(existingCertificate._id, { lastName, firstName, docLocation, finderContact }, { new: true });
+        return res.status(200).json(updatedCertificate);
     }
     const newCertificate = new Scertificate({
         certificateType: canonicalType,
@@ -65,60 +66,41 @@ export const searchScertificate = asyncHandler(async (req, res) => { // Renamed 
         certificateType: canonicalType,
         lastName: canonicalLastName,
         status: { $in: ["lost", "found"] }
-    }).select('-docLocation -finderContact -claimed -claimedAt -status -createdAt -updatedAt').limit(10);
+    }).select('_id certificateType lastName firstName docLocation finderContact').limit(10);
 
     res.status(200).json(certificateList);
 });
 
 export const viewScertificate = asyncHandler(async (req, res) => {
-    const { id } = req.params;
-
-    if (!id) {
-        return res.status(400).json({ message: "Certificate ID is required" });
+    const { identifier } = req.params;
+    if (!identifier) {
+        return res.status(400).json({ message: "Identifier required" });
     }
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
+    if (!mongoose.Types.ObjectId.isValid(identifier)) {
         return res.status(400).json({ message: "Invalid certificate ID" });
     }
 
-    // Find the certificate by ID and update status to found and claimed, if it is still "lost".
-    const certificate = await Scertificate.findOneAndUpdate(
-        { _id: id, status: "lost" },
-        { $set: { status: "found", claimed: true, claimedAt: new Date() } },
-        { new: true }
-    );
-
-    if (certificate) {
-        // successfully updated to found and claimed — increment found and claimed documents stats
-        await Stats.findOneAndUpdate({}, { $inc: { claimedDocuments: 1 } }, { upsert: true });
-
-        // return updated certificate
-        const {
-            certificateType: cType,
-            lastName,
-            firstName,
-            docLocation,
-            finderContact,
-            claimed
-        } = certificate;
-        const response = {
-            certificateType: cType,
-            lastName,
-            firstName,
-            docLocation,
-            finderContact,
-            claimed
-        };
-        return res.status(200).json(response);
-    }
-
-    //if not found with the status lost, try to find it anyway ( might already be 'found')
-    const existingCertificate = await Scertificate.findById(id);
-    if (!existingCertificate) {
+    let certificate = await Scertificate.findById(identifier);
+    if (!certificate) {
         return res.status(404).json({ message: "School Certificate not found" });
     }
 
-    // Return existing certificate (one which is already found or claimed)
+    const updated = await Scertificate.findOneAndUpdate(
+        { _id: certificate._id, claimed: false },
+        { $set: { claimed: true, claimedAt: new Date(), status: 'found' } },
+        { new: true }
+    );
+
+    if (updated) {
+        await Stats.findOneAndUpdate({}, { $inc: { claimedDocuments: 1 } }, { upsert: true });
+        certificate = updated;
+    } else if (certificate.status !== 'found') {
+        // If already claimed but status hasn't been updated, correct it
+        await Scertificate.updateOne({ _id: certificate._id, status: { $ne: 'found' } }, { $set: { status: 'found' } });
+        certificate.status = 'found';
+    }
+
     const {
         certificateType: cType,
         lastName,
@@ -126,7 +108,7 @@ export const viewScertificate = asyncHandler(async (req, res) => {
         docLocation,
         finderContact,
         claimed
-    } = existingCertificate;
+    } = certificate;
     const response = {
         certificateType: cType,
         lastName,
@@ -136,5 +118,4 @@ export const viewScertificate = asyncHandler(async (req, res) => {
         claimed
     };
     return res.status(200).json(response);
-
 });

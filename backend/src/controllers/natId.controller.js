@@ -1,8 +1,10 @@
 import asyncHandler from "express-async-handler";
+import mongoose from "mongoose";
 import NatId from "../models/natId.model.js";
 import Stats from "../models/stats.model.js";
 import isValidZimbabweIdNumber, { idNumberRegex } from "../utility/idValidation.utility.js";
 import { escapeRegex } from "../utility/regex.utility.js";
+import logger from "../utility/logger.utility.js";
 
 export const foundId = asyncHandler(async (req, res) => {
     const { lastName, firstName, idNumber, docLocation, finderContact } = req.body;
@@ -25,7 +27,21 @@ export const foundId = asyncHandler(async (req, res) => {
     });
 
     if (existingNatId) {
-        return res.status(400).json({ message: "National ID already exists within the database." });
+        // Validate submitted firstName and lastName against stored values (trimmed, case-insensitive)
+        const submittedFirstName = firstName.trim().toLowerCase();
+        const submittedLastName = lastName.trim().toLowerCase();
+        const storedFirstName = existingNatId.firstName.trim().toLowerCase();
+        const storedLastName = existingNatId.lastName.trim().toLowerCase();
+
+        if (submittedFirstName !== storedFirstName || submittedLastName !== storedLastName) {
+            // Log the mismatch for audit purposes
+            logger.info("Name mismatch detected for verification");
+            return res.status(400).json({ message: "Name mismatch: provided names do not match the stored values." });
+        }
+
+        // Proceed to update docLocation and finderContact
+        const updatedNatId = await NatId.findByIdAndUpdate(existingNatId._id, { docLocation, finderContact }, { new: true });
+        return res.status(200).json(updatedNatId);
     }
 
     const newNatId = new NatId({
@@ -57,14 +73,14 @@ export const searchNatId = asyncHandler(async (req, res) => {
         natIds = await NatId.findOne({
             idNumber: { $regex: `^${escapeRegex(identifier)}$`, $options: 'i' },
             status: { $in: ["lost", "found"] }
-        }).select('lastName firstName idNumber');
+        }).select('_id lastName firstName idNumber docLocation finderContact');
         isSingle = true;
     } else {
         // Search by lastName - multiple results
         natIds = await NatId.find({
             lastName: { $regex: `^${escapeRegex(identifier)}$`, $options: 'i' },
             status: { $in: ["lost", "found"] }
-        }).select('lastName firstName idNumber').limit(10);
+        }).select('_id lastName firstName idNumber docLocation finderContact').limit(10);
     }
 
     if (!natIds || (Array.isArray(natIds) && natIds.length === 0)) {
@@ -76,24 +92,15 @@ export const searchNatId = asyncHandler(async (req, res) => {
 
 export const claimId = asyncHandler(async (req, res) => {
     const { identifier } = req.params;
-    let isIdNumber = false;
-    let idDocument;
-
-    if (idNumberRegex.test(identifier)) {
-        isIdNumber = true;
-        idDocument = await NatId.findOne({
-            idNumber: { $regex: `^${escapeRegex(identifier)}$`, $options: 'i' },
-            status: { $in: ["lost", "found"] }
-        });
+    if (!identifier) {
+        return res.status(400).json({ message: "Identifier required" });
     }
 
-    if (!isIdNumber) {
-        idDocument = await NatId.findOne({
-            lastName: { $regex: `^${escapeRegex(identifier)}$`, $options: 'i' },
-            status: { $in: ["lost", "found"] }
-        });
+    if (!mongoose.Types.ObjectId.isValid(identifier)) {
+        return res.status(400).json({ message: "Invalid ID" });
     }
 
+    let idDocument = await NatId.findById(identifier);
     if (!idDocument) {
         return res.status(404).json({ message: "National ID not found" });
     }
@@ -112,6 +119,7 @@ export const claimId = asyncHandler(async (req, res) => {
         await NatId.updateOne({ _id: idDocument._id, status: { $ne: 'found' } }, { $set: { status: 'found' } });
         idDocument.status = 'found';
     }
+
     const { lastName: ln, firstName, idNumber, docLocation, finderContact } = idDocument;
     let response = {
         lastName: ln,
