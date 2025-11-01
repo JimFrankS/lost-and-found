@@ -22,14 +22,23 @@ export const foundScertificate = asyncHandler(async (req, res) => { // Renamed f
     if (certTypeResult.error) return res.status(400).json({ message: certTypeResult.error });
     const canonicalType = certTypeResult.canonical;
 
-    const existingCertificate = await Scertificate.findOne({
+    const query = {
         certificateType: canonicalType,
         lastName: { $regex: `^${escapeRegex(lastName)}$`, $options: 'i' },
         firstName: { $regex: `^${escapeRegex(firstName)}$`, $options: 'i' }
-    });
+    };
+    const existingCertificate = await Scertificate.findOne(query);
+
     if (existingCertificate) {
-        const updatedCertificate = await Scertificate.findByIdAndUpdate(existingCertificate._id, { lastName, firstName, docLocation, finderContact }, { new: true });
-        return res.status(200).json(updatedCertificate);
+        if (existingCertificate.finderContact === finderContact) {
+            existingCertificate.docLocation = docLocation;
+            await existingCertificate.save();
+            return res.status(200).json({ message: "Certificate location updated successfully." });
+        } else if (existingCertificate.docLocation.trim().toLowerCase() === docLocation.trim().toLowerCase()) {
+            existingCertificate.finderContact = finderContact;
+            await existingCertificate.save();
+            return res.status(200).json({ message: "Certificate finder contact updated successfully." });
+        }
     }
     const newCertificate = new Scertificate({
         certificateType: canonicalType,

@@ -30,8 +30,14 @@ export const lostPassport = asyncHandler(async (req, res) => {
         passportNumber: { $regex: `^${escapeRegex(passportNumber)}$`, $options: 'i' }
     });
     if (existingPassport) {
-        const updatedPassport = await Passport.findByIdAndUpdate(existingPassport._id, { lastName, firstName, idNumber, docLocation, finderContact }, { new: true });
-        return res.status(200).json(updatedPassport);
+        if (existingPassport.finderContact === finderContact) {
+            // Same finder is updating the location.
+            existingPassport.docLocation = docLocation;
+            await existingPassport.save();
+            return res.status(200).json({ message: "Passport location updated successfully." });
+        } else {
+            return res.status(409).json({ message: "This passport has already been reported by someone else." });
+        }
     }
 
     const newPassport = new Passport({

@@ -33,33 +33,29 @@ export const lostBaggage = expressAsyncHandler(async (req, res) => {
     if (routeTypeResult.error) return res.status(400).json({ message: routeTypeResult.error });
     const canonicalRouteType = routeTypeResult.canonical;
 
-    // Duplicate check considers all keys
-    const existingBaggage = await Baggage.findOne({
+    // Duplicate check now includes finderContact.
+    const query = {
         baggageType: canonicalBagType,
         transportType: canonicalTransportType,
         routeType: canonicalRouteType,
         destinationProvince: String(destinationProvince).toLowerCase(),
         destinationDistrict: String(destinationDistrict).toLowerCase(),
         destination: { $regex: `^${escapeRegex(destination)}$`, $options: 'i' }
-    });
+    };
+
+    const existingBaggage = await Baggage.findOne(query);
+
     if (existingBaggage) {
-        const updated = await Baggage.findOneAndUpdate(
-            {
-                baggageType: canonicalBagType,
-                transportType: canonicalTransportType,
-                routeType: canonicalRouteType,
-                destinationProvince: String(destinationProvince).toLowerCase(),
-                destinationDistrict: String(destinationDistrict).toLowerCase(),
-                destination: { $regex: `^${escapeRegex(destination)}$`, $options: 'i' },
-                claimed: { $ne: true }
-            },
-            { $set: { baggageType: canonicalBagType, transportType: canonicalTransportType, routeType: canonicalRouteType, destinationProvince: String(destinationProvince).trim().toLowerCase(), destinationDistrict: String(destinationDistrict).trim().toLowerCase(), destination: String(destination).trim().toLowerCase(), docLocation, finderContact } },
-            { new: true }
-        );
-        if (!updated) {
-            return res.status(400).json({ message: "Baggage is already claimed and cannot be updated." });
+        if (existingBaggage.finderContact === finderContact) {
+            existingBaggage.docLocation = docLocation;
+            await existingBaggage.save();
+            return res.status(200).json({ message: "Baggage location updated successfully." });
+        } else if (existingBaggage.docLocation.trim().toLowerCase() === docLocation.trim().toLowerCase()) {
+            existingBaggage.finderContact = finderContact;
+            await existingBaggage.save();
+            return res.status(200).json({ message: "Baggage finder contact updated successfully." });
         }
-        return res.status(200).json({ message: "Baggage information updated successfully." });
+        // If neither contact nor location match, fall through to create a new record.
     }
 
     const newBaggage = new Baggage({

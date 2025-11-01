@@ -30,9 +30,15 @@ export const foundLicence = asyncHandler(async (req, res) => {
         licenceNumber: { $regex: `^${escapeRegex(licenceNumber)}$`, $options: 'i' }
     });
     if (existingLicence) {
-        // Update the location and contact information
-        const updatedLicence = await DLicence.findByIdAndUpdate(existingLicence._id, { lastName, firstName, idNumber, docLocation, finderContact }, { new: true });
-        return res.status(200).json(updatedLicence);
+        if (existingLicence.finderContact === finderContact) {
+            // Same finder is updating the location.
+            existingLicence.docLocation = docLocation;
+            await existingLicence.save();
+            return res.status(200).json({ message: "Licence location updated successfully." });
+        } else {
+            // A different finder is reporting the same licence.
+            return res.status(409).json({ message: "This licence has already been reported by someone else." });
+        }
     }
 
     const newLicence = new DLicence({
