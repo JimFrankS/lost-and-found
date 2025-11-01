@@ -57,7 +57,7 @@ export const foundbCertificate = asyncHandler(async (req, res) => {
 });
 
 export const claimbCertificate = asyncHandler(async (req, res) => {
-    const { identifier } = req.params;
+    const { identifier } = req.query;
     if (!identifier) {
         return res.status(400).json({ message: "Identifier required" });
     }
@@ -85,14 +85,84 @@ export const claimbCertificate = asyncHandler(async (req, res) => {
         certificate.status = 'found';
     }
 
-    const { lastName: ln, firstName: certFirstName, secondName, motherLastName: mln, docLocation, finderContact } = certificate;
+    const { lastName: ln, firstName: certFirstName, secondName, motherLastName: mln, docLocation, finderContact, claimed } = certificate;
 
     let response = {
         lastName: ln,
         firstName: certFirstName,
         motherLastName: mln,
         docLocation,
-        finderContact
+        finderContact,
+        claimed
+    };
+    if (secondName) {
+        response.secondName = secondName;
+    }
+    res.status(200).json(response);
+});
+
+export const viewbCertificate = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    if (!id) {
+        return res.status(400).json({ message: "Certificate ID is required" });
+    }
+
+    // Find the certificate by ID and update status to 'found' if it's still 'lost'
+    const certificate = await Bcertificate.findOneAndUpdate(
+        { _id: id, claimed: false },
+        { $set: { status: 'found', claimed: true, claimedAt: new Date() } },
+        { new: true }
+    );
+
+    const findAndReturnCertificate = async (certificateId) => {
+        const existingCertificate = await Bcertificate.findById(certificateId);
+        if (!existingCertificate) return res.status(404).json({ message: "Certificate not found" });
+        // Return the existing certificate (already found or claimed)
+        const {
+            lastName: ln,
+            firstName: certFirstName,
+            secondName,
+            motherLastName: mln,
+            docLocation,
+            finderContact,
+            claimed
+        } = existingCertificate;
+        const response = {
+            lastName: ln,
+            firstName: certFirstName,
+            motherLastName: mln,
+            docLocation,
+            finderContact,
+            claimed
+        };
+        if (secondName) {
+            response.secondName = secondName;
+        }
+        res.status(200).json(response);
+    };
+
+    if (certificate) {
+        // Successfully updated to found, increment claimed documents stats
+        await Stats.findOneAndUpdate({}, { $inc: { claimedDocuments: 1 } }, { upsert: true });
+    } else {
+        return await findAndReturnCertificate(id);
+    }
+    const {
+        lastName: ln,
+        firstName: certFirstName,
+        secondName,
+        motherLastName: mln,
+        docLocation,
+        finderContact,
+        claimed
+    } = certificate;
+    const response = {
+        lastName: ln,
+        firstName: certFirstName,
+        motherLastName: mln,
+        docLocation,
+        finderContact,
+        claimed
     };
     if (secondName) {
         response.secondName = secondName;
