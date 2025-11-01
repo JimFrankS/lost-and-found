@@ -103,7 +103,7 @@ export const searchBaggage = expressAsyncHandler(async (req, res) => {
         destinationProvince: String(destinationProvince).toLowerCase(),
         destinationDistrict: String(destinationDistrict).toLowerCase(),
         status: { $in: ["lost", "found"] }
-    }).select('-docLocation -finderContact -claimed -claimedAt -status -createdAt -updatedAt');
+    }).select('_id baggageType transportType routeType destinationProvince destinationDistrict destination');
 
     res.status(200).json(baggageList);
 });

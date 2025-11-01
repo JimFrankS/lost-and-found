@@ -1,4 +1,5 @@
 import asyncHandler from "express-async-handler";
+import mongoose from "mongoose";
 import Passport from "../models/passport.model.js";
 import Stats from "../models/stats.model.js";
 import isValidZimbabweIdNumber, { idNumberRegex } from "../utility/idValidation.utility.js";
@@ -29,12 +30,8 @@ export const lostPassport = asyncHandler(async (req, res) => {
         passportNumber: { $regex: `^${escapeRegex(passportNumber)}$`, $options: 'i' }
     });
     if (existingPassport) {
-        await Passport.findOneAndUpdate(
-            { passportNumber: { $regex: `^${escapeRegex(passportNumber)}$`, $options: 'i' } },
-            { lastName, firstName, idNumber, docLocation, finderContact },
-            { new: true }
-        );
-        return res.status(200).json({ message: "Passport information updated successfully." });
+        const updatedPassport = await Passport.findByIdAndUpdate(existingPassport._id, { lastName, firstName, idNumber, docLocation, finderContact }, { new: true });
+        return res.status(200).json(updatedPassport);
     }
 
     const newPassport = new Passport({
@@ -93,7 +90,7 @@ export const claimPassport = asyncHandler(async (req, res) => {
         return res.status(400).json({ message: "Identifier required" });
     }
 
-    if (!require('mongoose').Types.ObjectId.isValid(identifier)) {
+    if (!mongoose.Types.ObjectId.isValid(identifier)) {
         return res.status(400).json({ message: "Invalid passport ID" });
     }
 

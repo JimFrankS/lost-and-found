@@ -28,15 +28,8 @@ export const foundScertificate = asyncHandler(async (req, res) => { // Renamed f
         firstName: { $regex: `^${escapeRegex(firstName)}$`, $options: 'i' }
     });
     if (existingCertificate) {
-        await Scertificate.findOneAndUpdate(
-            {
-                certificateType: canonicalType,
-                lastName: { $regex: `^${escapeRegex(lastName)}$`, $options: 'i' },
-                firstName: { $regex: `^${escapeRegex(firstName)}$`, $options: 'i' }
-            },
-            { lastName, firstName, docLocation, finderContact }
-        );
-        return res.status(200).json({ message: "Certificate information updated successfully." });
+        const updatedCertificate = await Scertificate.findByIdAndUpdate(existingCertificate._id, { lastName, firstName, docLocation, finderContact }, { new: true });
+        return res.status(200).json(updatedCertificate);
     }
     const newCertificate = new Scertificate({
         certificateType: canonicalType,
@@ -73,7 +66,7 @@ export const searchScertificate = asyncHandler(async (req, res) => { // Renamed 
         certificateType: canonicalType,
         lastName: canonicalLastName,
         status: { $in: ["lost", "found"] }
-    }).select('-docLocation -finderContact -claimed -claimedAt -status -createdAt -updatedAt').limit(10);
+    }).select('_id certificateType lastName firstName -docLocation -finderContact -claimed -claimedAt -status -createdAt -updatedAt').limit(10);
 
     res.status(200).json(certificateList);
 });

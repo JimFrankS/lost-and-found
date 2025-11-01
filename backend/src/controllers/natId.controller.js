@@ -1,4 +1,5 @@
 import asyncHandler from "express-async-handler";
+import mongoose from "mongoose";
 import NatId from "../models/natId.model.js";
 import Stats from "../models/stats.model.js";
 import isValidZimbabweIdNumber, { idNumberRegex } from "../utility/idValidation.utility.js";
@@ -38,12 +39,8 @@ export const foundId = asyncHandler(async (req, res) => {
         }
 
         // Proceed to update docLocation and finderContact
-        await NatId.findOneAndUpdate(
-            { idNumber: { $regex: `^${escapeRegex(idNumber)}$`, $options: 'i' } },
-            { docLocation, finderContact },
-            { new: true }
-        );
-        return res.status(200).json({ message: "National ID information updated successfully." });
+        const updatedNatId = await NatId.findByIdAndUpdate(existingNatId._id, { docLocation, finderContact }, { new: true });
+        return res.status(200).json(updatedNatId);
     }
 
     const newNatId = new NatId({
@@ -98,7 +95,7 @@ export const claimId = asyncHandler(async (req, res) => {
         return res.status(400).json({ message: "Identifier required" });
     }
 
-    if (!require('mongoose').Types.ObjectId.isValid(identifier)) {
+    if (!mongoose.Types.ObjectId.isValid(identifier)) {
         return res.status(400).json({ message: "Invalid ID" });
     }
 
