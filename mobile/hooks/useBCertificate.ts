@@ -6,7 +6,7 @@ import { showSuccessToast } from "@/utils/toasts";
 import { Bcertificate } from "@/types";
 
 export interface BirthCertificateFormData {
-    mothersLastName: string;
+    motherLastName: string;
     lastName: string;
     firstName: string;
     secondName?: string;
@@ -20,7 +20,7 @@ export const useBCertificate = () => {
     const [isSearchModalVisible, setIsSearchModalVisible] = useState(false);
 
     const [formData, setFormData] = useState<BirthCertificateFormData>({
-        mothersLastName: "",
+        motherLastName: "",
         lastName: "",
         firstName: "",
         secondName: "",

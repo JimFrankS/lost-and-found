@@ -56,20 +56,13 @@ export const foundScertificate = asyncHandler(async (req, res) => { // Renamed f
 
 export const searchScertificate = asyncHandler(async (req, res) => { // Renamed for consistency
     const { certificateType, lastName, firstName } = req.query;
-    if (!certificateType || !lastName || !firstName) {
+    if (!certificateType || !lastName || lastName.trim() === '' || !firstName || firstName.trim() === '') {
         return res.status(400).json({ message: "Certificate type, last name, and first name are required" });
     }
 
     const certTypeResult = getCanonical(certificateType, ALLOWED_CERTIFICATE_TYPES, 'certificateType');
     if (certTypeResult.error) return res.status(400).json({ message: certTypeResult.error });
     const canonicalType = certTypeResult.canonical;
-
-    if (!lastName || lastName.trim() === '') {
-        return res.status(400).json({ message: 'lastName is required' });
-    }
-    if (!firstName || firstName.trim() === '') {
-        return res.status(400).json({ message: 'firstName is required' });
-    }
 
     // Find all school certificates that match the certificate type, last name, and first name, including claimed ones.
 
