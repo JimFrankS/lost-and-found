@@ -26,21 +26,30 @@ export const foundLicence = asyncHandler(async (req, res) => {
         return res.status(400).json({ message: "Invalid Zimbabwean ID number. Example: 12-1234567A12" });
     }
 
+    // Attempt atomic update if the licence exists and finderContact matches
+    const updatedLicence = await DLicence.findOneAndUpdate(
+        {
+            licenceNumber: { $regex: `^${escapeRegex(licenceNumber)}$`, $options: 'i' },
+            finderContact: finderContact
+        },
+        { $set: { docLocation: docLocation } },
+        { new: true }
+    );
+
+    if (updatedLicence) {
+        return res.status(200).json({ message: "Licence location updated successfully." });
+    }
+
+    // If update failed, check if licence exists with a different finder
     const existingLicence = await DLicence.findOne({
         licenceNumber: { $regex: `^${escapeRegex(licenceNumber)}$`, $options: 'i' }
     });
+
     if (existingLicence) {
-        if (existingLicence.finderContact === finderContact) {
-            // Same finder is updating the location.
-            existingLicence.docLocation = docLocation;
-            await existingLicence.save();
-            return res.status(200).json({ message: "Licence location updated successfully." });
-        } else {
-            // A different finder is reporting the same licence.
-            return res.status(409).json({ message: "This licence has already been reported by someone else." });
-        }
+        return res.status(409).json({ message: "This licence has already been reported by someone else." });
     }
 
+    // If not exists, create new
     const newLicence = new DLicence({
         licenceNumber,
         lastName,

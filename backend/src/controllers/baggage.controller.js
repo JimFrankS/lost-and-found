@@ -33,7 +33,7 @@ export const lostBaggage = expressAsyncHandler(async (req, res) => {
     if (routeTypeResult.error) return res.status(400).json({ message: routeTypeResult.error });
     const canonicalRouteType = routeTypeResult.canonical;
 
-    // Duplicate check now includes finderContact.
+    // Check for existing baggage based on core fields
     const query = {
         baggageType: canonicalBagType,
         transportType: canonicalTransportType,
@@ -55,7 +55,7 @@ export const lostBaggage = expressAsyncHandler(async (req, res) => {
             await existingBaggage.save();
             return res.status(200).json({ message: "Baggage finder contact updated successfully." });
         }
-        // If neither contact nor location match, fall through to create a new record.
+        // If neither finderContact nor docLocation matches, fall through to create new
     }
 
     const newBaggage = new Baggage({
@@ -97,8 +97,8 @@ export const searchBaggage = expressAsyncHandler(async (req, res) => {
         baggageType: canonicalBagType,
         transportType: canonicalTransportType,
         routeType: canonicalRouteType,
-        destinationProvince: String(destinationProvince).toLowerCase(),
-        destinationDistrict: String(destinationDistrict).toLowerCase(),
+        destinationProvince: String(destinationProvince).trim().toLowerCase(),
+        destinationDistrict: String(destinationDistrict).trim().toLowerCase(),
         status: { $in: ["lost", "found"] }
     }).select('_id baggageType transportType routeType destinationProvince destinationDistrict destination');
 

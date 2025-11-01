@@ -26,34 +26,31 @@ export const lostPassport = asyncHandler(async (req, res) => {
             return res.status(400).json({ message: "Invalid Zimbabwean ID number. Example: 12-1234567A12" });
         }
 
+    // Attempt atomic update if the passport exists and finderContact matches
+    const updatedPassport = await Passport.findOneAndUpdate(
+        {
+            passportNumber: { $regex: `^${escapeRegex(passportNumber)}$`, $options: 'i' },
+            finderContact: finderContact
+        },
+        { $set: { docLocation: docLocation } },
+        { new: true }
+    );
+
+    if (updatedPassport) {
+        return res.status(200).json({ message: "Passport location updated successfully." });
+    }
+
+    // If update failed, check if passport exists with a different finder
     const existingPassport = await Passport.findOne({
         passportNumber: { $regex: `^${escapeRegex(passportNumber)}$`, $options: 'i' }
     });
+
     if (existingPassport) {
-        if (existingPassport.finderContact === finderContact) {
-            // Same finder is updating the location.
-            existingPassport.docLocation = docLocation;
-            await existingPassport.save();
-            return res.status(200).json({ message: "Passport location updated successfully." });
-        } else {
-            return res.status(409).json({ message: "This passport has already been reported by someone else." });
-        }
+        return res.status(409).json({ message: "This passport has already been reported by someone else." });
     }
 
-    const newPassport = new Passport({
-        passportNumber,
-        lastName,
-        firstName,
-        idNumber,
-        docLocation,
-        finderContact
-    });
-    await newPassport.save();
-    await Stats.findOneAndUpdate({}, { $inc: { totalDocuments: 1 } }, { upsert: true });
-
-    res.status(201).json({
-        message: "Passport created successfully."
-    });
+    // If not exists, return 404
+    return res.status(404).json({ message: "Passport not found." });
 });
 
 export const searchPassport = asyncHandler(async (req, res) => {
