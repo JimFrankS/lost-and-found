@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import ReportDLicenseModal from './reportDLicenseModal';
+import ReportDLicenseModal from './ReportDLicenseModal';
 import { useDLicense } from '@/hooks/useDLicense';
 import CardWrapper from '@/styles/CardWrapper';
 

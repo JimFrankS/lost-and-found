@@ -1,7 +1,9 @@
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { natIdApi } from "@/utils/api";
 import { useState } from "react";
-import { extractErrorMessage, extractSuccessMessage, showError, showSuccess } from "@/utils/alerts";
+import { extractErrorMessage, extractSuccessMessage, showError } from "@/utils/alerts";
+import { showSuccessToast } from "@/utils/toasts";
+import { NatId } from "@/types";
 
 export interface NationalIDFormData {
     lastName: string;
@@ -24,6 +26,19 @@ export const useNatID = () => {
         finderContact: ""
     }); // State for holding the form data for enter national ID details.
 
+    const [searchFormData, setSearchFormData] = useState({
+        category: "", // No default category
+        identifier: "",
+    }); // State for holding the search form data.
+
+    const [searchFound, setSearchFound] = useState(false); // Whether or not search yielded results.
+
+    const [foundNatId, setFoundNatId] = useState<NatId | NatId[] | null>(null); // found id details or list
+
+    const [viewingNatIdId, setViewingNatIdId] = useState<string | null>(null); // currently viewing id ID.
+
+    const [searchResults, setSearchResults] = useState<NatId[]>([]); // Store search results list
+
     const enterNatIDMutation = useMutation({
         mutationFn: (natIdData: any) => natIdApi.foundId(natIdData), // Api Call to report found national ID
 
@@ -31,7 +46,7 @@ export const useNatID = () => {
             queryClient.invalidateQueries({ queryKey: ["natId"] }); // Invalidate natId queries to refetch updated data.
             setIsNatIDModalVisible(false); // Close the modal
             const message = extractSuccessMessage(response, "National ID reported successfully");
-            showSuccess(message);
+            showSuccessToast(message);
         },
 
         onError: (error: any) => {
@@ -40,6 +55,54 @@ export const useNatID = () => {
             showError(message);
         },
     }); // end of the mutation for reporting found national ID.
+
+    const searchNatIdMutation = useMutation({
+        mutationFn: async (searchParams: any) => {
+            try {
+                return await natIdApi.searchNatId(searchParams);
+            } catch (error: any) {
+                if (error?.response?.status === 404) {
+                    return { data: [] };
+                }
+                throw error;
+            }
+        },
+        onSuccess: (response: any) => {
+            setSearchFound(false);
+            setSearchResults([]);
+            setFoundNatId(response.data);
+            setSearchResults(Array.isArray(response.data) ? response.data : [response.data]);
+            setSearchFound(true);
+        },
+
+        onError: (error: any) => {
+            const message = extractErrorMessage(error, "An error occurred whilst searching for the national ID");
+            if (__DEV__) console.error("NatID search error: ", message);
+            showError(message);
+        },
+    });
+
+    const viewNatIdMutation = useMutation({
+        mutationFn: (id: string) => {
+            setViewingNatIdId(id);
+            return natIdApi.claimId(id);
+        },
+
+        onSuccess: (response: any) => {
+            setViewingNatIdId(null);
+            if (response.data) {
+                setFoundNatId(response.data);
+                setSearchFound(true);
+            }
+        },
+
+        onError: (error: any) => {
+            setViewingNatIdId(null);
+            const message = extractErrorMessage(error, "An error occurred while viewing national ID");
+            if (__DEV__) console.error("NatID view error:", message);
+            showError(message);
+        },
+    });
 
     const openNatIDModal = () => {
         setFormData({
@@ -57,15 +120,50 @@ export const useNatID = () => {
         setFormData((prevData) => ({ ...prevData, [field]: value })); // Function to update the form data state
     };
 
+    const updateSearchFormData = (field: string, value: string) => {
+        setSearchFormData((prevData) => ({ ...prevData, [field]: value })); // Function to update the search form data state
+    };
+
+    // Wrapper helpers so callers can wait if needed.
+
+    const reportNatID = async () => enterNatIDMutation.mutateAsync(formData);
+    const searchNatId = async (params: any) => searchNatIdMutation.mutateAsync(params);
+    const viewNatId = async (id: string) => viewNatIdMutation.mutateAsync(id);
+
+    const resetSearch = () => {
+        setSearchFound(false);
+        setFoundNatId(null);
+        setSearchResults([]);
+        setViewingNatIdId(null);
+    };
+
+    const goBackToResults = () => {
+        if (searchResults.length > 0) {
+            setFoundNatId(searchResults);
+        }
+    };
+
     return {
         isNatIDModalVisible,
         formData,
+        searchFormData,
         openNatIDModal,
         closeNatIDModal: () => setIsNatIDModalVisible(false), // Function to close the national ID modal.
-        reportNatID: () => enterNatIDMutation.mutate(formData), // Function to submit the collected national ID information
+        reportNatID,
+        searchNatId,
+        viewNatId,
         updateFormData,
+        updateSearchFormData,
         isReporting: enterNatIDMutation.isPending,
-        refetch: () => queryClient.invalidateQueries({ queryKey: ["natId"] }) //function to refetch national ID data.
+        isSearching: searchNatIdMutation.isPending,
+        isViewing: viewNatIdMutation.isPending,
+        refetch: () => queryClient.invalidateQueries({ queryKey: ["natId"] }), //function to refetch national ID data.
+        searchFound,
+        foundNatId,
+        viewingNatIdId,
+        searchResults,
+        resetSearch,
+        goBackToResults
     };
 
 };
