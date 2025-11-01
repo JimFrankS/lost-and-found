@@ -66,7 +66,7 @@ export const searchScertificate = asyncHandler(async (req, res) => { // Renamed 
         certificateType: canonicalType,
         lastName: canonicalLastName,
         status: { $in: ["lost", "found"] }
-    }).select('_id certificateType lastName firstName -docLocation -finderContact -claimed -claimedAt -status -createdAt -updatedAt').limit(10);
+    }).select('_id certificateType lastName firstName docLocation finderContact').limit(10);
 
     res.status(200).json(certificateList);
 });

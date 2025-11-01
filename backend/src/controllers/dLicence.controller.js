@@ -65,21 +65,21 @@ export const searchDLicence = asyncHandler(async (req, res) => {
         licences = await DLicence.findOne({
             licenceNumber: { $regex: `^${identifier}$`, $options: 'i' },
             status: { $in: ["lost", "found"] }
-        }).select('_id licenceNumber lastName firstName idNumber');
+        }).select('_id licenceNumber lastName firstName idNumber docLocation finderContact');
         isSingle = true;
     } else if (idNumberRegex.test(identifier)) {
         // Search by idNumber - single result
         licences = await DLicence.findOne({
             idNumber: { $regex: `^${identifier}$`, $options: 'i' },
             status: { $in: ["lost", "found"] }
-        }).select('_id licenceNumber lastName firstName idNumber');
+        }).select('_id licenceNumber lastName firstName idNumber docLocation finderContact');
         isSingle = true;
     } else {
         // Search by lastName - multiple results
         licences = await DLicence.find({
             lastName: { $regex: `^${escapeRegex(identifier)}$`, $options: 'i' },
             status: { $in: ["lost", "found"] }
-        }).select('_id licenceNumber lastName firstName idNumber').limit(10);
+        }).select('_id licenceNumber lastName firstName idNumber docLocation finderContact').limit(10);
     }
 
     if (!licences || (Array.isArray(licences) && licences.length === 0)) {

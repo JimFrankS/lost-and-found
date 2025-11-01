@@ -72,14 +72,14 @@ export const searchNatId = asyncHandler(async (req, res) => {
         natIds = await NatId.findOne({
             idNumber: { $regex: `^${escapeRegex(identifier)}$`, $options: 'i' },
             status: { $in: ["lost", "found"] }
-        }).select('_id lastName firstName idNumber');
+        }).select('_id lastName firstName idNumber docLocation finderContact');
         isSingle = true;
     } else {
         // Search by lastName - multiple results
         natIds = await NatId.find({
             lastName: { $regex: `^${escapeRegex(identifier)}$`, $options: 'i' },
             status: { $in: ["lost", "found"] }
-        }).select('_id lastName firstName idNumber').limit(10);
+        }).select('_id lastName firstName idNumber docLocation finderContact').limit(10);
     }
 
     if (!natIds || (Array.isArray(natIds) && natIds.length === 0)) {

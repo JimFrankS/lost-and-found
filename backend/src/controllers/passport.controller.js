@@ -69,7 +69,7 @@ export const searchPassport = asyncHandler(async (req, res) => {
         return res.status(400).json({ message: "Invalid category" });
     }
 
-    const passports = await Passport.find(query).select('_id passportNumber lastName firstName idNumber');
+    const passports = await Passport.find(query).select('_id passportNumber lastName firstName idNumber docLocation finderContact');
 
     if (passports.length === 0) {
         return res.status(404).json({ message: "No passports found" });
