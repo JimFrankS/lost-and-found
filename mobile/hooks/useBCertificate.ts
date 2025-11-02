@@ -2,24 +2,15 @@ import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { bcertificateApi } from "@/utils/api";
 import { useState } from "react";
 import { extractErrorMessage, extractSuccessMessage, showError } from "@/utils/alerts";
-import { showSuccessToast } from "@/utils/toasts";
-import { Bcertificate, BirthCertificateSearchParams } from "@/types";
-
-export interface BirthCertificateFormData {
-    motherLastName: string;
-    lastName: string;
-    firstName: string;
-    secondName?: string;
-    docLocation: string;
-    finderContact: string;
-}
+import { showSuccessToast } from "@/utils/toasts"; 
+import { Bcertificate, BCertificateFoundData, BirthCertificateSearchParams } from "@/types";
 
 export const useBCertificate = () => {
     const queryClient = useQueryClient();
     const [isBCertificateModalVisible, setIsBCertificateModalVisible] = useState(false);
     const [isSearchModalVisible, setIsSearchModalVisible] = useState(false);
 
-    const [formData, setFormData] = useState<BirthCertificateFormData>({
+    const [formData, setFormData] = useState<BCertificateFoundData>({
         motherLastName: "",
         lastName: "",
         firstName: "",
@@ -45,7 +36,7 @@ export const useBCertificate = () => {
     const closeSearchModal = () => setIsSearchModalVisible(false);
     
     const enterBCertificateMutation = useMutation({
-        mutationFn: (bcertificateData: any) => bcertificateApi.foundbCertificate(bcertificateData),
+        mutationFn: (bcertificateData: BCertificateFoundData) => bcertificateApi.foundbCertificate(bcertificateData),
         onSuccess: (response) => {
             queryClient.invalidateQueries({ queryKey: ["bcertificate"] });
             setIsBCertificateModalVisible(false);

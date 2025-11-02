@@ -2,23 +2,15 @@ import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { natIdApi } from "@/utils/api";
 import { useState } from "react";
 import { extractErrorMessage, extractSuccessMessage, showError } from "@/utils/alerts";
-import { showSuccessToast } from "@/utils/toasts";
-import { NatId, NatIdSearchParams } from "@/types";
-
-export interface NationalIDFormData {
-    lastName: string;
-    firstName: string;
-    idNumber: string;
-    docLocation: string;
-    finderContact: string;
-}
+import { showSuccessToast } from "@/utils/toasts"; 
+import { NatId, NatIdFoundData, NatIdSearchParams } from "@/types";
 
 export const useNatID = () => {
     const queryClient = useQueryClient();
 
     const [isNatIDModalVisible, setIsNatIDModalVisible] = useState(false); // state for holding modal visibility
 
-    const [formData, setFormData] = useState<NationalIDFormData>({
+    const [formData, setFormData] = useState<NatIdFoundData>({
         lastName: "",
         firstName: "",
         idNumber: "",
@@ -27,7 +19,6 @@ export const useNatID = () => {
     }); // State for holding the form data for enter national ID details.
 
     const [searchFormData, setSearchFormData] = useState({
-        category: "", // No default category
         identifier: "",
     }); // State for holding the search form data.
 
@@ -40,7 +31,7 @@ export const useNatID = () => {
     const [searchResults, setSearchResults] = useState<NatId[]>([]); // Store search results list
 
     const enterNatIDMutation = useMutation({
-        mutationFn: (natIdData: any) => natIdApi.foundId(natIdData), // Api Call to report found national ID
+        mutationFn: (natIdData: NatIdFoundData) => natIdApi.foundId(natIdData), // Api Call to report found national ID
 
         onSuccess: (response) => {
             queryClient.invalidateQueries({ queryKey: ["natId"] }); // Invalidate natId queries to refetch updated data.

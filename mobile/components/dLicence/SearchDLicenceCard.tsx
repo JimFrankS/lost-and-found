@@ -8,7 +8,6 @@ import { DLicenceSearchParams, DLicence } from "@/types";
 interface SearchDLicenceCardProps {
     isDLicenceModalVisible: boolean;
     formData: {
-        category: string;
         identifier: string;
     };
     openDLicenceModal: () => void;

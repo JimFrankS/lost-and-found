@@ -2,18 +2,19 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { baggageApi } from "@/utils/api";
 import { useState } from "react";
 import { extractErrorMessage, extractSuccessMessage, showError } from "@/utils/alerts";
-import { showSuccessToast, showErrorToast } from "@/utils/toasts";
-import { Baggage, BaggageSearchParams } from "@/types";
+import { showErrorToast, showSuccessToast } from "@/utils/toasts";
+import { Baggage, BaggageFoundData, BaggageSearchParams } from "@/types";
 
 export const useBaggage = () => {
     const queryClient = useQueryClient();
 
     const [isBaggageModalVisible, setIsBaggageModalVisible] = useState(false); 
 
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<BaggageFoundData>({
         baggageType: "",
         transportType: "",
         routeType: "",
+        destination: "",
         destinationProvince: "",
         destinationDistrict: "",
         docLocation: "",
@@ -31,7 +32,7 @@ export const useBaggage = () => {
 
 
     const enterBaggageMutation = useMutation({
-        mutationFn: (baggageData: any) => baggageApi.lostBaggage(baggageData),
+        mutationFn: (baggageData: BaggageFoundData) => baggageApi.lostBaggage(baggageData),
         onSuccess: (response) => {
             queryClient.invalidateQueries({ queryKey: ['baggage'] });
             setIsBaggageModalVisible(false);

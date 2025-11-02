@@ -104,4 +104,60 @@ export interface Stats {
     claimedDocuments: number
 }
 
+// --- API Data Transfer Objects (DTOs) ---
+
+export interface BaggageFoundData {
+    baggageType: string;
+    transportType: string;
+    routeType: string;
+    destinationProvince: string;
+    destinationDistrict: string;
+    destination: string;
+    docLocation: string;
+    finderContact: string;
+}
+
+export interface BCertificateFoundData {
+    motherLastName: string;
+    lastName: string;
+    firstName: string;
+    secondName?: string;
+    docLocation: string;
+    finderContact: string;
+}
+
+export interface DLicenceFoundData {
+    licenceNumber: string;
+    lastName: string;
+    firstName: string;
+    idNumber: string;
+    docLocation: string;
+    finderContact: string;
+}
+
+export interface NatIdFoundData {
+    lastName: string;
+    firstName: string;
+    idNumber: string;
+    docLocation: string;
+    finderContact: string;
+}
+
+export interface PassportFoundData {
+    passportNumber: string;
+    lastName: string;
+    firstName: string;
+    idNumber: string;
+    docLocation: string;
+    finderContact: string;
+}
+
+export interface SCertificateFoundData {
+    certificateType: string;
+    lastName: string;
+    firstName: string;
+    docLocation: string;
+    finderContact: string;
+}
+
 // This file defines TypeScript interfaces for various document types used in the application. These interfaces ensure type safety and consistency when handling data related to lost and found documents. Each interface corresponds to a specific document type, outlining the expected properties and their types.

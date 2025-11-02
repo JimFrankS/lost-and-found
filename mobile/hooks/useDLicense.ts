@@ -2,24 +2,15 @@ import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { dLicenceApi } from "@/utils/api";
 import { useState } from "react";
 import { extractErrorMessage, extractSuccessMessage, showError } from "@/utils/alerts";
-import { showSuccessToast } from "@/utils/toasts";
-import { DLicence, DLicenceSearchParams } from "@/types";
-
-export interface DrivingLicenseFormData {
-    licenceNumber: string;
-    lastName: string;
-    firstName: string;
-    idNumber: string;
-    docLocation: string;
-    finderContact: string;
-}
+import { showSuccessToast } from "@/utils/toasts"; 
+import { DLicence, DLicenceFoundData, DLicenceSearchParams } from "@/types";
 
 export const useDLicense = () => {
     const queryClient = useQueryClient();
 
     const [isDLicenseModalVisible, setIsDLicenseModalVisible] = useState(false); // state for holding modal visibility
 
-    const [formData, setFormData] = useState<DrivingLicenseFormData>({
+    const [formData, setFormData] = useState<DLicenceFoundData>({
         licenceNumber: "",
         lastName: "",
         firstName: "",
@@ -29,7 +20,6 @@ export const useDLicense = () => {
     }); // State for holding the form data for enter driving license details.
 
     const [searchFormData, setSearchFormData] = useState({
-        category: "", // No default category
         identifier: "",
     }); // State for holding the search form data.
 
@@ -42,7 +32,7 @@ export const useDLicense = () => {
     const [searchResults, setSearchResults] = useState<DLicence[]>([]); // Store search results list
 
     const enterDLicenseMutation = useMutation({
-        mutationFn: (dLicenceData: any) => dLicenceApi.foundLicence(dLicenceData), // Api Call to report found driving license
+        mutationFn: (dLicenceData: DLicenceFoundData) => dLicenceApi.foundLicence(dLicenceData), // Api Call to report found driving license
 
         onSuccess: (response) => {
             queryClient.invalidateQueries({ queryKey: ["dLicence"] }); // Invalidate dLicence queries to refetch updated data.
