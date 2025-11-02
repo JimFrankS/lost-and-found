@@ -150,7 +150,7 @@ const ReportDLicenseModal = ({ isVisible, onClose, formData, reportDLicense, upd
                         className="border border-gray-300 rounded p-2 mb-4"
                         placeholder="Kindly enter the ID number of the licence owner"
                         value={formData.idNumber}
-                        onChangeText={(value) => updateFormData('idNumber', escapeRegex(value))}
+                        onChangeText={(value) => updateFormData('idNumber', value.replace(/[^0-9A-Za-z-]/g, '').slice(0, 13))}
                         maxLength={13}
                     />
 

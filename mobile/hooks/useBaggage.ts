@@ -3,7 +3,7 @@ import { baggageApi } from "@/utils/api";
 import { useState } from "react";
 import { extractErrorMessage, extractSuccessMessage, showError } from "@/utils/alerts";
 import { showSuccessToast, showErrorToast } from "@/utils/toasts";
-import { Baggage } from "@/types";
+import { Baggage, BaggageSearchParams } from "@/types";
 
 export const useBaggage = () => {
     const queryClient = useQueryClient();
@@ -106,7 +106,7 @@ export const useBaggage = () => {
 
     // wrapper helpers so callers can await if needed
     const reportBaggage = async () => enterBaggageMutation.mutateAsync(formData);
-    const searchBaggage = async (params: any) => searchBaggageMutation.mutateAsync(params);
+    const searchBaggage = async (params: BaggageSearchParams) => searchBaggageMutation.mutateAsync(params);
     const viewBaggage = async (baggageId: string) => viewBaggageMutation.mutateAsync(baggageId);
     const claimBaggage = async (baggageId: string) => claimBaggageMutation.mutateAsync(baggageId);
 

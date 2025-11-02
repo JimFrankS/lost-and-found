@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BAGGAGE_TYPES, TRANSPORT_TYPES, ROUTE_TYPES, PROVINCES, PROVINCE_DISTRICT_MAP } from "@/constants/allowedValues";
 import { OptionPicker, SelectField, toTitleCase } from "../FormsHelper";
 import { showAlerts } from "@/utils/alerts";
+import { Baggage, BaggageSearchParams } from "@/types";
 
 interface SearchBaggageModalProps {
     isVisible: boolean;
@@ -17,7 +18,7 @@ interface SearchBaggageModalProps {
         destinationProvince: string;
         destinationDistrict: string;
     };
-    searchBaggage: (params: any) => Promise<any>;
+    searchBaggage: (params: BaggageSearchParams) => Promise<Baggage[]>;
     updateFormData: (field: string, value: string) => void;
     isSearching: boolean;
     resetSearch: () => void;

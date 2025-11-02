@@ -143,7 +143,8 @@ const SearchDLicenceModal = ({ isVisible, onClose, formData, searchDLicence, upd
                                     if (formData.category === 'licenceNumber') {
                                         updateFormData('identifier', escapeRegex(value.toUpperCase()).slice(0, 8));
                                     } else if (formData.category === 'idNumber') {
-                                        updateFormData('identifier', escapeRegex(value).slice(0, 13));
+                                        const filteredValue = value.replace(/[^0-9A-Za-z-]/g, '').slice(0, 13);
+                                        updateFormData('identifier', filteredValue);
                                     } else {
                                         updateFormData('identifier', value.slice(0, 100));
                                     }

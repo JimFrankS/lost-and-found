@@ -4,7 +4,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { showAlerts } from "@/utils/alerts";
 import { isValidZimbabweIdNumber, idNumberRegex } from "@/utils/idValidator";
 import { OptionPicker, SelectField } from "../FormsHelper";
-import { escapeRegex } from "@/constants/allowedValues";
+
 
 interface SearchNatIdModalProps {
     isVisible: boolean;
@@ -136,7 +136,8 @@ const SearchNatIdModal = ({ isVisible, onClose, formData, searchNatId, updateFor
                                 value={formData.identifier}
                                 onChangeText={(value) => {
                                     if (formData.category === 'idNumber') {
-                                        updateFormData('identifier', escapeRegex(value).slice(0, 13));
+                                        const filteredValue = value.replace(/[^0-9A-Za-z-]/g, '').slice(0, 13);
+                                        updateFormData('identifier', filteredValue);
                                     } else {
                                         updateFormData('identifier', value.slice(0, 100));
                                     }

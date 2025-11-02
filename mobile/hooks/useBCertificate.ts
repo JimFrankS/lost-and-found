@@ -3,7 +3,7 @@ import { bcertificateApi } from "@/utils/api";
 import { useState } from "react";
 import { extractErrorMessage, extractSuccessMessage, showError } from "@/utils/alerts";
 import { showSuccessToast } from "@/utils/toasts";
-import { Bcertificate } from "@/types";
+import { Bcertificate, BirthCertificateSearchParams } from "@/types";
 
 export interface BirthCertificateFormData {
     motherLastName: string;
@@ -114,7 +114,7 @@ export const useBCertificate = () => {
     };
 
     const reportBCertificate = async () => enterBCertificateMutation.mutateAsync(formData);
-    const searchBcertificate = async (params: any) => searchBcertificateMutation.mutateAsync(params);
+    const searchBcertificate = async (params: BirthCertificateSearchParams) => searchBcertificateMutation.mutateAsync(params);
     const viewBcertificate = async (bcertificateId: string) => viewBcertificateMutation.mutateAsync(bcertificateId);
 
     const resetSearch = () => {

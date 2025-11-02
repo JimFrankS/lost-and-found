@@ -3,7 +3,7 @@ import { natIdApi } from "@/utils/api";
 import { useState } from "react";
 import { extractErrorMessage, extractSuccessMessage, showError } from "@/utils/alerts";
 import { showSuccessToast } from "@/utils/toasts";
-import { NatId } from "@/types";
+import { NatId, NatIdSearchParams } from "@/types";
 
 export interface NationalIDFormData {
     lastName: string;
@@ -127,7 +127,7 @@ export const useNatID = () => {
     // Wrapper helpers so callers can wait if needed.
 
     const reportNatID = async () => enterNatIDMutation.mutateAsync(formData);
-    const searchNatId = async (params: any) => searchNatIdMutation.mutateAsync(params);
+    const searchNatId = async (params: NatIdSearchParams) => searchNatIdMutation.mutateAsync(params);
     const viewNatId = async (id: string) => viewNatIdMutation.mutateAsync(id);
 
     const resetSearch = () => {

@@ -1,7 +1,7 @@
 import { Text, View, ScrollView, Modal, Alert, TouchableOpacity, TextInput, ActivityIndicator, Dimensions, Platform } from "react-native";
 import React from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { PHONE_NUMBER_REGEX, escapeRegex } from "@/constants/allowedValues";
+import { PHONE_NUMBER_REGEX } from "@/constants/allowedValues";
 import { isValidZimbabweIdNumber } from "@/utils/idValidator";
 import { showAlerts } from "@/utils/alerts";
 
@@ -126,7 +126,7 @@ const ReportNatIdModal = ({ isVisible, onClose, formData, reportNatID, updateFor
                         className="border border-gray-300 rounded p-2 mb-4"
                         placeholder="Kindly enter the ID number of the ID owner"
                         value={formData.idNumber}
-                        onChangeText={(value) => updateFormData('idNumber', escapeRegex(value))}
+                        onChangeText={(value) => updateFormData('idNumber', value.replace(/[^0-9A-Za-z-]/g, '').slice(0, 13))}
                         maxLength={13}
                     />
 

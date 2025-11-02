@@ -3,7 +3,7 @@ import { dLicenceApi } from "@/utils/api";
 import { useState } from "react";
 import { extractErrorMessage, extractSuccessMessage, showError } from "@/utils/alerts";
 import { showSuccessToast } from "@/utils/toasts";
-import { DLicence } from "@/types";
+import { DLicence, DLicenceSearchParams } from "@/types";
 
 export interface DrivingLicenseFormData {
     licenceNumber: string;
@@ -130,7 +130,7 @@ export const useDLicense = () => {
     // Wrapper helpers so callers can wait if needed.
 
     const reportDLicense = async () => enterDLicenseMutation.mutateAsync(formData);
-    const searchDLicence = async (params: any) => searchDLicenceMutation.mutateAsync(params);
+    const searchDLicence = async (params: DLicenceSearchParams) => searchDLicenceMutation.mutateAsync(params);
     const viewDLicence = async (licenceId: string) => viewDLicenceMutation.mutateAsync(licenceId);
 
     const resetSearch = () => {
