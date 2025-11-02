@@ -59,11 +59,13 @@ export const useNatID = () => {
             }
         },
         onSuccess: (response: any) => {
-            setSearchFound(false);
-            setSearchResults([]);
-            setFoundNatId(response.data);
-            setSearchResults(Array.isArray(response.data) ? response.data : [response.data]);
-            setSearchFound(true);
+            const data = response.data;
+            setFoundNatId(data);
+
+            const safeResults = data == null ? [] : Array.isArray(data) ? data : [data];
+            setSearchResults(safeResults);
+
+            setSearchFound(safeResults.length > 0);
         },
 
         onError: (error: any) => {

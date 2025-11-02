@@ -62,11 +62,13 @@ export const useBCertificate = () => {
             }
         },
         onSuccess: (response: any) => {
-            setSearchFound(false);
-            setSearchResults([]);
-            setFoundBcertificate(response.data);
-            setSearchResults(Array.isArray(response.data) ? response.data : [response.data]);
-            setSearchFound(true);
+            const data = response.data;
+            setFoundBcertificate(data);
+
+            const results = data == null ? [] : Array.isArray(data) ? data : [data];
+            setSearchResults(results);
+
+            setSearchFound(results.length > 0);
             closeSearchModal();
         },
         onError: (error: any) => {

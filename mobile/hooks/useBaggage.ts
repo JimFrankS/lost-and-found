@@ -52,11 +52,13 @@ export const useBaggage = () => {
             return response.data;
         },
         onSuccess: (data) => {
-            setSearchFound(false);
-            setSearchResults([]);
+            // The data is already the array from response.data due to the mutationFn
             setFoundBaggage(data);
-            setSearchResults(data);
-            setSearchFound(true);
+
+            const results = data == null ? [] : Array.isArray(data) ? data : [data];
+            setSearchResults(results);
+
+            setSearchFound(results.length > 0);
             closeBaggageModal();
         },
         onError: (error: any) => {
