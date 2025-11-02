@@ -59,7 +59,7 @@ export const useDLicense = () => {
     }); // end of the mutation for reporting found driving license.
 
     const searchDLicenceMutation = useMutation({
-        mutationFn: async (searchParams: any) => {
+        mutationFn: async (searchParams: DLicenceSearchParams) => {
             try {
                 return await dLicenceApi.searchDLicence(searchParams);
             } catch (error: any) {

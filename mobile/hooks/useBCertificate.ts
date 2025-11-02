@@ -60,7 +60,7 @@ export const useBCertificate = () => {
     });
 
     const searchBcertificateMutation = useMutation({
-        mutationFn: async (searchParams: any) => {
+        mutationFn: async (searchParams: BirthCertificateSearchParams) => {
             try {
                 return await bcertificateApi.searchbCertificate(searchParams);
             } catch (error: any) {

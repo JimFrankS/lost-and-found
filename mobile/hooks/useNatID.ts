@@ -57,7 +57,7 @@ export const useNatID = () => {
     }); // end of the mutation for reporting found national ID.
 
     const searchNatIdMutation = useMutation({
-        mutationFn: async (searchParams: any) => {
+        mutationFn: async (searchParams: NatIdSearchParams) => {
             try {
                 return await natIdApi.searchNatId(searchParams);
             } catch (error: any) {

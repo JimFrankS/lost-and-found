@@ -45,13 +45,16 @@ export const useBaggage = () => {
         },
     });
 
-    const searchBaggageMutation = useMutation({
-        mutationFn: (searchParams: any) => baggageApi.searchBaggage(searchParams),
-        onSuccess: (response: any) => {
+    const searchBaggageMutation = useMutation<Baggage[], unknown, BaggageSearchParams>({
+        mutationFn: async (searchParams) => {
+            const response = await baggageApi.searchBaggage(searchParams);
+            return response.data;
+        },
+        onSuccess: (data) => {
             setSearchFound(false);
             setSearchResults([]);
-            setFoundBaggage(response.data);
-            setSearchResults(response.data);
+            setFoundBaggage(data);
+            setSearchResults(data);
             setSearchFound(true);
             closeBaggageModal();
         },

@@ -2,7 +2,7 @@ import { Text, View, ScrollView, Modal, TouchableOpacity, ActivityIndicator, Dim
 import React, { useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { showAlerts } from "@/utils/alerts";
-import { isValidZimbabweIdNumber, idNumberRegex } from "@/utils/idValidator";
+import { isValidZimbabweIdNumber, idNumberRegex, sanitizeZimbabweIdNumber } from "@/utils/idValidator";
 import { OptionPicker, SelectField } from "../FormsHelper";
 
 
@@ -29,7 +29,7 @@ const SearchNatIdModal = ({ isVisible, onClose, formData, searchNatId, updateFor
             case 'idNumber':
                 return isValidZimbabweIdNumber(value);
             case 'surname':
-                return /^[a-zA-Z\s]+$/.test(value); // Basic name validation
+                return /^[a-zA-Z\s\-']+$/.test(value.trim()); // Basic name validation
             default:
                 return true;
         }
@@ -45,7 +45,7 @@ const SearchNatIdModal = ({ isVisible, onClose, formData, searchNatId, updateFor
         if (!validateInput(formData.category, formData.identifier)) {
             const messages = {
                 idNumber: "Invalid Zimbabwean ID number format. Example: 12-1234567A12",
-                surname: "Surname should contain only letters and spaces"
+                surname: "Surname should contain only letters, spaces, hyphens, and apostrophes"
             };
             showAlerts("Error", messages[formData.category as keyof typeof messages] || "Invalid input");
             return;
@@ -136,10 +136,9 @@ const SearchNatIdModal = ({ isVisible, onClose, formData, searchNatId, updateFor
                                 value={formData.identifier}
                                 onChangeText={(value) => {
                                     if (formData.category === 'idNumber') {
-                                        const filteredValue = value.replace(/[^0-9A-Za-z-]/g, '').slice(0, 13);
-                                        updateFormData('identifier', filteredValue);
+                                        updateFormData('identifier', sanitizeZimbabweIdNumber(value));
                                     } else {
-                                        updateFormData('identifier', value.slice(0, 100));
+                                        updateFormData('identifier', value.trim().slice(0, 100));
                                     }
                                 }}
                                 autoCapitalize={formData.category === 'surname' ? 'words' : 'none'}
@@ -148,7 +147,7 @@ const SearchNatIdModal = ({ isVisible, onClose, formData, searchNatId, updateFor
                             {formData.identifier.length > 0 && !validateInput(formData.category, formData.identifier) && (
                                 <Text className="text-red-600 text-xs mt-1">
                                     {formData.category === 'idNumber' ? 'Invalid ID number format.' :
-                                     'Surname should contain only letters and spaces'}
+                                     'Surname should contain only letters, spaces, hyphens, and apostrophes'}
                                 </Text>
                             )}
                             {formData.identifier.length === 0 && (

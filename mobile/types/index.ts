@@ -67,6 +67,38 @@ export interface Scertificate {
     claimed?: boolean
 }
 
+export interface BaggageSearchParams {
+    baggageType?: string;
+    transportType?: string;
+    routeType?: string;
+    destinationProvince?: string;
+    destinationDistrict?: string;
+}
+
+export interface BirthCertificateSearchParams {
+    motherLastName: string;
+    lastName: string;
+    firstName: string;
+}
+
+export interface DLicenceSearchParams {
+    identifier: string;
+}
+
+export interface NatIdSearchParams {
+    identifier: string;
+}
+
+export interface PassportSearchParams {
+    category: string;
+    identifier: string;
+}
+
+export interface SCertificateSearchParams {
+    certificateType: string;
+    lastName: string;
+}
+
 export interface Stats {
     totalDocuments: number,
     claimedDocuments: number
