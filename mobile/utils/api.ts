@@ -62,7 +62,6 @@ export interface NatIdFoundData {
 }
 
 export interface PassportSearchParams {
-  category: string;
   identifier: string;
 }
 

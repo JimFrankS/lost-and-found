@@ -13,7 +13,7 @@ interface SearchNatIdModalProps {
         category: string;
         identifier: string;
     };
-    searchNatId: (params: any) => void;
+    searchNatId: (params: any) => Promise<any>;
     updateFormData: (field: string, value: string) => void;
     isSearching: boolean;
     resetSearch: () => void;
@@ -73,9 +73,7 @@ const SearchNatIdModal = ({ isVisible, onClose, formData, searchNatId, updateFor
                             { text: "Yes", style: "destructive", onPress: onClose },
                         ]);
                     }}>
-                        <TouchableOpacity onPress={onClose}>
-                            <Text className="text-red-500 font-semibold">Close</Text>
-                        </TouchableOpacity>
+                        <Text className="text-red-500 font-semibold">Close</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={handleSearch} disabled={isSearching || !isFormComplete || (formData.identifier.length > 0 && !validateInput(formData.category, formData.identifier))}>
                         {(!isFormComplete || (formData.identifier.length > 0 && !validateInput(formData.category, formData.identifier))) ? (

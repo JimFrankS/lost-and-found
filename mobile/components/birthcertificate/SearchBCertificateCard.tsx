@@ -13,7 +13,7 @@ interface SearchBCertificateCardProps {
     };
     openSearchModal: () => void;
     closeSearchModal: () => void;
-    searchBCertificate: (params: any) => void;
+    searchBCertificate: (params: any) => Promise<any>;
     updateFormData: (field: string, value: string) => void;
     isSearching: boolean;
     resetSearch: () => void;

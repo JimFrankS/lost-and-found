@@ -11,7 +11,7 @@ interface SearchBCertificateModalProps {
         lastName: string;
         firstName: string;
     };
-    searchBCertificate: (params: any) => void;
+    searchBCertificate: (params: any) => Promise<any>;
     updateFormData: (field: string, value: string) => void;
     isSearching: boolean;
     resetSearch: () => void;

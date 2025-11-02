@@ -12,7 +12,7 @@ interface SearchDLicenceCardProps {
     };
     openDLicenceModal: () => void;
     closeDLicenceModal: () => void;
-    searchDLicence: (params: any) => void;
+    searchDLicence: (params: any) => Promise<any>;
     updateFormData: (field: string, value: string) => void;
     isSearching: boolean;
     resetSearch: () => void;

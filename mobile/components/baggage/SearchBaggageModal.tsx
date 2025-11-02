@@ -17,7 +17,7 @@ interface SearchBaggageModalProps {
         destinationProvince: string;
         destinationDistrict: string;
     };
-    searchBaggage: (params: any) => void;
+    searchBaggage: (params: any) => Promise<any>;
     updateFormData: (field: string, value: string) => void;
     isSearching: boolean;
     resetSearch: () => void;

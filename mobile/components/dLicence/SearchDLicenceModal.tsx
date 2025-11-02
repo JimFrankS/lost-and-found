@@ -13,7 +13,7 @@ interface SearchDLicenceModalProps {
         category: string;
         identifier: string;
     };
-    searchDLicence: (params: any) => void;
+    searchDLicence: (params: any) => Promise<any>;
     updateFormData: (field: string, value: string) => void;
     isSearching: boolean;
     resetSearch: () => void;
