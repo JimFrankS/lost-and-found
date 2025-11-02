@@ -39,7 +39,7 @@ const SearchDLicenceModal = ({ isVisible, onClose, formData, searchDLicence, upd
 
     const isFormComplete = Boolean(formData.identifier && validateInput(formData.category, formData.identifier));
 
-    const handleSearch = () => {
+    const handleSearch = async () => {
         if (!formData.identifier.trim()) {
             showAlerts("Error", "Please fill in the identifier field");
             return;
@@ -55,7 +55,12 @@ const SearchDLicenceModal = ({ isVisible, onClose, formData, searchDLicence, upd
         }
         //Reset Previous results before searching
         resetSearch();
-        searchDLicence(formData);
+        try {
+            await searchDLicence(formData);
+        } catch (error) {
+            showAlerts("Error", "Failed to search driving licence. Please try again.");
+            console.error("Search error:", error);
+        }
     };
 
     return (

@@ -3,6 +3,7 @@ import { Text } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import SearchNatIdModal from "@/components/natId/SearchNatIdModal";
 import CardWrapper from "@/styles/CardWrapper";
+import { NatIdSearchParams, NatId } from "@/types";
 
 interface SearchNatIdCardProps {
     isNatIDModalVisible: boolean;
@@ -12,7 +13,7 @@ interface SearchNatIdCardProps {
     };
     openNatIDModal: () => void;
     closeNatIDModal: () => void;
-    searchNatId: (params: any) => Promise<any>;
+    searchNatId: (params: NatIdSearchParams) => Promise<NatId[]>;
     updateFormData: (field: string, value: string) => void;
     isSearching: boolean;
     resetSearch: () => void;

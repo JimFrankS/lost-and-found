@@ -37,7 +37,7 @@ const SearchNatIdModal = ({ isVisible, onClose, formData, searchNatId, updateFor
 
     const isFormComplete = Boolean(formData.identifier && validateInput(formData.category, formData.identifier));
 
-    const handleSearch = () => {
+    const handleSearch = async () => {
         if (!formData.identifier.trim()) {
             showAlerts("Error", "Please fill in the identifier field");
             return;
@@ -52,7 +52,12 @@ const SearchNatIdModal = ({ isVisible, onClose, formData, searchNatId, updateFor
         }
         //Reset Previous results before searching
         resetSearch();
-        searchNatId(formData);
+        try {
+            await searchNatId(formData);
+        } catch (error) {
+            showAlerts("Error", "Failed to search national ID. Please try again.");
+            console.error("Search error:", error);
+        }
     };
 
     return (

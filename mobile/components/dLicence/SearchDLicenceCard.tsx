@@ -3,6 +3,7 @@ import { Text } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import SearchDLicenceModal from "@/components/dLicence/SearchDLicenceModal";
 import CardWrapper from "@/styles/CardWrapper";
+import { DLicenceSearchParams, DLicence } from "@/types";
 
 interface SearchDLicenceCardProps {
     isDLicenceModalVisible: boolean;
@@ -12,7 +13,7 @@ interface SearchDLicenceCardProps {
     };
     openDLicenceModal: () => void;
     closeDLicenceModal: () => void;
-    searchDLicence: (params: any) => Promise<any>;
+    searchDLicence: (params: DLicenceSearchParams) => Promise<DLicence[]>;
     updateFormData: (field: string, value: string) => void;
     isSearching: boolean;
     resetSearch: () => void;

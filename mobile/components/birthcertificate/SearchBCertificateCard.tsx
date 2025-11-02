@@ -3,6 +3,7 @@ import { Text } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import SearchBCertificateModal from '@/components/birthcertificate/SearchBCertificateModal';
 import CardWrapper from '@/styles/CardWrapper';
+import { BirthCertificateSearchParams, Bcertificate } from '@/types';
 
 interface SearchBCertificateCardProps {
     isSearchModalVisible: boolean;
@@ -13,7 +14,7 @@ interface SearchBCertificateCardProps {
     };
     openSearchModal: () => void;
     closeSearchModal: () => void;
-    searchBCertificate: (params: any) => Promise<any>;
+    searchBCertificate: (params: BirthCertificateSearchParams) => Promise<Bcertificate[]>;
     updateFormData: (field: string, value: string) => void;
     isSearching: boolean;
     resetSearch: () => void;

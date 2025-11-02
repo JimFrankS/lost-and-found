@@ -2,6 +2,7 @@ import { Text, View, ScrollView, Modal, TouchableOpacity, ActivityIndicator, Dim
 import React from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { showAlerts } from "@/utils/alerts";
+import { BirthCertificateSearchParams, Bcertificate } from "@/types";
 
 interface SearchBCertificateModalProps {
     isVisible: boolean;
@@ -11,7 +12,7 @@ interface SearchBCertificateModalProps {
         lastName: string;
         firstName: string;
     };
-    searchBCertificate: (params: any) => Promise<any>;
+    searchBCertificate: (params: BirthCertificateSearchParams) => Promise<Bcertificate[]>;
     updateFormData: (field: string, value: string) => void;
     isSearching: boolean;
     resetSearch: () => void;
@@ -24,14 +25,18 @@ const SearchBCertificateModal = ({ isVisible, onClose, formData, searchBCertific
         formData.motherLastName && formData.lastName && formData.firstName
     );
 
-    const handleSearch = () => {
+    const handleSearch = async () => {
         if (!isFormComplete) {
             showAlerts("Error", "Please fill in all the required fields");
             return;
         }
         //Reset Previous results before searching
         resetSearch();
-        searchBCertificate(formData);
+        try {
+            await searchBCertificate(formData);
+        } catch (error) {
+            showAlerts("Error", "Failed to search birth certificate. Please try again.");
+        }
     };
 
     return (

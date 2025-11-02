@@ -42,14 +42,19 @@ const SearchBaggageModal = ({ isVisible, onClose, formData, searchBaggage, updat
         formData.destinationDistrict
     );
 
-    const handleSearch = () => {
+    const handleSearch = async () => {
         if (!isFormComplete) {
             showAlerts("Error", "Please fill in all required fields.");
             return;
         }
         // Reset previous search results before searching
         resetSearch();
-        searchBaggage(formData);
+        try {
+            await searchBaggage(formData);
+        } catch (error) {
+            showAlerts("Error", "Failed to search baggage. Please try again.");
+            console.error("Search error:", error);
+        }
     };
 
     const renderSelect = (label: string, value: string, onPress: () => void, placeholder: string, displayValue?: string) => (
