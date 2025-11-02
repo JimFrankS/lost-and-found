@@ -83,7 +83,7 @@ const SearchDLicenceModal = ({ isVisible, onClose, formData, searchDLicence, upd
                         className="border border-gray-300 rounded p-3"
                         placeholder="Enter licence number, ID number, or surname"
                         value={formData.identifier}
-                        onChangeText={(value) => updateFormData('identifier', value.replace(/[^A-Za-z0-9\s'-]/g, '').trim())}
+                        onChangeText={(value) => updateFormData('identifier', value.replace(/[^A-Za-z0-9\s'-]/g, ''))}
                         autoCapitalize="characters"
                         maxLength={30}
                     />

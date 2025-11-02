@@ -25,7 +25,7 @@ export const useBCertificate = () => {
         firstName: "",
     });
     const [searchFound, setSearchFound] = useState(false);
-    const [foundBcertificate, setFoundBcertificate] = useState<Bcertificate | Bcertificate[] | null>(null);
+    const [viewedBcertificate, setViewedBcertificate] = useState<Bcertificate | null>(null);
     const [viewingBcertificateId, setViewingBcertificateId] = useState<string | null>(null);
     const [searchResults, setSearchResults] = useState<Bcertificate[]>([]);
 
@@ -63,11 +63,8 @@ export const useBCertificate = () => {
         },
         onSuccess: (response: any) => {
             const data = response.data;
-            setFoundBcertificate(data);
-
-            const results = data == null ? [] : Array.isArray(data) ? data : [data];
+            const results = data === null ? [] : Array.isArray(data) ? data : [data];
             setSearchResults(results);
-
             setSearchFound(results.length > 0);
             closeSearchModal();
         },
@@ -79,14 +76,15 @@ export const useBCertificate = () => {
     });
 
     const viewBcertificateMutation = useMutation({
-        mutationFn: (bcertificateId: string) => {
+        onMutate: (bcertificateId: string) => {
             setViewingBcertificateId(bcertificateId);
-            return bcertificateApi.viewBcertificate(bcertificateId);
         },
+        mutationFn: (bcertificateId: string) =>
+            bcertificateApi.viewBcertificate(bcertificateId),
         onSuccess: (response: any) => {
             setViewingBcertificateId(null);
             if (response.data) {
-                setFoundBcertificate(response.data);
+                setViewedBcertificate(response.data);
                 setSearchFound(true);
             }
         },
@@ -112,15 +110,13 @@ export const useBCertificate = () => {
 
     const resetSearch = () => {
         setSearchFound(false);
-        setFoundBcertificate(null);
+        setViewedBcertificate(null);
         setSearchResults([]);
         setViewingBcertificateId(null);
     };
 
     const goBackToResults = () => {
-        if (searchResults.length > 0) {
-            setFoundBcertificate(searchResults);
-        }
+        setViewedBcertificate(null);
     };
 
     return {
@@ -142,7 +138,7 @@ export const useBCertificate = () => {
         isViewing: viewBcertificateMutation.isPending,
         refetch: () => queryClient.invalidateQueries({ queryKey: ["bcertificate"] }),
         searchFound,
-        foundBcertificate,
+        viewedBcertificate,
         viewingBcertificateId,
         searchResults,
         resetSearch,

@@ -22,7 +22,7 @@ export const useBaggage = () => {
     });
 
     const [searchFound, setSearchFound] = useState(false); // whether search yielded results
-    const [foundBaggage, setFoundBaggage] = useState<Baggage | Baggage[] | null>(null); // found baggage details or list
+    const [viewedBaggage, setViewedBaggage] = useState<Baggage | null>(null); // viewed baggage details
     const [viewingBaggageId, setViewingBaggageId] = useState<string | null>(null); // currently viewing baggage ID
     const [searchResults, setSearchResults] = useState<Baggage[]>([]); // store search results list
     
@@ -52,10 +52,7 @@ export const useBaggage = () => {
             return response.data;
         },
         onSuccess: (data) => {
-            // The data is already the array from response.data due to the mutationFn
-            setFoundBaggage(data);
-
-            const results = data == null ? [] : Array.isArray(data) ? data : [data];
+            const results = data ?? [];
             setSearchResults(results);
 
             setSearchFound(results.length > 0);
@@ -66,20 +63,19 @@ export const useBaggage = () => {
             if (__DEV__) console.error("Baggage search error:", message);
             showErrorToast(message);
             setSearchFound(false);
-            setFoundBaggage(null);
             setSearchResults([]);
         },
     });
 
     const viewBaggageMutation = useMutation({
-        mutationFn: (baggageId: string) => {
+        onMutate: (baggageId: string) => {
             setViewingBaggageId(baggageId);
-            return baggageApi.viewBaggage(baggageId);
         },
+        mutationFn: (baggageId: string) => baggageApi.viewBaggage(baggageId),
         onSuccess: (response: any, baggageId: string) => {
             setViewingBaggageId(null);
             if (response.data) {
-                setFoundBaggage(response.data);
+                setViewedBaggage(response.data);
                 setSearchFound(true);
             }
         },
@@ -95,7 +91,7 @@ export const useBaggage = () => {
         mutationFn: (baggageId: string) => baggageApi.claimBaggage(baggageId),
         onSuccess: (response: any) => {
             if (response.data) {
-                setFoundBaggage(response.data);
+                setViewedBaggage(response.data);
                 setSearchFound(true);
             }
             showSuccessToast('Baggage claimed successfully!');
@@ -118,15 +114,14 @@ export const useBaggage = () => {
 
     const resetSearch = () => {
         setSearchFound(false);
-        setFoundBaggage(null);
+        setViewedBaggage(null);
         setSearchResults([]);
         setViewingBaggageId(null);
     };
 
     const goBackToResults = () => {
-        if (searchResults.length > 0) {
-            setFoundBaggage(searchResults);
-        }
+        // Clear the single-item view to show the search results list again
+        setViewedBaggage(null);
     };
 
     return {
@@ -145,7 +140,7 @@ export const useBaggage = () => {
         isClaiming: claimBaggageMutation.isPending,
         refetch: () => queryClient.invalidateQueries({ queryKey: ['baggage'] }),
         searchFound,
-        foundBaggage,
+        viewedBaggage,
         viewingBaggageId,
         searchResults,
         resetSearch,

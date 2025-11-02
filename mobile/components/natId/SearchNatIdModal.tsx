@@ -138,7 +138,7 @@ const SearchNatIdModal = ({ isVisible, onClose, formData, searchNatId, updateFor
                                     if (formData.category === 'idNumber') {
                                         updateFormData('identifier', sanitizeZimbabweIdNumber(value));
                                     } else {
-                                        updateFormData('identifier', value.trim().slice(0, 100));
+                                        updateFormData('identifier', value.slice(0, 100));
                                     }
                                 }}
                                 autoCapitalize={formData.category === 'surname' ? 'words' : 'none'}

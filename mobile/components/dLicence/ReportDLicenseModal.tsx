@@ -130,7 +130,7 @@ const ReportDLicenseModal = ({ isVisible, onClose, formData, reportDLicense, upd
                         className="border border-gray-300 rounded p-2 mb-4"
                         placeholder="Kindly enter the last name of the licence owner"
                         value={formData.lastName}
-                        onChangeText={(value) => updateFormData('lastName', value)}
+                        onChangeText={(value) => updateFormData('lastName', value.replace(/[^a-zA-Z\s'-]/g, ''))}
                         multiline
                         maxLength={100}
                     />
@@ -140,7 +140,7 @@ const ReportDLicenseModal = ({ isVisible, onClose, formData, reportDLicense, upd
                         className="border border-gray-300 rounded p-2 mb-4"
                         placeholder="Kindly enter the first name of the licence owner"
                         value={formData.firstName}
-                        onChangeText={(value) => updateFormData('firstName', value)}
+                        onChangeText={(value) => updateFormData('firstName', value.replace(/[^a-zA-Z\s'-]/g, ''))}
                         multiline
                         maxLength={100}
                     />

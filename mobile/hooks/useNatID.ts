@@ -24,7 +24,7 @@ export const useNatID = () => {
 
     const [searchFound, setSearchFound] = useState(false); // Whether or not search yielded results.
 
-    const [foundNatId, setFoundNatId] = useState<NatId | NatId[] | null>(null); // found id details or list
+    const [viewedNatId, setViewedNatId] = useState<NatId | null>(null); // viewed id details
 
     const [viewingNatIdId, setViewingNatIdId] = useState<string | null>(null); // currently viewing id ID.
 
@@ -60,9 +60,8 @@ export const useNatID = () => {
         },
         onSuccess: (response: any) => {
             const data = response.data;
-            setFoundNatId(data);
 
-            const safeResults = data == null ? [] : Array.isArray(data) ? data : [data];
+            const safeResults = data === null ? [] : Array.isArray(data) ? data : [data];
             setSearchResults(safeResults);
 
             setSearchFound(safeResults.length > 0);
@@ -76,15 +75,14 @@ export const useNatID = () => {
     });
 
     const viewNatIdMutation = useMutation({
-        mutationFn: (id: string) => {
+        onMutate: (id: string) => {
             setViewingNatIdId(id);
-            return natIdApi.claimId(id);
         },
-
+        mutationFn: (id: string) => natIdApi.claimId(id),
         onSuccess: (response: any) => {
             setViewingNatIdId(null);
             if (response.data) {
-                setFoundNatId(response.data);
+                setViewedNatId(response.data);
                 setSearchFound(true);
             }
         },
@@ -125,15 +123,13 @@ export const useNatID = () => {
 
     const resetSearch = () => {
         setSearchFound(false);
-        setFoundNatId(null);
+        setViewedNatId(null);
         setSearchResults([]);
         setViewingNatIdId(null);
     };
 
     const goBackToResults = () => {
-        if (searchResults.length > 0) {
-            setFoundNatId(searchResults);
-        }
+        setViewedNatId(null);
     };
 
     return {
@@ -152,7 +148,7 @@ export const useNatID = () => {
         isViewing: viewNatIdMutation.isPending,
         refetch: () => queryClient.invalidateQueries({ queryKey: ["natId"] }), //function to refetch national ID data.
         searchFound,
-        foundNatId,
+        viewedNatId,
         viewingNatIdId,
         searchResults,
         resetSearch,

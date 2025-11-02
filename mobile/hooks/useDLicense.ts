@@ -25,7 +25,7 @@ export const useDLicense = () => {
 
     const [searchFound, setSearchFound] = useState(false); // Whether or not search yielded results.
 
-    const [foundDLicence, setFoundDLicence] = useState<DLicence | DLicence[] | null>(null); // found licence details or list
+    const [viewedDLicence, setViewedDLicence] = useState<DLicence | null>(null); // viewed licence details
 
     const [viewingDLicenceId, setViewingDLicenceId] = useState<string | null>(null); // currently viewing licence ID.
 
@@ -61,9 +61,8 @@ export const useDLicense = () => {
         },
         onSuccess: (response: any) => {
             const data = response.data;
-            setFoundDLicence(data);
 
-            const results = data == null ? [] : Array.isArray(data) ? data : [data];
+            const results = data === null ? [] : Array.isArray(data) ? data : [data];
             setSearchResults(results);
 
             setSearchFound(results.length > 0);
@@ -77,15 +76,15 @@ export const useDLicense = () => {
     });
 
     const viewDLicenceMutation = useMutation({
-        mutationFn: (licenceId: string) => {
+        onMutate: (licenceId: string) => {
             setViewingDLicenceId(licenceId);
-            return dLicenceApi.claimLicence(licenceId);
         },
-
+        mutationFn: (licenceId: string) =>
+            dLicenceApi.claimLicence(licenceId),
         onSuccess: (response: any) => {
             setViewingDLicenceId(null);
             if (response.data) {
-                setFoundDLicence(response.data);
+                setViewedDLicence(response.data);
                 setSearchFound(true);
             }
         },
@@ -127,15 +126,13 @@ export const useDLicense = () => {
 
     const resetSearch = () => {
         setSearchFound(false);
-        setFoundDLicence(null);
+        setViewedDLicence(null);
         setSearchResults([]);
         setViewingDLicenceId(null);
     };
 
     const goBackToResults = () => {
-        if (searchResults.length > 0) {
-            setFoundDLicence(searchResults);
-        }
+        setViewedDLicence(null);
     };
 
     return {
@@ -154,7 +151,7 @@ export const useDLicense = () => {
         isViewing: viewDLicenceMutation.isPending,
         refetch: () => queryClient.invalidateQueries({ queryKey: ["dLicence"] }), //function to refetch driving license data.
         searchFound,
-        foundDLicence,
+        viewedDLicence,
         viewingDLicenceId,
         searchResults,
         resetSearch,
