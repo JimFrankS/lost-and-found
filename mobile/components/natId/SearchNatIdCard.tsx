@@ -34,7 +34,7 @@ const SearchNatIdCard = ({
         <>
             <CardWrapper onPress={openNatIDModal} accessibilityLabel="Search Lost National ID">
                 <Feather name="search" size={24} color="black" />
-                <Text style={{ marginLeft: 8, color: '#4B5563', fontWeight: 'bold', fontSize: 18 }}>Search Lost National ID</Text>
+                <Text className="ml-2 text-gray-600 font-bold text-lg">Search Lost National ID</Text>
             </CardWrapper>
 
             <SearchNatIdModal

@@ -78,7 +78,11 @@ const SearchScertificateModal = ({ isVisible, onClose, formData, searchScertific
                 </View>
 
                 {/* Form */}
-                <ScrollView className="flex-1 p-4"
+                <ScrollView 
+                    className="flex-1 p-4"
+                    contentContainerStyle={{
+                        alignItems: 'center',
+                    }}
                     style={
                         Platform.OS === 'web'
                             ? {
@@ -87,6 +91,7 @@ const SearchScertificateModal = ({ isVisible, onClose, formData, searchScertific
                             }
                             : undefined
                     }>
+                    <View style={{ width: '100%', maxWidth: 600 }}>
                     {renderSelect(
                         'Certificate Type', //Title of the select Field
                         formData.certificateType,
@@ -115,6 +120,7 @@ const SearchScertificateModal = ({ isVisible, onClose, formData, searchScertific
                         onSelect={(val) => updateFormData('certificateType', String(val).toLowerCase())}
                         onClose={() => setOpenPicker(null)}
                     />
+                    </View>
                 </ScrollView>
             </View>
         </Modal>

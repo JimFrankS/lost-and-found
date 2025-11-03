@@ -33,7 +33,7 @@ const SearchBCertificateCard = ({
     <>
         <CardWrapper onPress={openSearchModal} accessibilityLabel="Search Lost Birth Certificate">
             <Feather name="search" size={24} color="black" />
-            <Text style={{ marginLeft: 8, color: '#4B5563', fontWeight: 'bold', fontSize: 18 }}>Search Lost Birth Certificate</Text>
+            <Text className="ml-2 text-gray-600 font-bold text-lg">Search Lost Birth Certificate</Text>
         </CardWrapper>
         <SearchBCertificateModal isVisible={isSearchModalVisible} onClose={closeSearchModal} formData={formData} searchBCertificate={searchBCertificate} updateFormData={updateFormData} isSearching={isSearching} resetSearch={resetSearch} />
     </>

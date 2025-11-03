@@ -39,7 +39,7 @@ const SearchBaggageCard = ({
     <>
       <CardWrapper onPress={openBaggageModal} accessibilityLabel="Search lost baggage">
         <Feather name="search" size={24} color="black" />
-        <Text style={{ marginLeft: 8, color: '#4B5563', fontWeight: 'bold', fontSize: 18 }}>Search Lost Baggage</Text>
+        <Text className="ml-2 text-gray-600 font-bold text-lg">Search Lost Baggage</Text>
       </CardWrapper>
       <SearchBaggageModal
         isVisible={isBaggageModalVisible}

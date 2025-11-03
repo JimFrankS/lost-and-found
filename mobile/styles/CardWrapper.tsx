@@ -34,18 +34,18 @@ const styles = StyleSheet.create({
   touchable: {
     width: '100%',
     maxWidth: 760, // constrain on large screens / web
-    backgroundColor: 'inherit', //#fff
+    backgroundColor: 'transparent',
     borderRadius: 12,
     paddingVertical: 14,
     paddingHorizontal: 16,
-    borderWidth: 1,
-    borderColor: 'inherit', //#E5E7EB
-    // elevation / shadow for native
-    shadowColor: 'inherit', //#000
-    shadowOpacity: 0.06,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 2,
+    borderWidth: 2,
+    borderColor: 'rgba(107, 114, 128, 0.5)', // more visible border (gray-500 with higher opacity)
+    // Remove elevation and shadows for transparent background
+    shadowColor: 'transparent',
+    shadowOpacity: 0,
+    shadowRadius: 0,
+    shadowOffset: { width: 0, height: 0 },
+    elevation: 0,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',

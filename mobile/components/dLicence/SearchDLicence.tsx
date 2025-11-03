@@ -8,13 +8,14 @@ interface SearchDLicenceProps {
 }
 
 const SearchDLicence = ({ dlicenceHook }: SearchDLicenceProps) => {
-    const showingResults = !!dlicenceHook.searchFound;
+    const showingResults = dlicenceHook.searchPerformed;
 
     return (
         <View style={styles.container}>
             {showingResults ? (
                 <FoundDLicenceCard
                     searchFound={dlicenceHook.searchFound}
+                    searchPerformed={dlicenceHook.searchPerformed}
                     foundDLicence={dlicenceHook.viewedDLicence || dlicenceHook.searchResults}
                     resetSearch={dlicenceHook.resetSearch}
                     goBackToResults={dlicenceHook.goBackToResults}

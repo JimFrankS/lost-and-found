@@ -26,6 +26,8 @@ export const useDLicense = () => {
 
     const [searchFound, setSearchFound] = useState(false); // Whether or not search yielded results.
 
+    const [searchPerformed, setSearchPerformed] = useState(false); // Whether a search has been performed
+
     const [viewedDLicence, setViewedDLicence] = useState<DLicence | null>(null); // viewed licence details
 
     const [viewingDLicenceId, setViewingDLicenceId] = useState<string | null>(null); // currently viewing licence ID.
@@ -69,6 +71,7 @@ export const useDLicense = () => {
             setSearchResults(results);
 
             setSearchFound(results.length > 0);
+            setSearchPerformed(true);
         },
 
         onError: (error: any) => {
@@ -131,6 +134,7 @@ export const useDLicense = () => {
 
     const resetSearch = () => {
         setSearchFound(false);
+        setSearchPerformed(false);
         setViewedDLicence(null);
         setSearchResults([]);
         setViewingDLicenceId(null);
@@ -156,6 +160,7 @@ export const useDLicense = () => {
         isViewing: viewDLicenceMutation.isPending,
         refetch: () => queryClient.invalidateQueries({ queryKey: ["dLicence"] }), //function to refetch driving license data.
         searchFound,
+        searchPerformed,
         viewedDLicence,
         viewingDLicenceId,
         searchResults,

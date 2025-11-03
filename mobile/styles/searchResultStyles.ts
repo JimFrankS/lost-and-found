@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 
-export const searchResultStyles =StyleSheet.create({
+export const searchResultStyles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: "transparent",
@@ -45,10 +45,12 @@ export const searchResultStyles =StyleSheet.create({
   resultsContainer: {
     padding: 12,
     paddingBottom: 12,
+    alignItems: "center", // Center cards on large screens
   },
   singleContainer: {
     padding: 12,
     paddingBottom: 12,
+    alignItems: "center", // Center card on large screens
   },
   card: {
     backgroundColor: "rgba(255, 255, 255, 0.7)",
@@ -60,12 +62,16 @@ export const searchResultStyles =StyleSheet.create({
     shadowRadius: 6,
     shadowOffset: { width: 0, height: 2 },
     elevation: 2,
+    width: "100%",
+    maxWidth: 600, // Constrain width on large screens
   },
   detailCard: {
     backgroundColor: "rgba(249, 250, 251, 0.7)",
     padding: 16,
     borderRadius: 12,
     marginBottom: 12,
+    width: "100%",
+    maxWidth: 600, // Constrain width on large screens
   },
   cardTitle: {
     fontSize: 16,

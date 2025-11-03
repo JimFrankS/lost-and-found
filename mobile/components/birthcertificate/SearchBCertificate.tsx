@@ -8,14 +8,15 @@ interface SearchBCertificateProps {
 }
 
 const SearchBCertificate = ({ bcertificateHook }: SearchBCertificateProps) => {
-    const showingResults = !!bcertificateHook.searchFound;
+    const showingResults = bcertificateHook.searchPerformed;
 
     return (
         <View style={styles.container}>
             {showingResults ? (
                 <FoundBCertificateCard
                     searchFound={bcertificateHook.searchFound}
-                    foundBcertificate={bcertificateHook.foundBcertificate}
+                    searchPerformed={bcertificateHook.searchPerformed}
+                    foundBcertificate={bcertificateHook.viewedBcertificate || bcertificateHook.searchResults}
                     resetSearch={bcertificateHook.resetSearch}
                     goBackToResults={bcertificateHook.goBackToResults}
                     viewBcertificate={bcertificateHook.viewBcertificate}

@@ -25,6 +25,7 @@ export const useBCertificate = () => {
         firstName: "",
     });
     const [searchFound, setSearchFound] = useState(false);
+    const [searchPerformed, setSearchPerformed] = useState(false);
     const [viewedBcertificate, setViewedBcertificate] = useState<Bcertificate | null>(null);
     const [viewingBcertificateId, setViewingBcertificateId] = useState<string | null>(null);
     const [searchResults, setSearchResults] = useState<Bcertificate[]>([]);
@@ -69,6 +70,7 @@ export const useBCertificate = () => {
         const results = data == null ? [] : Array.isArray(data) ? data : [data];
         setSearchResults(results);
         setSearchFound(results.length > 0);
+        setSearchPerformed(true);
         closeSearchModal();
     },
         onError: (error: any) => {
@@ -115,6 +117,7 @@ export const useBCertificate = () => {
 
     const resetSearch = () => {
         setSearchFound(false);
+        setSearchPerformed(false);
         setViewedBcertificate(null);
         setSearchResults([]);
         setViewingBcertificateId(null);
@@ -143,6 +146,7 @@ export const useBCertificate = () => {
         isViewing: viewBcertificateMutation.isPending,
         refetch: () => queryClient.invalidateQueries({ queryKey: ["bcertificate"] }),
         searchFound,
+        searchPerformed,
         viewedBcertificate,
         viewingBcertificateId,
         searchResults,
