@@ -184,7 +184,7 @@ const SearchBaggageModal = ({ isVisible, onClose, formData, searchBaggage, updat
                     />
                 </ScrollView>
             </View>
-        </ModalWrapper >
+        </ModalWrapper>
     );
 };
 

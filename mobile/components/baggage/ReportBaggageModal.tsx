@@ -228,7 +228,7 @@ const ReportBaggageModal = ({ isVisible, onClose, formData, reportBaggage, updat
                     />
                 </ScrollView>
             </View>
-        </ModalWrapper >
+        </ModalWrapper>
     );
 };
 

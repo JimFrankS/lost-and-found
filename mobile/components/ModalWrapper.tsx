@@ -8,22 +8,12 @@ interface ModalWrapperProps {
   transparent?: boolean;
 }
 
-/**
- * A reusable modal wrapper that provides:
- * - Transparent background with blur effect
- * - Width constraint on large screens
- * - Safe area insets
- * - Consistent styling across all modals
- */
 const ModalWrapper: React.FC<ModalWrapperProps> = ({
   visible,
   children,
-  transparent = false
+  transparent = true,
 }) => {
   const insets = useSafeAreaInsets();
-
-  console.log('ModalWrapper: transparent prop:', transparent);
-  console.log('ModalWrapper: visible:', visible);
 
   return (
     <Modal visible={visible} animationType="slide" transparent={transparent}>
