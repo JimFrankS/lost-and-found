@@ -1,9 +1,10 @@
-import { Text, View, ScrollView, Modal, Alert, TouchableOpacity, TextInput, ActivityIndicator, Dimensions, Platform } from "react-native";
+import { Text, View, ScrollView, Alert, TouchableOpacity, TextInput, ActivityIndicator, Dimensions, Platform } from "react-native";
 import React, { useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { PHONE_NUMBER_REGEX, SCERTIFICATE_TYPES, PHONE_EXAMPLE } from "@/constants/allowedValues";
 import { OptionPicker, SelectField } from "../FormsHelper";
 import { showAlerts } from "@/utils/alerts";
+import ModalWrapper from "../ModalWrapper";
 
 interface ReportSCertificateModalProps {
     isVisible: boolean;
@@ -54,16 +55,8 @@ const ReportSCertificateModal = ({ isVisible, onClose, formData, reportSCertific
     );
 
     return (
-        <Modal visible={isVisible} animationType="slide" transparent={false}>
-            <View
-                className="flex-1 bg-white"
-                style={{
-                    paddingTop: insets.top,
-                    paddingBottom: insets.bottom,
-                    paddingLeft: insets.left,
-                    paddingRight: insets.right
-                }}
-            >
+        <ModalWrapper visible={isVisible}>
+            <View className="flex-1">
                 {/* Header */}
                 <View className="flex-row items-center justify-between px-4 py-3 border-b border-gray-100">
                     <TouchableOpacity onPress={() => {
@@ -169,7 +162,7 @@ const ReportSCertificateModal = ({ isVisible, onClose, formData, reportSCertific
 
                 </ScrollView>
             </View>
-        </Modal>
+        </ModalWrapper>
     );
 };
 

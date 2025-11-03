@@ -1,8 +1,9 @@
-import { Text, View, ScrollView, Modal, TouchableOpacity, ActivityIndicator, Dimensions, Platform, TextInput } from "react-native";
+import { Text, View, ScrollView, TouchableOpacity, ActivityIndicator, Dimensions, Platform, TextInput } from "react-native";
 import React from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { showAlerts } from "@/utils/alerts";
 import { BirthCertificateSearchParams, Bcertificate } from "@/types";
+import ModalWrapper from "../ModalWrapper";
 
 interface SearchBCertificateModalProps {
     isVisible: boolean;
@@ -40,15 +41,8 @@ const SearchBCertificateModal = ({ isVisible, onClose, formData, searchBCertific
     };
 
     return (
-        <Modal visible={isVisible} animationType="slide" transparent={false}>
-            <View
-                className="flex-1 bg-white"
-                style={{
-                    paddingTop: insets.top,
-                    paddingBottom: insets.bottom,
-                    paddingLeft: insets.left,
-                    paddingRight: insets.right,
-                }}>
+        <ModalWrapper visible={isVisible}>
+            <View className="flex-1">
                 {/* Modal Header */}
                 <View className='flex-row items-center justify-between px-4 py-3 border-b border-gray-100'>
                     <TouchableOpacity onPress={() => {
@@ -114,7 +108,7 @@ const SearchBCertificateModal = ({ isVisible, onClose, formData, searchBCertific
 
                 </ScrollView>
             </View>
-        </Modal>
+        </ModalWrapper>
     );
 };
 

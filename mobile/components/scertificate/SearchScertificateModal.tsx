@@ -1,10 +1,11 @@
-import { Text, View, ScrollView, Modal, TouchableOpacity, ActivityIndicator, Dimensions, Platform, TextInput } from "react-native";
+import { Text, View, ScrollView, TouchableOpacity, ActivityIndicator, Dimensions, Platform, TextInput } from "react-native";
 import React, { useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { SCERTIFICATE_TYPES } from "@/constants/allowedValues";
 import { OptionPicker, SelectField, toTitleCase } from "../FormsHelper";
 import { showAlerts } from "@/utils/alerts";
+import ModalWrapper from "../ModalWrapper";
 
 interface SearchScertificateModalProps {
     isVisible: boolean;
@@ -46,15 +47,8 @@ const SearchScertificateModal = ({ isVisible, onClose, formData, searchScertific
     );
 
     return (
-        <Modal visible={isVisible} animationType="slide" transparent={false}>
-            <View
-                className="flex-1 bg-white"
-                style={{
-                    paddingTop: insets.top,
-                    paddingBottom: insets.bottom,
-                    paddingLeft: insets.left,
-                    paddingRight: insets.right,
-                }}>
+        <ModalWrapper visible={isVisible}>
+            <View className="flex-1">
                 {/* Modal Header */}
                 <View className='flex-row items-center justify-between px-4 py-3 border-b border-gray-100'>
                     <TouchableOpacity onPress={() => {
@@ -80,9 +74,6 @@ const SearchScertificateModal = ({ isVisible, onClose, formData, searchScertific
                 {/* Form */}
                 <ScrollView 
                     className="flex-1 p-4"
-                    contentContainerStyle={{
-                        alignItems: 'center',
-                    }}
                     style={
                         Platform.OS === 'web'
                             ? {
@@ -91,7 +82,6 @@ const SearchScertificateModal = ({ isVisible, onClose, formData, searchScertific
                             }
                             : undefined
                     }>
-                    <View style={{ width: '100%', maxWidth: 600 }}>
                     {renderSelect(
                         'Certificate Type', //Title of the select Field
                         formData.certificateType,
@@ -120,10 +110,9 @@ const SearchScertificateModal = ({ isVisible, onClose, formData, searchScertific
                         onSelect={(val) => updateFormData('certificateType', String(val).toLowerCase())}
                         onClose={() => setOpenPicker(null)}
                     />
-                    </View>
                 </ScrollView>
             </View>
-        </Modal>
+        </ModalWrapper>
     );
 };
 
