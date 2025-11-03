@@ -66,9 +66,9 @@ export const useBCertificate = () => {
     onSuccess: (response: any) => {
         setViewedBcertificate(null);
         const data = response.data;
-        const results = data === null ? [] : Array.isArray(data) ? data : [data];
+        const results = data == null ? [] : Array.isArray(data) ? data : [data];
         setSearchResults(results);
-        setSearchFound(true);
+        setSearchFound(results.length > 0);
         closeSearchModal();
     },
         onError: (error: any) => {
@@ -146,6 +146,7 @@ export const useBCertificate = () => {
         viewedBcertificate,
         viewingBcertificateId,
         searchResults,
+        foundBcertificate: viewedBcertificate || searchResults,
         resetSearch,
         goBackToResults,
     };

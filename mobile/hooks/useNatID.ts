@@ -50,20 +50,19 @@ export const useNatID = () => {
         },
     }); // end of the mutation for reporting found national ID.
 
-    const searchNatIdMutation = useMutation({
+    const searchNatIdMutation = useMutation<NatId[], unknown, NatIdSearchParams>({
         mutationFn: async (searchParams: NatIdSearchParams) => {
             try {
-                return await natIdApi.searchNatId(searchParams);
+                const response = await natIdApi.searchNatId(searchParams);
+                return response.data;
             } catch (error: any) {
                 if (error?.response?.status === 404) {
-                    return { data: [] };
+                    return [];
                 }
                 throw error;
             }
         },
-        onSuccess: (response: any) => {
-            const data = response.data;
-
+        onSuccess: (data: NatId[]) => {
             const safeResults = data === null ? [] : Array.isArray(data) ? data : [data];
             setSearchResults(safeResults);
 

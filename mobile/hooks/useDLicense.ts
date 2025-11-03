@@ -65,10 +65,10 @@ export const useDLicense = () => {
         onSuccess: (response: any) => {
             const data = response.data;
 
-            const results = data === null ? [] : Array.isArray(data) ? data : [data];
+            const results = data == null ? [] : Array.isArray(data) ? data : [data];
             setSearchResults(results);
 
-            setSearchFound(true);
+            setSearchFound(results.length > 0);
         },
 
         onError: (error: any) => {

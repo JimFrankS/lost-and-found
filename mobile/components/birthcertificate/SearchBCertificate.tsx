@@ -15,7 +15,7 @@ const SearchBCertificate = ({ bcertificateHook }: SearchBCertificateProps) => {
             {showingResults ? (
                 <FoundBCertificateCard
                     searchFound={bcertificateHook.searchFound}
-                    foundBcertificate={bcertificateHook.viewedBcertificate || bcertificateHook.searchResults}
+                    foundBcertificate={bcertificateHook.foundBcertificate}
                     resetSearch={bcertificateHook.resetSearch}
                     goBackToResults={bcertificateHook.goBackToResults}
                     viewBcertificate={bcertificateHook.viewBcertificate}
