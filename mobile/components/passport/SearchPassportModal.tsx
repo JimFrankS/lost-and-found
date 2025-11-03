@@ -1,9 +1,10 @@
-import { Text, View, ScrollView, Modal, TouchableOpacity, ActivityIndicator, Dimensions, Platform, TextInput } from "react-native";
+import { Text, View, ScrollView, TouchableOpacity, ActivityIndicator, Dimensions, Platform, TextInput } from "react-native";
 import React, { useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { showAlerts } from "@/utils/alerts";
 import { isValidZimbabweIdNumber, idNumberRegex, sanitizeZimbabweIdNumber } from "@/utils/idValidator";
 import { OptionPicker, SelectField } from "../FormsHelper";
+import ModalWrapper from "../ModalWrapper";
 
 interface SearchParams {
     category: string;
@@ -85,15 +86,8 @@ const SearchPassportModal = ({ isVisible, onClose, formData, searchPassport, upd
     };
 
     return (
-        <Modal visible={isVisible} animationType="slide" transparent={false}>
-            <View
-                className="flex-1 bg-white"
-                style={{
-                    paddingTop: insets.top,
-                    paddingBottom: insets.bottom,
-                    paddingLeft: insets.left,
-                    paddingRight: insets.right,
-                }}>
+        <ModalWrapper visible={isVisible} onClose={onClose}>
+            <View className="flex-1">
                 {/* Modal Header */}
                 <View className='flex-row items-center justify-between px-4 py-3 border-b border-gray-100'>
                     <TouchableOpacity onPress={() => {
@@ -121,7 +115,6 @@ const SearchPassportModal = ({ isVisible, onClose, formData, searchPassport, upd
                     style={
                         Platform.OS === 'web'
                             ? {
-                                maxHeight: Dimensions.get('window').height - insets.top - insets.bottom,
                                 overflow: 'scroll'
                             }
                             : undefined
@@ -186,7 +179,7 @@ const SearchPassportModal = ({ isVisible, onClose, formData, searchPassport, upd
 
                 </ScrollView>
             </View>
-        </Modal>
+        </ModalWrapper>
     );
 };
 

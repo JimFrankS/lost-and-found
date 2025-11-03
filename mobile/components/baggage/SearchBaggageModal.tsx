@@ -1,4 +1,4 @@
-import { Text, View, ScrollView, Modal, Alert, TouchableOpacity, ActivityIndicator, Dimensions, Platform } from "react-native";
+import { Text, View, ScrollView, Alert, TouchableOpacity, ActivityIndicator, Dimensions, Platform } from "react-native";
 import React, { useMemo, useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -7,6 +7,7 @@ import { BAGGAGE_TYPES, TRANSPORT_TYPES, ROUTE_TYPES, PROVINCES, PROVINCE_DISTRI
 import { OptionPicker, SelectField, toTitleCase } from "../FormsHelper";
 import { showAlerts } from "@/utils/alerts";
 import { Baggage, BaggageSearchParams } from "@/types";
+import ModalWrapper from "../ModalWrapper";
 
 interface SearchBaggageModalProps {
     isVisible: boolean;
@@ -63,16 +64,8 @@ const SearchBaggageModal = ({ isVisible, onClose, formData, searchBaggage, updat
     );
 
     return (
-        <Modal visible={isVisible} animationType="slide" transparent={false}>
-            <View
-                className="flex-1 bg-white"
-                style={{
-                    paddingTop: insets.top,
-                    paddingBottom: insets.bottom,
-                    paddingLeft: insets.left,
-                    paddingRight: insets.right,
-                }}
-            >
+        <ModalWrapper visible={isVisible} onClose={onClose}>
+            <View className="flex-1">
                 {/* Header */}
                 <View className='flex-row items-center justify-between px-4 py-3 border-b border-gray-100'>
                     <TouchableOpacity onPress={() => {
@@ -100,7 +93,6 @@ const SearchBaggageModal = ({ isVisible, onClose, formData, searchBaggage, updat
                     style={
                         Platform.OS === 'web'
                             ? {
-                                maxHeight: Dimensions.get('window').height - insets.top - insets.bottom,
                                 overflow: 'scroll',
                             }
                             : undefined
@@ -191,7 +183,7 @@ const SearchBaggageModal = ({ isVisible, onClose, formData, searchBaggage, updat
                     />
                 </ScrollView>
             </View>
-        </Modal >
+        </ModalWrapper>
     );
 };
 

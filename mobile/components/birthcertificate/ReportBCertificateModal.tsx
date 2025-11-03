@@ -1,8 +1,9 @@
-import { Text, View, ScrollView, Modal, Alert, TouchableOpacity, TextInput, ActivityIndicator, Dimensions, Platform } from "react-native";
+import { Text, View, ScrollView, Alert, TouchableOpacity, TextInput, ActivityIndicator, Dimensions, Platform } from "react-native";
 import React from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { PHONE_NUMBER_REGEX } from "@/constants/allowedValues";
 import { showAlerts } from "@/utils/alerts";
+import ModalWrapper from "../ModalWrapper";
 
 
 interface ReportBCertificateModalProps {
@@ -49,16 +50,8 @@ const ReportBCertificateModal = ({ isVisible, onClose, formData, reportBCertific
     };
 
     return (
-        <Modal visible={isVisible} animationType="slide" transparent={false}>
-            <View
-                className="flex-1 bg-white"
-                style={{
-                    paddingTop: insets.top,
-                    paddingBottom: insets.bottom,
-                    paddingLeft: insets.left,
-                    paddingRight: insets.right
-                }}
-            >
+        <ModalWrapper visible={isVisible} onClose={onClose}>
+            <View className="flex-1">
                 {/* Header */}
                 <View className="flex-row items-center justify-between px-4 py-3 border-b border-gray-100">
                     <TouchableOpacity onPress={() => {
@@ -92,7 +85,6 @@ const ReportBCertificateModal = ({ isVisible, onClose, formData, reportBCertific
                     style={
                         Platform.OS === 'web'
                             ? {
-                                maxHeight: Dimensions.get('window').height - insets.top - insets.bottom,
                                 overflow: 'scroll',
                             } : undefined
                     }>
@@ -170,7 +162,7 @@ const ReportBCertificateModal = ({ isVisible, onClose, formData, reportBCertific
 
                 </ScrollView>
             </View>
-        </Modal>
+        </ModalWrapper>
     );
 };
 
