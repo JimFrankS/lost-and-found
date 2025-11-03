@@ -12,7 +12,6 @@ interface SearchScertificateModalProps {
     formData: {
         certificateType: string;
         lastName: string;
-        firstName: string;
     };
     searchScertificate: (params: any) => Promise<any>;
     updateFormData: (field: string, value: string) => void;
@@ -25,7 +24,7 @@ const SearchScertificateModal = ({ isVisible, onClose, formData, searchScertific
     const insets = useSafeAreaInsets();
 
     const isFormComplete = Boolean(
-        formData.certificateType && formData.lastName && formData.firstName
+        formData.certificateType && formData.lastName
     );
 
     const handleSearch = async () => {
@@ -106,15 +105,7 @@ const SearchScertificateModal = ({ isVisible, onClose, formData, searchScertific
                         />
                     </View>
 
-                    <View className="mb-4">
-                        <Text className="text-lg font-semibold text-gray-600 mb-2">First Name</Text>
-                        <TextInput
-                            className="border border-gray-300 rounded p-3"
-                            placeholder="Enter your first name"
-                            value={formData.firstName}
-                            onChangeText={(text) => updateFormData('firstName', text)}
-                        />
-                    </View>
+
 
                     {/* Pickers */}
 
