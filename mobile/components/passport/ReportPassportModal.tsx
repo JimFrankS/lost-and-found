@@ -2,7 +2,7 @@ import { Text, View, ScrollView, Modal, Alert, TouchableOpacity, TextInput, Acti
 import React from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { PHONE_NUMBER_REGEX, passportNumberRegex, escapeRegex } from "@/constants/allowedValues";
-import { isValidZimbabweIdNumber } from "@/utils/idValidator";
+import { isValidZimbabweIdNumber, sanitizeZimbabweIdNumber } from "@/utils/idValidator";
 import { showAlerts } from "@/utils/alerts";
 
 interface ReportPassportModalProps {
@@ -150,7 +150,8 @@ const ReportPassportModal = ({ isVisible, onClose, formData, reportPassport, upd
                         className="border border-gray-300 rounded p-2 mb-4"
                         placeholder="Kindly enter the ID number on the passport"
                         value={formData.idNumber}
-                        onChangeText={(value) => updateFormData('idNumber', escapeRegex(value))}
+                        onChangeText={(value) => updateFormData('idNumber', sanitizeZimbabweIdNumber(value))}
+                        maxLength={13}
                     />
 
                     {formData.idNumber.length > 0 && !isIdValid && (

@@ -68,37 +68,75 @@ export const lostPassport = asyncHandler(async (req, res) => {
 });
 
 export const searchPassport = asyncHandler(async (req, res) => {
-    const { category, identifier } = req.query;
-
+    const { category, identifier = "" } = req.query;
     if (!category || !identifier) {
-        return res.status(400).json({ message: "Category and identifier are required" });
+        return res.status(400).json({ message: "Category and identifier required" });
     }
 
-    let query = { status: { $in: ["lost", "found"] } };
+    let passports = null;
+    let isSingle = false;
 
-    if (category === 'passportNumber') {
-        query.passportNumber = { $regex: `^${escapeRegex(identifier)}$`, $options: 'i' };
-    } else if (category === 'idNumber') {
-        query.idNumber = { $regex: `^${escapeRegex(identifier)}$`, $options: 'i' };
-    } else if (category === 'surname') {
-        query.lastName = { $regex: `^${escapeRegex(identifier)}$`, $options: 'i' };
-    } else {
-        return res.status(400).json({ message: "Invalid category" });
+    switch (category) {
+        case 'passportNumber':
+            // Search by passportNumber - single result, update status to found
+            passports = await Passport.findOneAndUpdate(
+                {
+                    passportNumber: { $regex: `^${escapeRegex(identifier)}$`, $options: 'i' },
+                    status: { $in: ["lost", "found"] },
+                    claimed: false
+                },
+                { $set: { status: 'found', claimed: true, claimedAt: new Date() } },
+                { new: true }
+            ).select('_id passportNumber lastName firstName idNumber docLocation finderContact');
+            if (passports) {
+                await Stats.findOneAndUpdate({}, { $inc: { claimedDocuments: 1 } }, { upsert: true });
+            } else {
+                // If not found with claimed: false, try to find already claimed/found
+                passports = await Passport.findOne({
+                    passportNumber: { $regex: `^${escapeRegex(identifier)}$`, $options: 'i' },
+                    status: { $in: ["lost", "found"] }
+                }).select('_id passportNumber lastName firstName idNumber docLocation finderContact');
+            }
+            isSingle = true;
+            break;
+        case 'idNumber':
+            // Search by idNumber - single result, update status to found
+            passports = await Passport.findOneAndUpdate(
+                {
+                    idNumber: { $regex: `^${escapeRegex(identifier)}$`, $options: 'i' },
+                    status: { $in: ["lost", "found"] },
+                    claimed: false
+                },
+                { $set: { status: 'found', claimed: true, claimedAt: new Date() } },
+                { new: true }
+            ).select('_id passportNumber lastName firstName idNumber docLocation finderContact');
+            if (passports) {
+                await Stats.findOneAndUpdate({}, { $inc: { claimedDocuments: 1 } }, { upsert: true });
+            } else {
+                // If not found with claimed: false, try to find already claimed/found
+                passports = await Passport.findOne({
+                    idNumber: { $regex: `^${escapeRegex(identifier)}$`, $options: 'i' },
+                    status: { $in: ["lost", "found"] }
+                }).select('_id passportNumber lastName firstName idNumber docLocation finderContact');
+            }
+            isSingle = true;
+            break;
+        case 'surname':
+            // Search by lastName - multiple results, no status update
+            passports = await Passport.find({
+                lastName: { $regex: `^${escapeRegex(identifier)}$`, $options: 'i' },
+                status: { $in: ["lost", "found"] }
+            }).select('_id passportNumber lastName firstName idNumber docLocation finderContact').limit(10);
+            break;
+        default:
+            return res.status(400).json({ message: "Invalid category" });
     }
 
-    const passports = await Passport.find(query).select('_id passportNumber lastName firstName idNumber docLocation finderContact');
-
-    if (passports.length === 0) {
-        return res.status(404).json({ message: "No passports found" });
+    if (!passports || (Array.isArray(passports) && passports.length === 0)) {
+        return res.status(404).json({ message: "Passport not found" });
     }
 
-    // If searching by passportNumber or idNumber, return single result or array
-    if (category === 'passportNumber' || category === 'idNumber') {
-        if (passports.length === 1) {
-            return res.status(200).json(passports[0]);
-        }
-    }
-    return res.status(200).json(passports);
+    res.status(200).json(passports);
 });
 
 export const claimPassport = asyncHandler(async (req, res) => {
