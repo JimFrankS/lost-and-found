@@ -39,6 +39,8 @@ const SearchPassportModal = ({ isVisible, onClose, formData, searchPassport, upd
 
     const isFormComplete = Boolean(formData.category && formData.identifier && validateInput(formData.category, formData.identifier));
 
+    const isSearchDisabled = isSearching || !isFormComplete || (formData.identifier.length > 0 && !validateInput(formData.category, formData.identifier));
+
     const handleSearch = async () => {
         if (!formData.category) {
             showAlerts("Error", "Please select a search category");
@@ -88,7 +90,7 @@ const SearchPassportModal = ({ isVisible, onClose, formData, searchPassport, upd
                     }}>
                         <Text className="text-red-500 font-semibold">Close</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={handleSearch} disabled={isSearching || !isFormComplete || (formData.identifier.length > 0 && !validateInput(formData.category, formData.identifier))}>
+                    <TouchableOpacity onPress={handleSearch} disabled={isSearchDisabled}>
                         {(!isFormComplete || (formData.identifier.length > 0 && !validateInput(formData.category, formData.identifier))) ? (
                             <Text className="text-gray-500 font-semi-bold">Search</Text>
                         ) :
