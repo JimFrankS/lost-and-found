@@ -74,7 +74,6 @@ export const searchPassport = asyncHandler(async (req, res) => {
     }
 
     let passports = null;
-    let isSingle = false;
 
     switch (category) {
         case 'passportNumber':
@@ -97,7 +96,6 @@ export const searchPassport = asyncHandler(async (req, res) => {
                     status: { $in: ["lost", "found"] }
                 }).select('_id passportNumber lastName firstName idNumber docLocation finderContact');
             }
-            isSingle = true;
             break;
         case 'idNumber':
             // Search by idNumber - single result, update status to found
@@ -119,7 +117,6 @@ export const searchPassport = asyncHandler(async (req, res) => {
                     status: { $in: ["lost", "found"] }
                 }).select('_id passportNumber lastName firstName idNumber docLocation finderContact');
             }
-            isSingle = true;
             break;
         case 'surname':
             // Search by lastName - multiple results, no status update

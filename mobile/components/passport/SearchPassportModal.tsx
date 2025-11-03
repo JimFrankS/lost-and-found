@@ -44,11 +44,12 @@ const SearchPassportModal = ({ isVisible, onClose, formData, searchPassport, upd
             showAlerts("Error", "Please select a search category");
             return;
         }
-        if (!formData.identifier.trim()) {
+        const trimmedIdentifier = formData.identifier.trim();
+        if (!trimmedIdentifier) {
             showAlerts("Error", "Please fill in the identifier field");
             return;
         }
-        if (!validateInput(formData.category, formData.identifier)) {
+        if (!validateInput(formData.category, trimmedIdentifier)) {
             const messages = {
                 passportNumber: "Invalid passport number format. Example: AB123456",
                 idNumber: "Invalid Zimbabwean ID number format. Example: 12-1234567A12",
@@ -60,7 +61,7 @@ const SearchPassportModal = ({ isVisible, onClose, formData, searchPassport, upd
         //Reset Previous results before searching
         resetSearch();
         try {
-            await searchPassport(formData);
+            await searchPassport({ ...formData, identifier: trimmedIdentifier });
         } catch (error) {
             showAlerts("Error", "Failed to search passport. Please try again.");
             console.error("Search error:", error);
@@ -148,7 +149,9 @@ const SearchPassportModal = ({ isVisible, onClose, formData, searchPassport, upd
                                     } else if (formData.category === 'idNumber') {
                                         updateFormData('identifier', sanitizeZimbabweIdNumber(value));
                                     } else {
-                                        updateFormData('identifier', value.trim().slice(0, 100));
+                                        // Strip disallowed characters (allow letters, spaces, hyphens, apostrophes) and enforce max length
+                                        const sanitized = value.replace(/[^a-zA-Z\s\-']/g, '').slice(0, 100);
+                                        updateFormData('identifier', sanitized);
                                     }
                                 }}
                                 autoCapitalize={formData.category === 'surname' ? 'words' : 'none'}

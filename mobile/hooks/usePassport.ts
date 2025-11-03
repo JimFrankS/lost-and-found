@@ -74,6 +74,8 @@ export const usePassport = () => {
         onError: (error: any) => {
             const message = extractErrorMessage(error, "An error occurred whilst searching for the passport");
             if (__DEV__) console.error("Passport search error: ", message);
+            setSearchResults([]);
+            setSearchFound(false);
             showError(message);
         },
     });
@@ -85,7 +87,6 @@ export const usePassport = () => {
         }, // Api Call to claim passport
 
         onSuccess: (data: Passport) => {
-            setViewingPassportId(null);
             if (data) {
                 setViewedPassport(data);
                 setSearchFound(true);
@@ -99,6 +100,10 @@ export const usePassport = () => {
             const message = extractErrorMessage(error, "An error occurred while viewing passport");
             if (__DEV__) console.error("Passport view error:", message);
             showError(message);
+        },
+
+        onSettled: () => {
+            setViewingPassportId(null);
         },
     });
 
@@ -127,7 +132,10 @@ export const usePassport = () => {
 
     const reportPassport = async () => enterPassportMutation.mutateAsync(formData);
     const searchPassport = async (params: PassportSearchParams) => searchPassportMutation.mutateAsync(params);
-    const viewPassport = async (passportId: string) => viewPassportMutation.mutateAsync(passportId);
+    const viewPassport = async (passportId: string) => {
+        setViewingPassportId(passportId);
+        return viewPassportMutation.mutateAsync(passportId);
+    };
 
     const resetSearch = () => {
         setSearchFound(false);
