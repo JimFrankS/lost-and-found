@@ -1,92 +1,13 @@
 import axios, { AxiosInstance } from "axios"; //
 import { Platform } from "react-native";
-
-// TypeScript interfaces for API params and data shapes
-export interface BaggageSearchParams {
-  baggageType?: string;
-  transportType?: string;
-  routeType?: string;
-  destinationProvince?: string;
-  destinationDistrict?: string;
-}
-
-export interface BaggageFoundData {
-  baggageType: string;
-  transportType: string;
-  routeType: string;
-  destinationProvince: string;
-  destinationDistrict: string;
-  destination: string;
-  docLocation: string;
-  finderContact: string;
-}
-
-export interface BCertificateFoundData {
-  motherLastName: string;
-  lastName: string;
-  firstName: string;
-  secondName?: string;
-  docLocation: string;
-  finderContact: string;
-}
-
-export interface BCertificateClaimParams {
-  lastName: string;
-  motherLastName: string;
-  firstName: string;
-}
-
-export interface DLicenceSearchParams {
-  identifier: string;
-}
-
-export interface DLicenceFoundData {
-  licenceNumber: string;
-  lastName: string;
-  firstName: string;
-  idNumber: string;
-  docLocation: string;
-  finderContact: string;
-}
-
-export interface NatIdSearchParams {
-  identifier: string;
-}
-
-export interface NatIdFoundData {
-  lastName: string;
-  firstName: string;
-  idNumber: string;
-  docLocation: string;
-  finderContact: string;
-}
-
-export interface PassportSearchParams {
-  category: string;
-  identifier: string;
-}
-
-export interface PassportLostData {
-  passportNumber: string;
-  lastName: string;
-  firstName: string;
-  idNumber: string;
-  docLocation: string;
-  finderContact: string;
-}
-
-export interface SCertificateSearchParams {
-  certificateType: string;
-  lastName: string;
-}
-
-export interface SCertificateFoundData {
-  certificateType: string;
-  lastName: string;
-  firstName: string;
-  docLocation: string;
-  finderContact: string;
-}
+import {
+    BaggageFoundData,
+    BaggageSearchParams,
+    BCertificateFoundData,
+    BirthCertificateSearchParams,
+    DLicenceFoundData,
+    DLicenceSearchParams, NatIdFoundData, NatIdSearchParams, PassportFoundData, PassportSearchParams, SCertificateFoundData, SCertificateSearchParams
+} from "../types";
 
 const DEFAULT_BASE_URL = "https://lost-and-found-opal.vercel.app/";
 let API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || DEFAULT_BASE_URL;
@@ -134,8 +55,8 @@ export const baggageApi = {
 
 export const bcertificateApi = {
     foundbCertificate: (data: BCertificateFoundData) => apiClient.post("/api/bCertificate/found", data),
-    searchbCertificate: (params: BCertificateClaimParams) => apiClient.get("/api/bCertificate/search", {params}),
-    claimbCertificate: (params: BCertificateClaimParams) => apiClient.get("/api/bCertificate/claim", {params}),
+    searchbCertificate: (params: BirthCertificateSearchParams) => apiClient.get("/api/bCertificate/search", {params}),
+    claimbCertificate: (params: BirthCertificateSearchParams) => apiClient.get("/api/bCertificate/claim", {params}),
     viewBcertificate: (bcertificateId: string) => apiClient.get(`/api/bCertificate/view/${bcertificateId}`),
 };
 
@@ -152,7 +73,7 @@ export const natIdApi = {
 };
 
 export const passportApi = {
-    lostPassport: (data: PassportLostData) => apiClient.post("/api/passport/lost", data),
+    lostPassport: (data: PassportFoundData) => apiClient.post("/api/passport/lost", data),
     searchPassport: (params: PassportSearchParams) => apiClient.get("/api/passport/search", {params}),
     claimPassport: (identifier: string) => apiClient.get(`/api/passport/claim/${identifier}`),
 };

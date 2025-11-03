@@ -1,36 +1,33 @@
 import { Text, View, ScrollView, Modal, Alert, TouchableOpacity, TextInput, ActivityIndicator, Dimensions, Platform } from "react-native";
 import React from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { PHONE_NUMBER_REGEX, licenceNumberRegex, escapeRegex } from "@/constants/allowedValues";
-import { isValidZimbabweIdNumber } from "@/utils/idValidator";
+import { PHONE_NUMBER_REGEX } from "@/constants/allowedValues";
+import { isValidZimbabweIdNumber, sanitizeZimbabweIdNumber } from "@/utils/idValidator";
 import { showAlerts } from "@/utils/alerts";
 
-interface ReportDLicenseModalProps {
+interface ReportNatIdModalProps {
     isVisible: boolean;
     onClose: () => void;
     formData: {
-        licenceNumber: string;
         lastName: string;
         firstName: string;
         idNumber: string;
         docLocation: string;
         finderContact: string;
     };
-    reportDLicense: () => void;
+    reportNatID: () => void;
     updateFormData: (field: string, value: string) => void;
     isReporting: boolean;
 } // Props to be used in the modal and their data types and arguments.
 
-const ReportDLicenseModal = ({ isVisible, onClose, formData, reportDLicense, updateFormData, isReporting }: ReportDLicenseModalProps) => {
+const ReportNatIdModal = ({ isVisible, onClose, formData, reportNatID, updateFormData, isReporting }: ReportNatIdModalProps) => {
 
     const insets = useSafeAreaInsets();
 
     const isPhoneValid = PHONE_NUMBER_REGEX.test(formData.finderContact); // check for validating zim phone numbers during data entry.
-    const isLicenceValid = licenceNumberRegex.test(formData.licenceNumber); // check for validating licence number.
     const isIdValid = isValidZimbabweIdNumber(formData.idNumber); // check for validating id number.
 
     const isFormComplete = Boolean(
-        formData.licenceNumber &&
         formData.lastName &&
         formData.firstName &&
         formData.idNumber &&
@@ -44,11 +41,6 @@ const ReportDLicenseModal = ({ isVisible, onClose, formData, reportDLicense, upd
             return;
         }
 
-        if (!isLicenceValid) {
-            Alert.alert("Error", "Invalid licence number format. Example: 123456AB");
-            return;
-        }
-
         if (!isIdValid) {
             Alert.alert("Error", "Invalid ID number format.");
             return;
@@ -58,7 +50,7 @@ const ReportDLicenseModal = ({ isVisible, onClose, formData, reportDLicense, upd
             Alert.alert("Error", "Invalid phone number format. Example: 0719729537");
             return;
         }
-        reportDLicense();
+        reportNatID();
     };
 
     return (
@@ -87,8 +79,8 @@ const ReportDLicenseModal = ({ isVisible, onClose, formData, reportDLicense, upd
                         <Text className="text-red-500 font-semibold">Close</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity onPress={handleSave} disabled={isReporting || !isFormComplete || !isLicenceValid || !isIdValid || !isPhoneValid}>
-                        {(!isFormComplete || !isLicenceValid || !isIdValid || !isPhoneValid) ? (
+                    <TouchableOpacity onPress={handleSave} disabled={isReporting || !isFormComplete || !isIdValid || !isPhoneValid}>
+                        {(!isFormComplete || !isIdValid || !isPhoneValid) ? (
                             <Text className="text-gray-500 font-semibold">Upload</Text>
                         ) :
                             isReporting ? (
@@ -109,28 +101,12 @@ const ReportDLicenseModal = ({ isVisible, onClose, formData, reportDLicense, upd
                             } : undefined
                     }>
 
-                    <Text className="text-lg font-semibold text-gray-600 mb-2">Licence Number</Text>
-                    <TextInput
-                        className="border border-gray-300 rounded p-2 mb-4"
-                        placeholder="Kindly enter the licence number"
-                        value={formData.licenceNumber}
-                        onChangeText={(value) => updateFormData('licenceNumber', escapeRegex(value))}
-                        maxLength={8}
-                    />
-
-                    {formData.licenceNumber.length > 0 && !isLicenceValid && (
-                        <Text className="text-red-600 text-xs mb-7">Invalid licence number format. Example: 123456AB</Text>
-                    )}
-                    {formData.licenceNumber.length === 0 && (
-                        <View className="mb-7" />
-                    )}
-
                     <Text className="text-lg font-semibold text-gray-600 mb-2">Last Name</Text>
                     <TextInput
                         className="border border-gray-300 rounded p-2 mb-4"
-                        placeholder="Kindly enter the last name of the licence owner"
+                        placeholder="Kindly enter the last name of the ID owner"
                         value={formData.lastName}
-                        onChangeText={(value) => updateFormData('lastName', value)}
+                        onChangeText={(value) => updateFormData('lastName', value.replace(/[^a-zA-Z\s'-]/g, ''))}
                         multiline
                         maxLength={100}
                     />
@@ -138,9 +114,9 @@ const ReportDLicenseModal = ({ isVisible, onClose, formData, reportDLicense, upd
                     <Text className="text-lg font-semibold text-gray-600 mb-2">First Name</Text>
                     <TextInput
                         className="border border-gray-300 rounded p-2 mb-4"
-                        placeholder="Kindly enter the first name of the licence owner"
+                        placeholder="Kindly enter the first name of the ID owner"
                         value={formData.firstName}
-                        onChangeText={(value) => updateFormData('firstName', value)}
+                        onChangeText={(value) => updateFormData('firstName', value.replace(/[^a-zA-Z\s'-]/g, ''))}
                         multiline
                         maxLength={100}
                     />
@@ -148,10 +124,9 @@ const ReportDLicenseModal = ({ isVisible, onClose, formData, reportDLicense, upd
                     <Text className="text-lg font-semibold text-gray-600 mb-2">ID Number</Text>
                     <TextInput
                         className="border border-gray-300 rounded p-2 mb-4"
-                        placeholder="Kindly enter the ID number of the licence owner"
+                        placeholder="Kindly enter the ID number of the ID owner"
                         value={formData.idNumber}
-                        onChangeText={(value) => updateFormData('idNumber', escapeRegex(value))}
-                        maxLength={13}
+                        onChangeText={(value) => updateFormData('idNumber', sanitizeZimbabweIdNumber(value))}
                     />
 
                     {formData.idNumber.length > 0 && !isIdValid && (
@@ -161,10 +136,10 @@ const ReportDLicenseModal = ({ isVisible, onClose, formData, reportDLicense, upd
                         <View className="mb-7" />
                     )}
 
-                    <Text className="text-lg font-semibold text-gray-600 mb-2">Driver's Licence Location</Text>
+                    <Text className="text-lg font-semibold text-gray-600 mb-2">National ID Location</Text>
                     <TextInput
                         className="border border-gray-300 rounded p-2 mb-4"
-                        placeholder="Where can the owner come to collect the driving licence?"
+                        placeholder="Where can the owner come to collect the national ID?"
                         value={formData.docLocation}
                         onChangeText={(value) => updateFormData('docLocation', value)}
                         multiline
@@ -197,4 +172,4 @@ const ReportDLicenseModal = ({ isVisible, onClose, formData, reportDLicense, upd
     );
 };
 
-export default ReportDLicenseModal;
+export default ReportNatIdModal;

@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BAGGAGE_TYPES, TRANSPORT_TYPES, ROUTE_TYPES, PROVINCES, PROVINCE_DISTRICT_MAP } from "@/constants/allowedValues";
 import { OptionPicker, SelectField, toTitleCase } from "../FormsHelper";
 import { showAlerts } from "@/utils/alerts";
+import { Baggage, BaggageSearchParams } from "@/types";
 
 interface SearchBaggageModalProps {
     isVisible: boolean;
@@ -17,7 +18,7 @@ interface SearchBaggageModalProps {
         destinationProvince: string;
         destinationDistrict: string;
     };
-    searchBaggage: (params: any) => void;
+    searchBaggage: (params: BaggageSearchParams) => Promise<Baggage[]>;
     updateFormData: (field: string, value: string) => void;
     isSearching: boolean;
     resetSearch: () => void;
@@ -42,14 +43,19 @@ const SearchBaggageModal = ({ isVisible, onClose, formData, searchBaggage, updat
         formData.destinationDistrict
     );
 
-    const handleSearch = () => {
+    const handleSearch = async () => {
         if (!isFormComplete) {
             showAlerts("Error", "Please fill in all required fields.");
             return;
         }
         // Reset previous search results before searching
         resetSearch();
-        searchBaggage(formData);
+        try {
+            await searchBaggage(formData);
+        } catch (error) {
+            showAlerts("Error", "Failed to search baggage. Please try again.");
+            console.error("Search error:", error);
+        }
     };
 
     const renderSelect = (label: string, value: string, onPress: () => void, placeholder: string, displayValue?: string) => (

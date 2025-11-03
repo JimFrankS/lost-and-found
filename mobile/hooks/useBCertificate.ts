@@ -2,24 +2,15 @@ import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { bcertificateApi } from "@/utils/api";
 import { useState } from "react";
 import { extractErrorMessage, extractSuccessMessage, showError } from "@/utils/alerts";
-import { showSuccessToast } from "@/utils/toasts";
-import { Bcertificate } from "@/types";
-
-export interface BirthCertificateFormData {
-    motherLastName: string;
-    lastName: string;
-    firstName: string;
-    secondName?: string;
-    docLocation: string;
-    finderContact: string;
-}
+import { showSuccessToast } from "@/utils/toasts"; 
+import { Bcertificate, BCertificateFoundData, BirthCertificateSearchParams } from "@/types";
 
 export const useBCertificate = () => {
     const queryClient = useQueryClient();
     const [isBCertificateModalVisible, setIsBCertificateModalVisible] = useState(false);
     const [isSearchModalVisible, setIsSearchModalVisible] = useState(false);
 
-    const [formData, setFormData] = useState<BirthCertificateFormData>({
+    const [formData, setFormData] = useState<BCertificateFoundData>({
         motherLastName: "",
         lastName: "",
         firstName: "",
@@ -34,7 +25,7 @@ export const useBCertificate = () => {
         firstName: "",
     });
     const [searchFound, setSearchFound] = useState(false);
-    const [foundBcertificate, setFoundBcertificate] = useState<Bcertificate | Bcertificate[] | null>(null);
+    const [viewedBcertificate, setViewedBcertificate] = useState<Bcertificate | null>(null);
     const [viewingBcertificateId, setViewingBcertificateId] = useState<string | null>(null);
     const [searchResults, setSearchResults] = useState<Bcertificate[]>([]);
 
@@ -45,7 +36,9 @@ export const useBCertificate = () => {
     const closeSearchModal = () => setIsSearchModalVisible(false);
     
     const enterBCertificateMutation = useMutation({
-        mutationFn: (bcertificateData: any) => bcertificateApi.foundbCertificate(bcertificateData),
+        mutationFn: async (bcertificateData: BCertificateFoundData) => {
+            return await bcertificateApi.foundbCertificate(bcertificateData);
+        },
         onSuccess: (response) => {
             queryClient.invalidateQueries({ queryKey: ["bcertificate"] });
             setIsBCertificateModalVisible(false);
@@ -60,7 +53,7 @@ export const useBCertificate = () => {
     });
 
     const searchBcertificateMutation = useMutation({
-        mutationFn: async (searchParams: any) => {
+        mutationFn: async (searchParams: BirthCertificateSearchParams) => {
             try {
                 return await bcertificateApi.searchbCertificate(searchParams);
             } catch (error: any) {
@@ -70,14 +63,14 @@ export const useBCertificate = () => {
                 throw error;
             }
         },
-        onSuccess: (response: any) => {
-            setSearchFound(false);
-            setSearchResults([]);
-            setFoundBcertificate(response.data);
-            setSearchResults(Array.isArray(response.data) ? response.data : [response.data]);
-            setSearchFound(true);
-            closeSearchModal();
-        },
+    onSuccess: (response: any) => {
+        setViewedBcertificate(null);
+        const data = response.data;
+        const results = data == null ? [] : Array.isArray(data) ? data : [data];
+        setSearchResults(results);
+        setSearchFound(results.length > 0);
+        closeSearchModal();
+    },
         onError: (error: any) => {
             const message = extractErrorMessage(error, "An error occurred whilst searching for the certificate");
             if (__DEV__) console.error("Birth Certificate search error: ", message);
@@ -86,18 +79,21 @@ export const useBCertificate = () => {
     });
 
     const viewBcertificateMutation = useMutation({
-        mutationFn: (bcertificateId: string) => {
+        onMutate: (bcertificateId: string) => {
             setViewingBcertificateId(bcertificateId);
-            return bcertificateApi.viewBcertificate(bcertificateId);
         },
-        onSuccess: (response: any) => {
+        mutationFn: async (bcertificateId: string) => {
+            const response = await bcertificateApi.viewBcertificate(bcertificateId);
+            return response.data;
+        },
+        onSuccess: (data: Bcertificate) => {
             setViewingBcertificateId(null);
-            if (response.data) {
-                setFoundBcertificate(response.data);
+            if (data) {
+                setViewedBcertificate(data);
                 setSearchFound(true);
             }
         },
-        onError: (error: any, bcertificateId: string) => {
+        onError: (error: any) => {
             setViewingBcertificateId(null);
             const message = extractErrorMessage(error, "An error occurred while viewing certificate");
             if (__DEV__) console.error("Certificate view error:", message);
@@ -114,20 +110,18 @@ export const useBCertificate = () => {
     };
 
     const reportBCertificate = async () => enterBCertificateMutation.mutateAsync(formData);
-    const searchBcertificate = async (params: any) => searchBcertificateMutation.mutateAsync(params);
+    const searchBcertificate = async (params: BirthCertificateSearchParams) => searchBcertificateMutation.mutateAsync(params);
     const viewBcertificate = async (bcertificateId: string) => viewBcertificateMutation.mutateAsync(bcertificateId);
 
     const resetSearch = () => {
         setSearchFound(false);
-        setFoundBcertificate(null);
+        setViewedBcertificate(null);
         setSearchResults([]);
         setViewingBcertificateId(null);
     };
 
     const goBackToResults = () => {
-        if (searchResults.length > 0) {
-            setFoundBcertificate(searchResults);
-        }
+        setViewedBcertificate(null);
     };
 
     return {
@@ -149,9 +143,10 @@ export const useBCertificate = () => {
         isViewing: viewBcertificateMutation.isPending,
         refetch: () => queryClient.invalidateQueries({ queryKey: ["bcertificate"] }),
         searchFound,
-        foundBcertificate,
+        viewedBcertificate,
         viewingBcertificateId,
         searchResults,
+        foundBcertificate: viewedBcertificate || searchResults,
         resetSearch,
         goBackToResults,
     };

@@ -63,4 +63,13 @@ export function isValidZimbabweIdNumber(str: string): boolean {
   return letter === expectedLetter;
 }
 
+/**
+ * Sanitizes a Zimbabwean ID number by removing invalid characters, converting to uppercase, and limiting to 13 characters.
+ * @param value - The ID number string to sanitize
+ * @returns The sanitized ID number
+ */
+export const sanitizeZimbabweIdNumber = (value: string): string => {
+  return value.replace(/[^0-9A-Za-z-]/g, '').toUpperCase().slice(0, 13);
+};
+
 export { isValidZimbabweIdNumber as default, idNumberRegex, allowedCodes, modulus23Map };
