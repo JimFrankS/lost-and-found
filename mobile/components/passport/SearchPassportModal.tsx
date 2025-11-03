@@ -4,7 +4,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { showAlerts } from "@/utils/alerts";
 import { isValidZimbabweIdNumber, idNumberRegex, sanitizeZimbabweIdNumber } from "@/utils/idValidator";
 import { OptionPicker, SelectField } from "../FormsHelper";
-import { escapeRegex } from "@/constants/allowedValues";
 
 interface SearchParams {
     category: string;
@@ -42,11 +41,11 @@ const SearchPassportModal = ({ isVisible, onClose, formData, searchPassport, upd
         if (!value.trim()) return true; // Allow empty for now, but check on submit
         switch (category) {
             case 'passportNumber':
-                return /^[A-Z]{2}\d{6}$/i.test(value);
+                return value.length >= 8 && /^[A-Z]{2}\d{6}$/i.test(value);
             case 'idNumber':
-                return isValidZimbabweIdNumber(value);
+                return value.length >= 13 && isValidZimbabweIdNumber(value);
             case 'surname':
-                return /^[a-zA-Z\s\-']+$/.test(value.trim()); // Basic name validation
+                return value.length >= 1 && /^[a-zA-Z\s\-']+$/.test(value.trim()); // Basic name validation
             default:
                 return true;
         }
@@ -98,7 +97,7 @@ const SearchPassportModal = ({ isVisible, onClose, formData, searchPassport, upd
                 {/* Modal Header */}
                 <View className='flex-row items-center justify-between px-4 py-3 border-b border-gray-100'>
                     <TouchableOpacity onPress={() => {
-                        showAlerts("Cancel", "Are you sure you want to cancel?", [
+                        showAlerts("Confirm", "Are you sure you want to close this search?", [
                             { text: "No", style: "cancel" },
                             { text: "Yes", style: "destructive", onPress: onClose },
                         ]);
@@ -107,7 +106,7 @@ const SearchPassportModal = ({ isVisible, onClose, formData, searchPassport, upd
                     </TouchableOpacity>
                     <TouchableOpacity onPress={handleSearch} disabled={isSearchDisabled}>
                         {!isFormComplete ? (
-                            <Text className="text-gray-500 font-semi-bold">Search</Text>
+                            <Text className="text-gray-500 font-semibold">Search</Text>
                         ) :
                             isSearching ? (
                                 <ActivityIndicator size="small" color="blue" />
@@ -148,7 +147,7 @@ const SearchPassportModal = ({ isVisible, onClose, formData, searchPassport, upd
                     />
 
                     {formData.category ? (
-                        <View className="mb-4">
+                        <View className="mb-4" style={{ minHeight: 80 }}>
                             <Text className="text-lg font-semibold text-gray-600 mb-2">
                                 {formData.category === 'passportNumber' ? 'Passport Number' : formData.category === 'idNumber' ? 'ID Number' : 'Surname'}
                             </Text>
@@ -181,9 +180,6 @@ const SearchPassportModal = ({ isVisible, onClose, formData, searchPassport, upd
                                      formData.category === 'idNumber' ? 'Invalid ID number format.' :
                                      'Surname should contain only letters, spaces, hyphens, and apostrophes'}
                                 </Text>
-                            )}
-                            {formData.identifier.length === 0 && (
-                                <View className="mt-7" />
                             )}
                         </View>
                     ) : null}
