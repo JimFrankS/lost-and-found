@@ -32,11 +32,14 @@ export const useBaggage = () => {
 
 
     const enterBaggageMutation = useMutation({
-        mutationFn: (baggageData: BaggageFoundData) => baggageApi.lostBaggage(baggageData),
-        onSuccess: (response) => {
+        mutationFn: async (baggageData: BaggageFoundData) => {
+            const response = await baggageApi.lostBaggage(baggageData);
+            return response.data;
+        },
+        onSuccess: (data) => {
             queryClient.invalidateQueries({ queryKey: ['baggage'] });
             setIsBaggageModalVisible(false);
-            const message = extractSuccessMessage(response, 'Baggage reported successfully');
+            const message = extractSuccessMessage({ data }, 'Baggage reported successfully');
             showSuccessToast(message);
         },
         onError: (error: any) => {
@@ -71,11 +74,14 @@ export const useBaggage = () => {
         onMutate: (baggageId: string) => {
             setViewingBaggageId(baggageId);
         },
-        mutationFn: (baggageId: string) => baggageApi.viewBaggage(baggageId),
-        onSuccess: (response: any, baggageId: string) => {
+        mutationFn: async (baggageId: string) => {
+            const response = await baggageApi.viewBaggage(baggageId);
+            return response.data;
+        },
+        onSuccess: (data: Baggage, baggageId: string) => {
             setViewingBaggageId(null);
-            if (response.data) {
-                setViewedBaggage(response.data);
+            if (data) {
+                setViewedBaggage(data);
                 setSearchFound(true);
             }
         },
@@ -88,10 +94,13 @@ export const useBaggage = () => {
     });
 
     const claimBaggageMutation = useMutation({
-        mutationFn: (baggageId: string) => baggageApi.claimBaggage(baggageId),
-        onSuccess: (response: any) => {
-            if (response.data) {
-                setViewedBaggage(response.data);
+        mutationFn: async (baggageId: string) => {
+            const response = await baggageApi.claimBaggage(baggageId);
+            return response.data;
+        },
+        onSuccess: (data: Baggage) => {
+            if (data) {
+                setViewedBaggage(data);
                 setSearchFound(true);
             }
             showSuccessToast('Baggage claimed successfully!');

@@ -32,12 +32,15 @@ export const useDLicense = () => {
     const [searchResults, setSearchResults] = useState<DLicence[]>([]); // Store search results list
 
     const enterDLicenseMutation = useMutation({
-        mutationFn: (dLicenceData: DLicenceFoundData) => dLicenceApi.foundLicence(dLicenceData), // Api Call to report found driving license
+        mutationFn: async (dLicenceData: DLicenceFoundData) => {
+            const response = await dLicenceApi.foundLicence(dLicenceData);
+            return response.data;
+        }, // Api Call to report found driving license
 
-        onSuccess: (response) => {
+        onSuccess: (data) => {
             queryClient.invalidateQueries({ queryKey: ["dLicence"] }); // Invalidate dLicence queries to refetch updated data.
             setIsDLicenseModalVisible(false); // Close the modal
-            const message = extractSuccessMessage(response, "Driving License reported successfully");
+            const message = extractSuccessMessage({ data }, "Driving License reported successfully");
             showSuccessToast(message);
         },
 
@@ -79,12 +82,14 @@ export const useDLicense = () => {
         onMutate: (licenceId: string) => {
             setViewingDLicenceId(licenceId);
         },
-        mutationFn: (licenceId: string) =>
-            dLicenceApi.claimLicence(licenceId),
-        onSuccess: (response: any) => {
+        mutationFn: async (licenceId: string) => {
+            const response = await dLicenceApi.claimLicence(licenceId);
+            return response.data;
+        },
+        onSuccess: (data: DLicence) => {
             setViewingDLicenceId(null);
-            if (response.data) {
-                setViewedDLicence(response.data);
+            if (data) {
+                setViewedDLicence(data);
                 setSearchFound(true);
             }
         },

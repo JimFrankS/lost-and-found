@@ -31,12 +31,15 @@ export const useNatID = () => {
     const [searchResults, setSearchResults] = useState<NatId[]>([]); // Store search results list
 
     const enterNatIDMutation = useMutation({
-        mutationFn: (natIdData: NatIdFoundData) => natIdApi.foundId(natIdData), // Api Call to report found national ID
+        mutationFn: async (natIdData: NatIdFoundData) => {
+            const response = await natIdApi.foundId(natIdData);
+            return response.data;
+        }, // Api Call to report found national ID
 
-        onSuccess: (response) => {
+        onSuccess: (data) => {
             queryClient.invalidateQueries({ queryKey: ["natId"] }); // Invalidate natId queries to refetch updated data.
             setIsNatIDModalVisible(false); // Close the modal
-            const message = extractSuccessMessage(response, "National ID reported successfully");
+            const message = extractSuccessMessage({ data }, "National ID reported successfully");
             showSuccessToast(message);
         },
 
@@ -78,11 +81,14 @@ export const useNatID = () => {
         onMutate: (id: string) => {
             setViewingNatIdId(id);
         },
-        mutationFn: (id: string) => natIdApi.claimId(id),
-        onSuccess: (response: any) => {
+        mutationFn: async (id: string) => {
+            const response = await natIdApi.claimId(id);
+            return response.data;
+        },
+        onSuccess: (data: NatId) => {
             setViewingNatIdId(null);
-            if (response.data) {
-                setViewedNatId(response.data);
+            if (data) {
+                setViewedNatId(data);
                 setSearchFound(true);
             }
         },

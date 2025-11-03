@@ -36,11 +36,14 @@ export const useBCertificate = () => {
     const closeSearchModal = () => setIsSearchModalVisible(false);
     
     const enterBCertificateMutation = useMutation({
-        mutationFn: (bcertificateData: BCertificateFoundData) => bcertificateApi.foundbCertificate(bcertificateData),
-        onSuccess: (response) => {
+        mutationFn: async (bcertificateData: BCertificateFoundData) => {
+            const response = await bcertificateApi.foundbCertificate(bcertificateData);
+            return response.data;
+        },
+        onSuccess: (data) => {
             queryClient.invalidateQueries({ queryKey: ["bcertificate"] });
             setIsBCertificateModalVisible(false);
-            const message = extractSuccessMessage(response, "Birth Certificate reported successfully");
+            const message = extractSuccessMessage({ data }, "Birth Certificate reported successfully");
             showSuccessToast(message);
         },
         onError: (error: any) => {
@@ -61,13 +64,14 @@ export const useBCertificate = () => {
                 throw error;
             }
         },
-        onSuccess: (response: any) => {
-            const data = response.data;
-            const results = data === null ? [] : Array.isArray(data) ? data : [data];
-            setSearchResults(results);
-            setSearchFound(results.length > 0);
-            closeSearchModal();
-        },
+    onSuccess: (response: any) => {
+        setViewedBcertificate(null);
+        const data = response.data;
+        const results = data === null ? [] : Array.isArray(data) ? data : [data];
+        setSearchResults(results);
+        setSearchFound(results.length > 0);
+        closeSearchModal();
+    },
         onError: (error: any) => {
             const message = extractErrorMessage(error, "An error occurred whilst searching for the certificate");
             if (__DEV__) console.error("Birth Certificate search error: ", message);
@@ -79,16 +83,18 @@ export const useBCertificate = () => {
         onMutate: (bcertificateId: string) => {
             setViewingBcertificateId(bcertificateId);
         },
-        mutationFn: (bcertificateId: string) =>
-            bcertificateApi.viewBcertificate(bcertificateId),
-        onSuccess: (response: any) => {
+        mutationFn: async (bcertificateId: string) => {
+            const response = await bcertificateApi.viewBcertificate(bcertificateId);
+            return response.data;
+        },
+        onSuccess: (data: Bcertificate) => {
             setViewingBcertificateId(null);
-            if (response.data) {
-                setViewedBcertificate(response.data);
+            if (data) {
+                setViewedBcertificate(data);
                 setSearchFound(true);
             }
         },
-        onError: (error: any, bcertificateId: string) => {
+        onError: (error: any) => {
             setViewingBcertificateId(null);
             const message = extractErrorMessage(error, "An error occurred while viewing certificate");
             if (__DEV__) console.error("Certificate view error:", message);

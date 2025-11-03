@@ -52,12 +52,7 @@ const SearchNatIdModal = ({ isVisible, onClose, formData, searchNatId, updateFor
         }
         //Reset Previous results before searching
         resetSearch();
-        try {
-            await searchNatId(formData);
-        } catch (error) {
-            showAlerts("Error", "Failed to search national ID. Please try again.");
-            console.error("Search error:", error);
-        }
+        await searchNatId(formData);
     };
 
     return (
