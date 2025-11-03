@@ -6,6 +6,21 @@ import { isValidZimbabweIdNumber, idNumberRegex, sanitizeZimbabweIdNumber } from
 import { OptionPicker, SelectField } from "../FormsHelper";
 import { escapeRegex } from "@/constants/allowedValues";
 
+interface SearchParams {
+    category: string;
+    identifier: string;
+}
+
+interface PassportSearchResult {
+    _id: string;
+    passportNumber: string;
+    lastName: string;
+    firstName: string;
+    idNumber: string;
+    docLocation?: string;
+    finderContact?: string;
+}
+
 interface SearchPassportModalProps {
     isVisible: boolean;
     onClose: () => void;
@@ -13,7 +28,7 @@ interface SearchPassportModalProps {
         category: string;
         identifier: string;
     };
-    searchPassport: (params: any) => Promise<any>;
+    searchPassport: (params: SearchParams) => Promise<PassportSearchResult | PassportSearchResult[]>;
     updateFormData: (field: string, value: string) => void;
     isSearching: boolean;
     resetSearch: () => void;
@@ -39,7 +54,7 @@ const SearchPassportModal = ({ isVisible, onClose, formData, searchPassport, upd
 
     const isFormComplete = Boolean(formData.category && formData.identifier && validateInput(formData.category, formData.identifier));
 
-    const isSearchDisabled = isSearching || !isFormComplete || (formData.identifier.length > 0 && !validateInput(formData.category, formData.identifier));
+    const isSearchDisabled = isSearching || !isFormComplete;
 
     const handleSearch = async () => {
         if (!formData.category) {
@@ -91,7 +106,7 @@ const SearchPassportModal = ({ isVisible, onClose, formData, searchPassport, upd
                         <Text className="text-red-500 font-semibold">Close</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={handleSearch} disabled={isSearchDisabled}>
-                        {(!isFormComplete || (formData.identifier.length > 0 && !validateInput(formData.category, formData.identifier))) ? (
+                        {!isFormComplete ? (
                             <Text className="text-gray-500 font-semi-bold">Search</Text>
                         ) :
                             isSearching ? (
@@ -147,7 +162,8 @@ const SearchPassportModal = ({ isVisible, onClose, formData, searchPassport, upd
                                 value={formData.identifier}
                                 onChangeText={(value) => {
                                     if (formData.category === 'passportNumber') {
-                                        updateFormData('identifier', escapeRegex(value.toUpperCase()).slice(0, 8));
+                                        const sanitized = value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8);
+                                        updateFormData('identifier', sanitized);
                                     } else if (formData.category === 'idNumber') {
                                         updateFormData('identifier', sanitizeZimbabweIdNumber(value));
                                     } else {
