@@ -69,7 +69,7 @@ export const useSCertificate = () => {
 
         onError: (error: any) => {
             const message = extractErrorMessage(error, "An error occurred whilst searching for the certificate");
-            if (__DEV__) console.error("Baggage search error: ", message);
+            if (__DEV__) console.error("Certificate search error: ", message);
             showError(message);
             setSearchFound(false);
             setSearchResults([]);

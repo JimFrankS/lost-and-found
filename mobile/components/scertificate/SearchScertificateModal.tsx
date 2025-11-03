@@ -103,9 +103,8 @@ const SearchScertificateModal = ({ isVisible, onClose, formData, searchScertific
                             value={formData.lastName}
                             onChangeText={(text) => updateFormData('lastName', text)}
                         />
+
                     </View>
-
-
 
                     {/* Pickers */}
 
@@ -113,7 +112,7 @@ const SearchScertificateModal = ({ isVisible, onClose, formData, searchScertific
                         visible={openPicker === 'certificateType'}
                         title="Select Certificate type"
                         options={SCERTIFICATE_TYPES as unknown as string[]}
-                        onSelect={(val) => updateFormData('certificateType', String(val).toLocaleLowerCase())}
+                        onSelect={(val) => updateFormData('certificateType', String(val).toLowerCase())}
                         onClose={() => setOpenPicker(null)}
                     />
                 </ScrollView>
