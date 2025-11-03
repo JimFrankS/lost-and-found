@@ -2,7 +2,7 @@ import { Text, View, ScrollView, Modal, Alert, TouchableOpacity, TextInput, Acti
 import React, { useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { PHONE_NUMBER_REGEX, SCERTIFICATE_TYPES, PHONE_EXAMPLE } from "@/constants/allowedValues";
-import { OptionPicker, SelectField } from "./FormsHelper";
+import { OptionPicker, SelectField } from "../FormsHelper";
 import { showAlerts } from "@/utils/alerts";
 
 interface ReportSCertificateModalProps {
