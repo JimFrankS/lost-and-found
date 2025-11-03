@@ -20,6 +20,7 @@ export const useDLicense = () => {
     }); // State for holding the form data for enter driving license details.
 
     const [searchFormData, setSearchFormData] = useState({
+        category: "",
         identifier: "",
     }); // State for holding the search form data.
 
@@ -33,14 +34,13 @@ export const useDLicense = () => {
 
     const enterDLicenseMutation = useMutation({
         mutationFn: async (dLicenceData: DLicenceFoundData) => {
-            const response = await dLicenceApi.foundLicence(dLicenceData);
-            return response.data;
+            return await dLicenceApi.foundLicence(dLicenceData);
         }, // Api Call to report found driving license
 
-        onSuccess: (data) => {
+        onSuccess: (response) => {
             queryClient.invalidateQueries({ queryKey: ["dLicence"] }); // Invalidate dLicence queries to refetch updated data.
             setIsDLicenseModalVisible(false); // Close the modal
-            const message = extractSuccessMessage({ data }, "Driving License reported successfully");
+            const message = extractSuccessMessage(response, "Driving License reported successfully");
             showSuccessToast(message);
         },
 
@@ -68,7 +68,7 @@ export const useDLicense = () => {
             const results = data === null ? [] : Array.isArray(data) ? data : [data];
             setSearchResults(results);
 
-            setSearchFound(results.length > 0);
+            setSearchFound(true);
         },
 
         onError: (error: any) => {

@@ -33,13 +33,12 @@ export const useBaggage = () => {
 
     const enterBaggageMutation = useMutation({
         mutationFn: async (baggageData: BaggageFoundData) => {
-            const response = await baggageApi.lostBaggage(baggageData);
-            return response.data;
+            return await baggageApi.lostBaggage(baggageData);
         },
-        onSuccess: (data) => {
+        onSuccess: (response) => {
             queryClient.invalidateQueries({ queryKey: ['baggage'] });
             setIsBaggageModalVisible(false);
-            const message = extractSuccessMessage({ data }, 'Baggage reported successfully');
+            const message = extractSuccessMessage(response, 'Baggage reported successfully');
             showSuccessToast(message);
         },
         onError: (error: any) => {
@@ -58,7 +57,7 @@ export const useBaggage = () => {
             const results = data ?? [];
             setSearchResults(results);
 
-            setSearchFound(results.length > 0);
+            setSearchFound(true);
             closeBaggageModal();
         },
         onError: (error: any) => {

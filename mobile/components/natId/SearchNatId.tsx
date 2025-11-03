@@ -15,7 +15,7 @@ const SearchNatId = ({ natIdHook }: SearchNatIdProps) => {
             {showingResults ? (
                 <FoundNatIDCard
                     searchFound={natIdHook.searchFound}
-                    foundNatId={natIdHook.foundNatId}
+                    foundNatId={natIdHook.viewedNatId || natIdHook.searchResults}
                     resetSearch={natIdHook.resetSearch}
                     goBackToResults={natIdHook.goBackToResults}
                     viewNatId={natIdHook.viewNatId}

@@ -1,6 +1,6 @@
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { natIdApi } from "@/utils/api";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { extractErrorMessage, extractSuccessMessage, showError } from "@/utils/alerts";
 import { showSuccessToast } from "@/utils/toasts"; 
 import { NatId, NatIdFoundData, NatIdSearchParams } from "@/types";
@@ -67,7 +67,7 @@ export const useNatID = () => {
             const safeResults = data === null ? [] : Array.isArray(data) ? data : [data];
             setSearchResults(safeResults);
 
-            setSearchFound(safeResults.length > 0);
+            setSearchFound(true);
         },
 
         onError: (error: any) => {
@@ -123,20 +123,29 @@ export const useNatID = () => {
 
     // Wrapper helpers so callers can wait if needed.
 
-    const reportNatID = async () => enterNatIDMutation.mutateAsync(formData);
-    const searchNatId = async (params: NatIdSearchParams) => searchNatIdMutation.mutateAsync(params);
-    const viewNatId = async (id: string) => viewNatIdMutation.mutateAsync(id);
+    const reportNatID = useCallback(
+        async () => enterNatIDMutation.mutateAsync(formData),
+        [formData]
+    );
+    const searchNatId = useCallback(
+        async (params: NatIdSearchParams) => searchNatIdMutation.mutateAsync(params),
+        []
+    );
+    const viewNatId = useCallback(
+        async (id: string) => viewNatIdMutation.mutateAsync(id),
+        []
+    );
 
-    const resetSearch = () => {
+    const resetSearch = useCallback(() => {
         setSearchFound(false);
         setViewedNatId(null);
         setSearchResults([]);
         setViewingNatIdId(null);
-    };
+    }, []);
 
-    const goBackToResults = () => {
+    const goBackToResults = useCallback(() => {
         setViewedNatId(null);
-    };
+    }, []);
 
     return {
         isNatIDModalVisible,

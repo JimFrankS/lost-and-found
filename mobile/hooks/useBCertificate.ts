@@ -37,13 +37,12 @@ export const useBCertificate = () => {
     
     const enterBCertificateMutation = useMutation({
         mutationFn: async (bcertificateData: BCertificateFoundData) => {
-            const response = await bcertificateApi.foundbCertificate(bcertificateData);
-            return response.data;
+            return await bcertificateApi.foundbCertificate(bcertificateData);
         },
-        onSuccess: (data) => {
+        onSuccess: (response) => {
             queryClient.invalidateQueries({ queryKey: ["bcertificate"] });
             setIsBCertificateModalVisible(false);
-            const message = extractSuccessMessage({ data }, "Birth Certificate reported successfully");
+            const message = extractSuccessMessage(response, "Birth Certificate reported successfully");
             showSuccessToast(message);
         },
         onError: (error: any) => {
@@ -69,7 +68,7 @@ export const useBCertificate = () => {
         const data = response.data;
         const results = data === null ? [] : Array.isArray(data) ? data : [data];
         setSearchResults(results);
-        setSearchFound(results.length > 0);
+        setSearchFound(true);
         closeSearchModal();
     },
         onError: (error: any) => {

@@ -15,7 +15,7 @@ const SearchDLicence = ({ dlicenceHook }: SearchDLicenceProps) => {
             {showingResults ? (
                 <FoundDLicenceCard
                     searchFound={dlicenceHook.searchFound}
-                    foundDLicence={dlicenceHook.foundDLicence}
+                    foundDLicence={dlicenceHook.viewedDLicence || dlicenceHook.searchResults}
                     resetSearch={dlicenceHook.resetSearch}
                     goBackToResults={dlicenceHook.goBackToResults}
                     viewDLicence={dlicenceHook.viewDLicence}

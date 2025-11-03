@@ -82,6 +82,7 @@ export interface BirthCertificateSearchParams {
 }
 
 export interface DLicenceSearchParams {
+    category: string;
     identifier: string;
 }
 
