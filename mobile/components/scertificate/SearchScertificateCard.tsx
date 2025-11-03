@@ -10,7 +10,6 @@ interface SearchScertificateCardProps {
     formData: {
         certificateType: string;
         lastName: string;
-        firstName: string;
     };
     openScertificateModal: () => void;
     closeScertificateModal: () => void;
