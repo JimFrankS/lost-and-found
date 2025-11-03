@@ -6,17 +6,24 @@ interface ModalWrapperProps {
   visible: boolean;
   children: React.ReactNode;
   transparent?: boolean;
+  onClose?: () => void;
 }
 
 const ModalWrapper: React.FC<ModalWrapperProps> = ({
   visible,
   children,
   transparent = true,
+  onClose,
 }) => {
   const insets = useSafeAreaInsets();
 
   return (
-    <Modal visible={visible} animationType="slide" transparent={transparent}>
+    <Modal
+      visible={visible}
+      animationType="slide"
+      transparent={transparent}
+      onRequestClose={() => onClose?.()}
+    >
       <View
         style={[
           styles.container,
@@ -27,8 +34,15 @@ const ModalWrapper: React.FC<ModalWrapperProps> = ({
             paddingRight: insets.right,
           }
         ]}
+        // Tapping on backdrop should close modal
+        onStartShouldSetResponder={() => true}
+        onResponderRelease={(e) => {
+          // Only trigger close if release happens on the backdrop and not on content
+          // We'll rely on the content wrapper to stop propagation via pointerEvents
+          onClose?.();
+        }}
       >
-        <View style={styles.contentWrapper}>
+        <View style={styles.contentWrapper} pointerEvents="box-none">
           {children}
         </View>
       </View>

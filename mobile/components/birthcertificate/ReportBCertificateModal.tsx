@@ -50,7 +50,7 @@ const ReportBCertificateModal = ({ isVisible, onClose, formData, reportBCertific
     };
 
     return (
-        <ModalWrapper visible={isVisible}>
+        <ModalWrapper visible={isVisible} onClose={onClose}>
             <View className="flex-1">
                 {/* Header */}
                 <View className="flex-row items-center justify-between px-4 py-3 border-b border-gray-100">

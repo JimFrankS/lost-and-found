@@ -64,7 +64,7 @@ const SearchBaggageModal = ({ isVisible, onClose, formData, searchBaggage, updat
     );
 
     return (
-        <ModalWrapper visible={isVisible}>
+        <ModalWrapper visible={isVisible} onClose={onClose}>
             <View className="flex-1">
                 {/* Header */}
                 <View className='flex-row items-center justify-between px-4 py-3 border-b border-gray-100'>
@@ -93,7 +93,7 @@ const SearchBaggageModal = ({ isVisible, onClose, formData, searchBaggage, updat
                     style={
                         Platform.OS === 'web'
                             ? {
-                                maxHeight: Dimensions.get('window').height - insets.top - insets.bottom,
+                                maxHeight: Dimensions.get('window').height,
                                 overflow: 'scroll',
                             }
                             : undefined
