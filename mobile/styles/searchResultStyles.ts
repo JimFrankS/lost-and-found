@@ -22,7 +22,7 @@ export const searchResultStyles =StyleSheet.create({
     paddingHorizontal: 12,
     borderBottomWidth: 1,
     borderBottomColor: "#F3F4F6",
-    backgroundColor: "rgba(255, 255, 255, 0.8)",
+    backgroundColor: "rgba(255, 255, 255, 0.5)",
   },
   backButton: {
     paddingVertical: 8,
