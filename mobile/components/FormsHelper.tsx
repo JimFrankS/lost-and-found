@@ -17,8 +17,8 @@ export interface OptionPickerProps { // Props for the OptionPicker component
 export const OptionPicker = ({ visible, title, options, onSelect, onClose, getLabel }: OptionPickerProps) => { // Function to render a modal for selecting options from a list
   return (
     <Modal visible={visible} animationType="fade" transparent>
-      <View className="flex-1 bg-black/40 justify-end">
-        <View className="bg-white rounded-t-xl p-4 max-h-[70%]">
+      <View className="flex-1 bg-black/40 justify-center items-center px-4">
+        <View className="bg-white rounded-xl p-4 w-full max-w-md max-h-[70%]">
           <View className="flex-row items-center justify-between mb-3">
             <Text className="text-lg font-semibold">{title}</Text>
             <TouchableOpacity onPress={onClose}>

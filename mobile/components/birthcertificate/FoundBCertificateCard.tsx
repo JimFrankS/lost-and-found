@@ -8,6 +8,7 @@ import { toTitleCase } from '@/utils/string.utility';
 
 interface FoundBCertificateCardProps {
     searchFound: boolean;
+    searchPerformed: boolean;
     foundBcertificate: Bcertificate | Bcertificate[] | null;
     resetSearch: () => void;
     goBackToResults?: () => void;
@@ -20,6 +21,7 @@ interface FoundBCertificateCardProps {
 const FoundBCertificateCard: React.FC<FoundBCertificateCardProps> = ({
     foundBcertificate,
     searchFound,
+    searchPerformed,
     resetSearch,
     goBackToResults,
     viewBcertificate,
@@ -29,7 +31,7 @@ const FoundBCertificateCard: React.FC<FoundBCertificateCardProps> = ({
 }) => {
     const insets = useSafeAreaInsets();
 
-    if (!searchFound) return null;
+    if (!searchPerformed) return null;
 
     if (!foundBcertificate) return null; // safety checks to prevent errors in the render method in case nothing is found
 

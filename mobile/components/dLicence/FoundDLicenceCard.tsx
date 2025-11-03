@@ -8,6 +8,7 @@ import { toTitleCase } from "@/utils/string.utility";
 
 interface FoundDLicenceCardProps {
     searchFound: boolean;
+    searchPerformed: boolean;
     foundDLicence: DLicence | DLicence[] | null;
     resetSearch: () => void;
     goBackToResults?: () => void;
@@ -20,6 +21,7 @@ interface FoundDLicenceCardProps {
 const FoundDLicenceCard: React.FC<FoundDLicenceCardProps> = ({
     foundDLicence,
     searchFound,
+    searchPerformed,
     resetSearch,
     goBackToResults,
     viewDLicence,
@@ -29,7 +31,7 @@ const FoundDLicenceCard: React.FC<FoundDLicenceCardProps> = ({
 }) => {
     const insets = useSafeAreaInsets();
 
-    if (!searchFound) return null;
+    if (!searchPerformed) return null;
 
     if (!foundDLicence) return null; // safety checks to prevent errors in the render method in case nothing is found
 

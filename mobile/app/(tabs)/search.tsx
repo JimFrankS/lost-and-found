@@ -9,6 +9,7 @@ import { View, ScrollView } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { tabStyles } from '@/styles/tabStyles';
 import BackGroundCard from '@/components/BackGroundCard'
+import ResponsiveContainer from '@/components/ResponsiveContainer'
 import { useBaggage } from '@/hooks/useBaggage'
 import { useSCertificate } from '@/hooks/useSCertificate'
 import { useBCertificate } from '@/hooks/useBCertificate'
@@ -24,35 +25,45 @@ const Search = () => {
   const natIdHook = useNatID();
   const passportHook = usePassport();
 
-  const showFullScreenResults = baggageHook.searchFound || scertificateHook.searchFound || bcertificateHook.searchFound || dlicenceHook.searchFound || natIdHook.searchFound || passportHook.searchFound;
+  const showFullScreenResults =
+    baggageHook.searchFound ||
+    scertificateHook.searchFound ||
+    bcertificateHook.searchPerformed ||
+    dlicenceHook.searchPerformed ||
+    natIdHook.searchFound ||
+    passportHook.searchFound;
 
   return (
-    <View style = {{ flex: 1 }}>
+    <View style={{ flex: 1 }}>
       <BackGroundCard />
       <SafeAreaView style={tabStyles.safeArea}>
         {showFullScreenResults ? (
-          <ScrollView contentContainerStyle={tabStyles.container}>
+          <View style={{ flex: 1 }}>
             {baggageHook.searchFound && <SearchBaggage baggageHook={baggageHook} />}
             {scertificateHook.searchFound && (
               <SearchScertificate scertificateHook={scertificateHook} />
             )}
-            {bcertificateHook.searchFound && <SearchBCertificate bcertificateHook={bcertificateHook} />}
-            {dlicenceHook.searchFound && <SearchDLicence dlicenceHook={dlicenceHook} />}
+            {(bcertificateHook.searchPerformed) && <SearchBCertificate bcertificateHook={bcertificateHook} />}
+            {(dlicenceHook.searchPerformed) && <SearchDLicence dlicenceHook={dlicenceHook} />}
             {natIdHook.searchFound && <SearchNatId natIdHook={natIdHook} />}
             {passportHook.searchFound && <SearchPassport passportHook={passportHook} />}
-          </ScrollView>
-        ) : (
-          <View style={tabStyles.container}>
-            <SearchBaggage baggageHook={baggageHook} />
-            <SearchScertificate scertificateHook={scertificateHook} />
-            <SearchBCertificate bcertificateHook={bcertificateHook} />
-            <SearchDLicence dlicenceHook={dlicenceHook} />
-            <SearchNatId natIdHook={natIdHook} />
-            <SearchPassport passportHook={passportHook} />
           </View>
+        ) : (
+          <ScrollView 
+            style={{ flex: 1 }}
+            contentContainerStyle={tabStyles.container}
+          >
+            <ResponsiveContainer>
+              <SearchBaggage baggageHook={baggageHook} />
+              <SearchBCertificate bcertificateHook={bcertificateHook} />
+              <SearchDLicence dlicenceHook={dlicenceHook} />
+              <SearchNatId natIdHook={natIdHook} />
+              <SearchPassport passportHook={passportHook} />
+              <SearchScertificate scertificateHook={scertificateHook} />
+            </ResponsiveContainer>
+          </ScrollView>
         )}
       </SafeAreaView>
-
     </View>
   )
 }

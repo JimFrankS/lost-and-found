@@ -6,11 +6,14 @@ export const tabStyles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   container: {
-    flex: 1,
     position: 'relative',
+    alignItems: 'center', // Center content horizontally on large screens
+    paddingHorizontal: 16, // Add horizontal padding
   },
   content: {
     flex: 1,
     zIndex: 1,
+    width: '100%',
+    maxWidth: 800, // Constrain width on large screens
   },
 });

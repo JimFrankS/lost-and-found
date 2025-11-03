@@ -20,7 +20,7 @@ const ReportBaggageCard = () => {
     <>
       <CardWrapper onPress={openBaggageModal} accessibilityLabel="Report lost baggage">
         <Feather name="plus" size={20} color="black" />
-        <Text style={{ marginLeft: 10, color: '#374151', fontWeight: '700' }}>Report Lost Baggage</Text>
+        <Text className="ml-2 text-gray-600 font-bold text-lg">Report Lost Baggage</Text>
       </CardWrapper>
 
       <ReportBaggageModal

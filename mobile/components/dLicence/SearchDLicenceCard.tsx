@@ -8,6 +8,7 @@ import { DLicenceSearchParams, DLicence } from "@/types";
 interface SearchDLicenceCardProps {
     isDLicenceModalVisible: boolean;
     formData: {
+        category: string;
         identifier: string;
     };
     openDLicenceModal: () => void;
@@ -33,7 +34,7 @@ const SearchDLicenceCard = ({
         <>
             <CardWrapper onPress={openDLicenceModal} accessibilityLabel="Search Lost Driving Licence">
                 <Feather name="search" size={24} color="black" />
-                <Text style={{ marginLeft: 8, color: '#4B5563', fontWeight: 'bold', fontSize: 18 }}>Search Lost Driving Licence</Text>
+                <Text className="ml-2 text-gray-600 font-bold text-lg">Search Lost Driving Licence</Text>
             </CardWrapper>
 
             <SearchDLicenceModal
