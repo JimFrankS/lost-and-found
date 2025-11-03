@@ -4,15 +4,15 @@ import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 
 import { searchResultStyles } from "@/styles/searchResultStyles";
 import NothingFound from "../NothingFound";
-import { Baggage, Scertificate } from "@/types";
+import { Scertificate } from "@/types";
 import { toTitleCase } from "@/utils/string.utility";
 
-interface FoundScertificateCardProps {
+export interface FoundScertificateCardProps {
     searchFound: boolean;
     foundScertificate: Scertificate | Scertificate[] | null;
     resetSearch: () => void;
     goBackToResults?: () => void;
-    viewScertificate?: (sceritifacateId: string) => void;
+    viewScertificate?: (scertificateId: string) => void;
     isViewing?: boolean;
     viewingScertificateId?: string | null;
     searchResults?: Scertificate[];
@@ -86,25 +86,25 @@ const FoundScertificateCard = ({
                     </TouchableOpacity>
 
                     <Text style={searchResultStyles.headerTitle}>
-                        {isMultipleResults ? "Found Certificate Results" : (foundScertificate && !Array.isArray(foundScertificate) ? "Found Certificate Result" : "NA")}
+                        {isMultipleResults ? "Found Certificate Results" : "Found Certificate Result"}
                     </Text>
                     <View style={searchResultStyles.headerSpacer} />
                 </View>
 
                 {isMultipleResults ? (
                     <ScrollView contentContainerStyle={searchResultStyles.resultsContainer}>
-                        {foundScertificate.map((scertificate: any, index: number) => {
+                        {foundScertificate.map((scertificate: Scertificate, index: number) => {
                             if (!scertificate || typeof scertificate !== 'object' || !scertificate._id) return null;
                             return (
-                                <View key={String(scertificate._id || index)} style={searchResultStyles.card}>
+                                <View key={scertificate._id || index.toString()} style={searchResultStyles.card}>
                                     <Text style={searchResultStyles.cardTitle}>Certificate Type: {toTitleCase(String(scertificate.certificateType || 'NA'))} </Text>
                                     <Text style={searchResultStyles.cardText}>Surname: {toTitleCase(String(scertificate.lastName || 'NA'))} </Text>
 
                                     <TouchableOpacity
-                                        onPress={() => handleViewDetails(String(scertificate._id || ''))}
-                                        disabled={isViewing && viewingScertificateId === String(scertificate._id || '')}
+                                        onPress={() => handleViewDetails(scertificate._id)}
+                                        disabled={isViewing && viewingScertificateId === scertificate._id}
                                         style={[searchResultStyles.actionButton, searchResultStyles.viewButton]}>
-                                        <Text style={searchResultStyles.actionText}> {isViewing && viewingScertificateId === String(scertificate._id || '') ? "Loading..." : "View Details"} </Text>
+                                        <Text style={searchResultStyles.actionText}> {isViewing && viewingScertificateId === scertificate._id ? "Loading..." : "View Details"} </Text>
                                     </TouchableOpacity>
                                 </View>
                             );
