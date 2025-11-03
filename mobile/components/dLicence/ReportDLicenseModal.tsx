@@ -97,7 +97,6 @@ const ReportDLicenseModal = ({ isVisible, onClose, formData, reportDLicense, upd
                     style={
                         Platform.OS === 'web'
                             ? {
-                                maxHeight: Dimensions.get('window').height - insets.top - insets.bottom,
                                 overflow: 'scroll',
                             } : undefined
                     }>

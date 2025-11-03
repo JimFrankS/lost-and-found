@@ -89,7 +89,6 @@ const ReportNatIdModal = ({ isVisible, onClose, formData, reportNatID, updateFor
                     style={
                         Platform.OS === 'web'
                             ? {
-                                maxHeight: Dimensions.get('window').height - insets.top - insets.bottom,
                                 overflow: 'scroll',
                             } : undefined
                     }>

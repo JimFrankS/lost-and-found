@@ -86,7 +86,6 @@ const SearchNatIdModal = ({ isVisible, onClose, formData, searchNatId, updateFor
                     style={
                         Platform.OS === 'web'
                             ? {
-                                maxHeight: Dimensions.get('window').height - insets.top - insets.bottom,
                                 overflow: 'scroll'
                             }
                             : undefined

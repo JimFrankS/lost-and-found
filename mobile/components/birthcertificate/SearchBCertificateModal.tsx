@@ -70,7 +70,6 @@ const SearchBCertificateModal = ({ isVisible, onClose, formData, searchBCertific
                     style={
                         Platform.OS === 'web'
                             ? {
-                                maxHeight: Dimensions.get('window').height - insets.top - insets.bottom,
                                 overflow: 'scroll'
                             }
                             : undefined

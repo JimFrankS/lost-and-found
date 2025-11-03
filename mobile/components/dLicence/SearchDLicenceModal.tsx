@@ -99,7 +99,6 @@ const SearchDLicenceModal = ({ isVisible, onClose, formData, searchDLicence, upd
                     style={
                         Platform.OS === 'web'
                             ? {
-                                maxHeight: Dimensions.get('window').height - insets.top - insets.bottom,
                                 overflow: 'scroll'
                             }
                             : undefined

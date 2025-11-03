@@ -85,7 +85,6 @@ const ReportBCertificateModal = ({ isVisible, onClose, formData, reportBCertific
                     style={
                         Platform.OS === 'web'
                             ? {
-                                maxHeight: Dimensions.get('window').height - insets.top - insets.bottom,
                                 overflow: 'scroll',
                             } : undefined
                     }>

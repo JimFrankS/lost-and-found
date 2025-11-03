@@ -93,7 +93,6 @@ const SearchBaggageModal = ({ isVisible, onClose, formData, searchBaggage, updat
                     style={
                         Platform.OS === 'web'
                             ? {
-                                maxHeight: Dimensions.get('window').height,
                                 overflow: 'scroll',
                             }
                             : undefined

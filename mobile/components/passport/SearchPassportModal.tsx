@@ -115,7 +115,6 @@ const SearchPassportModal = ({ isVisible, onClose, formData, searchPassport, upd
                     style={
                         Platform.OS === 'web'
                             ? {
-                                maxHeight: Dimensions.get('window').height - insets.top - insets.bottom,
                                 overflow: 'scroll'
                             }
                             : undefined
