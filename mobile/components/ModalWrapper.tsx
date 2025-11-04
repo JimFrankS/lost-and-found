@@ -1,18 +1,17 @@
+
 import React from 'react';
-import { View, Modal, StyleSheet, Platform, Dimensions } from 'react-native';
+import { View, Modal, StyleSheet, TouchableWithoutFeedback } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-interface ModalWrapperProps {
+const ModalWrapper: React.FC<{
   visible: boolean;
   children: React.ReactNode;
   transparent?: boolean;
   onClose?: () => void;
-}
-
-const ModalWrapper: React.FC<ModalWrapperProps> = ({
+}> = ({
   visible,
   children,
-  transparent = true,
+  transparent = false,
   onClose,
 }) => {
   const insets = useSafeAreaInsets();
@@ -24,7 +23,8 @@ const ModalWrapper: React.FC<ModalWrapperProps> = ({
       transparent={transparent}
       onRequestClose={() => onClose?.()}
     >
-      <View
+      <TouchableWithoutFeedback onPress={onClose}>
+        <View
         style={[
           styles.container,
           {
@@ -34,18 +34,12 @@ const ModalWrapper: React.FC<ModalWrapperProps> = ({
             paddingRight: insets.right,
           }
         ]}
-        // Tapping on backdrop should close modal
-        onStartShouldSetResponder={() => true}
-        onResponderRelease={(e) => {
-          // Only trigger close if release happens on the backdrop and not on content
-          // We'll rely on the content wrapper to stop propagation via pointerEvents
-          onClose?.();
-        }}
       >
-        <View style={styles.contentWrapper} pointerEvents="box-none">
-          {children}
-        </View>
+        <TouchableWithoutFeedback>
+          <View style={styles.contentWrapper}>{children}</View>
+        </TouchableWithoutFeedback>
       </View>
+      </TouchableWithoutFeedback>
     </Modal>
   );
 };
