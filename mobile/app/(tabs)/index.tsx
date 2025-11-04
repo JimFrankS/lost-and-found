@@ -11,38 +11,14 @@ import { Feather } from '@expo/vector-icons';
 
 const HomeScreen = () => {
   const [activeScreen, setActiveScreen] = useState<'home' | 'search' | 'report'>('home');
-  const [isLoading, setIsLoading] = useState(false);
 
   const handleNavigation = (screen: 'search' | 'report') => {
-    setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-      setActiveScreen(screen);
-    }, 1000);
+    setActiveScreen(screen);
   };
 
   const handleBackToHome = () => {
-    setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-      setActiveScreen('home');
-    }, 1000);
+    setActiveScreen('home');
   };
-
-  // Show loading indicator
-  if (isLoading) {
-    return (
-      <View style={{ flex: 1 }}>
-        <BackGroundCard />
-        <SafeAreaView style={tabStyles.safeArea}>
-          <View className="flex-1 justify-center items-center">
-            <ActivityIndicator size="large" color="#3b82f6" />
-            <Text className="mt-4 text-gray-600 text-base">Loading...</Text>
-          </View>
-        </SafeAreaView>
-      </View>
-    );
-  }
 
   // If a screen is active, render only that screen
   if (activeScreen === 'search') {
@@ -60,9 +36,13 @@ const HomeScreen = () => {
       <SafeAreaView style={tabStyles.safeArea}>
         <View className="flex-1 justify-center items-center px-4">
           <View className="w-full max-w-md">
-            <TouchableOpacity 
+            <TouchableOpacity
               onPress={() => handleNavigation('report')}
-              className="bg-blue-400 border  border-gray-100 p-3 rounded-2xl mb-4 flex-row items-center justify-center opacity-60"
+              className="bg-blue-400 border  border-gray-100 p-3 rounded-2xl mb-4 flex-row items-center justify-center"
+              accessible={true}
+              accessibilityRole="button"
+              accessibilityLabel="Report Lost Items"
+              accessibilityHint="Opens the report lost items screen"
             >
 
                 <Feather name='edit' size={20} color={"black"} className="mr-8" />
@@ -71,9 +51,13 @@ const HomeScreen = () => {
               </Text>
             </TouchableOpacity>
 
-            <TouchableOpacity 
+            <TouchableOpacity
               onPress={() => handleNavigation('search')}
-              className="bg-green-400 border  border-gray-100 p-3 rounded-2xl flex-row items-center justify-center opacity-60"
+              className="bg-green-400 border  border-gray-100 p-3 rounded-2xl flex-row items-center justify-center"
+              accessible={true}
+              accessibilityRole="button"
+              accessibilityLabel="Search for Lost Items"
+              accessibilityHint="Opens the search for lost items screen"
             >
                 <Feather name='search' size={20} color={"black"} className="mr-8" />
               <Text className="text-gray-900 text-center text-base font-bold">

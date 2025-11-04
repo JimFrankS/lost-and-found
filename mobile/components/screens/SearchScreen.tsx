@@ -5,7 +5,7 @@ import SearchBCertificate from '@/components/birthcertificate/SearchBCertificate
 import SearchDLicence from '@/components/dLicence/SearchDLicence'
 import SearchNatId from '@/components/natId/SearchNatId'
 import SearchPassport from '@/components/passport/SearchPassport'
-import { View, ScrollView, TouchableOpacity, Text } from 'react-native'
+import { View, ScrollView } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { tabStyles } from '@/styles/tabStyles';
 import BackGroundCard from '@/components/BackGroundCard'
@@ -16,6 +16,7 @@ import { useBCertificate } from '@/hooks/useBCertificate'
 import { useDLicense } from '@/hooks/useDLicense'
 import { useNatID } from '@/hooks/useNatID'
 import { usePassport } from '@/hooks/usePassport'
+import BackToHomeButton from '@/components/BackToHomeButton'
 
 interface SearchScreenProps {
   onBack?: () => void;
@@ -58,16 +59,7 @@ const SearchScreen = ({ onBack }: SearchScreenProps) => {
             contentContainerStyle={tabStyles.container}
           >
             <ResponsiveContainer>
-              {onBack && (
-                <TouchableOpacity 
-                  onPress={onBack}
-                  className="bg-gray-500 p-3 rounded-lg mb-4 flex-row items-center justify-center"
-                >
-                  <Text className="text-white text-center text-base font-semibold">
-                    ← Back to Home
-                  </Text>
-                </TouchableOpacity>
-              )}
+              {onBack && <BackToHomeButton onPress={onBack} />}
               <SearchBaggage baggageHook={baggageHook} />
               <SearchBCertificate bcertificateHook={bcertificateHook} />
               <SearchDLicence dlicenceHook={dlicenceHook} />

@@ -1,4 +1,4 @@
-import { View, ScrollView, TouchableOpacity, Text } from 'react-native';
+import { View, ScrollView } from 'react-native';
 import React from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import BackGroundCard from '@/components/BackGroundCard';
@@ -10,6 +10,7 @@ import ReportNatIdCard from '@/components/natId/ReportNatIdCard';
 import ReportPassportCard from '@/components/passport/ReportPassportCard';
 import ReportSCertificateCard from '@/components/scertificate/ReportSCertificateCard';
 import ResponsiveContainer from '@/components/ResponsiveContainer';
+import BackToHomeButton from '@/components/BackToHomeButton';
 
 
 interface ReportScreenProps {
@@ -26,16 +27,7 @@ const ReportScreen = ({ onBack }: ReportScreenProps) => {
           contentContainerStyle={tabStyles.container}
         >
           <ResponsiveContainer>
-            {onBack && (
-              <TouchableOpacity 
-                onPress={onBack}
-                className="bg-gray-500 p-3 rounded-lg mb-4 flex-row items-center justify-center"
-              >
-                <Text className="text-white text-center text-base font-semibold">
-                  ← Back to Home
-                </Text>
-              </TouchableOpacity>
-            )}
+            {onBack && <BackToHomeButton onPress={onBack} />}
             <ReportBaggageCard />
             <ReportBCertificateCard />
             <ReportDLicenseCard />
