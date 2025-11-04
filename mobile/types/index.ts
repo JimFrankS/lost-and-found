@@ -1,13 +1,25 @@
-import { BAGGAGE_TYPES, ROUTE_TYPES, SCERTIFICATE_TYPES, TRANSPORT_TYPES } from "@/constants/allowedValues"
+import { BAGGAGE_TYPES, MBAGGAGE_TYPES, ROUTE_TYPES, SCERTIFICATE_TYPES, TRANSPORT_TYPES, gatheringTypes } from "@/constants/allowedValues"
 
 export interface Baggage {
     _id: string,
     baggageType: (typeof BAGGAGE_TYPES)[number], // Restrict to one of the predefined strings
     transportType: (typeof TRANSPORT_TYPES) [number], // Restrict to one of the predefined strings
-    routeType: (typeof ROUTE_TYPES)[number], 
+    routeType: (typeof ROUTE_TYPES)[number],
     destinationProvince: string,
     destinationDistrict: string,
     destination: string,
+    docLocation: string,
+    finderContact: string,
+    claimed?: boolean
+}
+
+export interface MBaggage {
+    _id: string,
+    baggageType: (typeof MBAGGAGE_TYPES)[number], // Restrict to one of the predefined strings
+    gatheringType: (typeof gatheringTypes)[number],
+    destinationProvince: string,
+    destinationDistrict: string,
+    gatheringLocation: string,
     docLocation: string,
     finderContact: string,
     claimed?: boolean
@@ -100,6 +112,13 @@ export interface SCertificateSearchParams {
     lastName: string;
 }
 
+export interface MBaggageSearchParams {
+    baggageType?: string;
+    gatheringType?: string;
+    destinationProvince?: string;
+    destinationDistrict?: string;
+}
+
 export interface Stats {
     totalDocuments: number,
     claimedDocuments: number
@@ -157,6 +176,16 @@ export interface SCertificateFoundData {
     certificateType: string;
     lastName: string;
     firstName: string;
+    docLocation: string;
+    finderContact: string;
+}
+
+export interface MBaggageFoundData {
+    baggageType: string;
+    gatheringType: string;
+    destinationProvince: string;
+    destinationDistrict: string;
+    gatheringLocation: string;
     docLocation: string;
     finderContact: string;
 }
