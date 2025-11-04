@@ -31,14 +31,6 @@ const TabsLayout = () => {
                     tabBarIcon: ({ color, size }) => <Feather name='home' size={size} color={color} />
                 }}
             />
-            <Tabs.Screen
-                name='search'
-                options={{
-                    title: "",
-                    tabBarLabel: () => <Text>Search</Text>,
-                    tabBarIcon: ({ color, size }) => <Feather name='search' size={size} color={color} />
-                }}
-            />
 
         </Tabs>
     )
