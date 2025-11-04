@@ -16,8 +16,13 @@ import { useBCertificate } from '@/hooks/useBCertificate'
 import { useDLicense } from '@/hooks/useDLicense'
 import { useNatID } from '@/hooks/useNatID'
 import { usePassport } from '@/hooks/usePassport'
+import BackToHomeButton from '@/components/BackToHomeButton'
 
-const Search = () => {
+interface SearchScreenProps {
+  onBack?: () => void;
+}
+
+const SearchScreen = ({ onBack }: SearchScreenProps) => {
   const baggageHook = useBaggage();
   const scertificateHook = useSCertificate();
   const bcertificateHook = useBCertificate();
@@ -54,6 +59,7 @@ const Search = () => {
             contentContainerStyle={tabStyles.container}
           >
             <ResponsiveContainer>
+              {onBack && <BackToHomeButton onPress={onBack} />}
               <SearchBaggage baggageHook={baggageHook} />
               <SearchBCertificate bcertificateHook={bcertificateHook} />
               <SearchDLicence dlicenceHook={dlicenceHook} />
@@ -68,4 +74,4 @@ const Search = () => {
   )
 }
 
-export default Search
+export default SearchScreen
