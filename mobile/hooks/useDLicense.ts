@@ -128,7 +128,7 @@ export const useDLicense = () => {
 
     // Wrapper helpers so callers can wait if needed.
 
-    const reportDLicense = async () => {
+    const reportDLicense = async (): Promise<boolean> => {
         try {
             await enterDLicenseMutation.mutateAsync(formData);
             return true;
@@ -136,7 +136,7 @@ export const useDLicense = () => {
             return false;
         }
     };
-    const searchDLicence = async (params: DLicenceSearchParams) => {
+    const searchDLicence = async (params: DLicenceSearchParams): Promise<boolean> => {
         try {
             await searchDLicenceMutation.mutateAsync(params);
             return true;
@@ -144,7 +144,7 @@ export const useDLicense = () => {
             return false;
         }
     };
-    const viewDLicence = async (licenceId: string) => {
+    const viewDLicence = async (licenceId: string): Promise<boolean> => {
         try {
             await viewDLicenceMutation.mutateAsync(licenceId);
             return true;

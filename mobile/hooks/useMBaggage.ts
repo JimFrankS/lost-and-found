@@ -121,7 +121,7 @@ export const useMBaggage = () => {
         setFormData(prev => ({ ...prev, [field]: value }));
 
     // wrapper helpers so callers can await if needed
-    const reportBaggage = async () => {
+    const reportBaggage = async (): Promise<boolean> => {
         try {
             await enterBaggageMutation.mutateAsync(formData);
             return true;
@@ -129,7 +129,7 @@ export const useMBaggage = () => {
             return false;
         }
     };
-    const searchBaggage = async (params: MBaggageSearchParams) => {
+    const searchBaggage = async (params: MBaggageSearchParams): Promise<boolean> => {
         try {
             await searchBaggageMutation.mutateAsync(params);
             return true;
@@ -137,7 +137,7 @@ export const useMBaggage = () => {
             return false;
         }
     };
-    const viewBaggage = async (baggageId: string) => {
+    const viewBaggage = async (baggageId: string): Promise<boolean> => {
         try {
             await viewBaggageMutation.mutateAsync(baggageId);
             return true;
@@ -145,7 +145,7 @@ export const useMBaggage = () => {
             return false;
         }
     };
-    const claimBaggage = async (baggageId: string) => {
+    const claimBaggage = async (baggageId: string): Promise<boolean> => {
         try {
             await claimBaggageMutation.mutateAsync(baggageId);
             return true;

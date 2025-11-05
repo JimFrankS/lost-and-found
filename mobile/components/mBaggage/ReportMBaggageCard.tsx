@@ -19,7 +19,7 @@ const ReportMBaggageCard = () => {
   return (
     <>
       <CardWrapper onPress={openBaggageModal} accessibilityLabel="Report lost mBaggage">
-        <Text className="ml-2 text-gray-600 font-bold text-lg">Report Items Lost & Found at a Gathering or Event </Text>
+        <Text className="ml-2 text-gray-600 font-bold text-lg">Report Items Found at a Gathering or Event or "Dropped" </Text>
       </CardWrapper>
 
       <ReportMBaggageModa

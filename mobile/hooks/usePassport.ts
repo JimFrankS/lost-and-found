@@ -130,7 +130,7 @@ export const usePassport = () => {
 
     // Wrapper helpers so callers can wait if needed.
 
-    const reportPassport = async () => {
+    const reportPassport = async (): Promise<boolean> => {
         try {
             await enterPassportMutation.mutateAsync(formData);
             return true;
@@ -138,7 +138,7 @@ export const usePassport = () => {
             return false;
         }
     };
-    const searchPassport = async (params: PassportSearchParams) => {
+    const searchPassport = async (params: PassportSearchParams): Promise<boolean> => {
         try {
             await searchPassportMutation.mutateAsync(params);
             return true;
@@ -146,7 +146,7 @@ export const usePassport = () => {
             return false;
         }
     };
-    const viewPassport = async (passportId: string) => {
+    const viewPassport = async (passportId: string): Promise<boolean> => {
         try {
             setViewingPassportId(passportId);
             await viewPassportMutation.mutateAsync(passportId);

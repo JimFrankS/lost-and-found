@@ -67,7 +67,6 @@ export const useNatID = () => {
             const data = response.data;
             const safeResults = data === null ? [] : Array.isArray(data) ? data : [data];
             setSearchResults(safeResults);
-    
             setSearchFound(true);
         },
 
@@ -122,13 +121,11 @@ export const useNatID = () => {
             identifier: "",
         }); // reset search form data when opening the modal
         setIsSearchModalVisible(true); // set modal visibility
-        if (__DEV__) console.log('useNatID openSearchModal called - resetting form data and opening modal');
-        };
+    };
 
     const closeSearchModal = () => {
         setIsSearchModalVisible(false); // close the search modal
-        if (__DEV__) console.log('useNatID closeSearchModal called - closing modal');
-        };
+    };
 
     const updateFormData = (field: string, value: string) => {
         setFormData((prevData) => ({ ...prevData, [field]: value })); // Function to update the form data state

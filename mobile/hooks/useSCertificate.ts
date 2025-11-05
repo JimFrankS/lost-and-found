@@ -119,7 +119,7 @@ export const useSCertificate = () => {
 
     // Wrapper helpers so callers can wait if needed.
 
-    const reportSCertificate = async () => {
+    const reportSCertificate = async (): Promise<boolean> => {
         try {
             await enterSCertificateMutation.mutateAsync(formData);
             return true;
@@ -135,7 +135,7 @@ export const useSCertificate = () => {
             return false;
         }
     };
-    const viewScertificate = async (scertificateId: string) => {
+    const viewScertificate = async (scertificateId: string): Promise<boolean> => {
         try {
             await viewScertificateMutation.mutateAsync(scertificateId);
             return true;
