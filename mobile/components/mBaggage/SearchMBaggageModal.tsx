@@ -1,4 +1,4 @@
-import { Text, View, ScrollView, Alert, TouchableOpacity, ActivityIndicator, Dimensions, Platform } from "react-native";
+import { Text, View, ScrollView, TouchableOpacity, ActivityIndicator, Platform } from "react-native";
 import React, { useMemo, useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
