@@ -50,8 +50,15 @@ export const useBaggage = () => {
 
     const searchBaggageMutation = useMutation<Baggage[], unknown, BaggageSearchParams>({
         mutationFn: async (searchParams) => {
-            const response = await baggageApi.searchBaggage(searchParams);
-            return response.data;
+            try {
+                const response = await baggageApi.searchBaggage(searchParams);
+                return response.data;
+            } catch (error: any) {
+                if (error?.response?.status === 404) {
+                    return [];
+                }
+                throw error;
+            }
         },
         onSuccess: (data) => {
             const results = data ?? [];

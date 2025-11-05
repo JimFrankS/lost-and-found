@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import ReportMBaggageModa from '@/components/mBaggage/ReportMBaggageModa';
-import { useBaggage } from '@/hooks/useMBaggage';
+import { useMBaggage } from '@/hooks/useMBaggage';
 import CardWrapper from '@/styles/CardWrapper';
 
 const ReportMBaggageCard = () => {
@@ -14,7 +14,7 @@ const ReportMBaggageCard = () => {
     reportBaggage,
     updateFormData,
     isReporting,
-  } = useBaggage();
+  } = useMBaggage();
 
   return (
     <>

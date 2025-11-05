@@ -3,7 +3,7 @@ import { Text } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import SearchMBaggageModal from './SearchMBaggageModal';
 import CardWrapper from '@/styles/CardWrapper';
-import { MBaggageSearchParams, MBaggage } from '@/types';
+import { MBaggageSearchParams } from '@/types';
 
 interface SearchBaggageCardProps {
   isBaggageModalVisible: boolean;
@@ -15,7 +15,7 @@ interface SearchBaggageCardProps {
   };
   openBaggageModal: () => void;
   closeBaggageModal: () => void;
-  searchBaggage: (params: MBaggageSearchParams) => Promise<MBaggage[]>;
+  searchBaggage: (params: MBaggageSearchParams) => Promise<boolean>;
   updateFormData: (field: string, value: string) => void;
   isSearching: boolean;
   resetSearch: () => void;

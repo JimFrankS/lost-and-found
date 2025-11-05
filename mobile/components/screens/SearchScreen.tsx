@@ -17,7 +17,7 @@ import { useBCertificate } from '@/hooks/useBCertificate'
 import { useDLicense } from '@/hooks/useDLicense'
 import { useNatID } from '@/hooks/useNatID'
 import { usePassport } from '@/hooks/usePassport'
-import { useBaggage as useMBaggage } from '@/hooks/useMBaggage'
+import { useMBaggage } from '@/hooks/useMBaggage'
 import BackToHomeButton from '@/components/BackToHomeButton'
 
 interface SearchScreenProps {

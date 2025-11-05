@@ -56,7 +56,16 @@ export const useSCertificate = () => {
     }); // end of the mutation for reporting found school certificate.
 
     const searchScertificateMutation = useMutation({
-        mutationFn: (searchParams: SCertificateSearchParams) => scertificateApi.searchScertificate(searchParams),
+        mutationFn: async (searchParams: SCertificateSearchParams) => {
+            try {
+                return await scertificateApi.searchScertificate(searchParams);
+            } catch (error: any) {
+                if (error?.response?.status === 404) {
+                    return { data: [] };
+                }
+                throw error;
+            }
+        },
     onSuccess: (response: any) => {
             const data = response.data;
 
@@ -118,10 +127,10 @@ export const useSCertificate = () => {
             return false;
         }
     };
-    const searchScertificate = async (params: SCertificateSearchParams) => {
+    const searchScertificate = async (params: SCertificateSearchParams): Promise<boolean> => {
         try {
-            const response = await searchScertificateMutation.mutateAsync(params);
-            return response.data;
+            await searchScertificateMutation.mutateAsync(params);
+            return true;
         } catch {
             return false;
         }

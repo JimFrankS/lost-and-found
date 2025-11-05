@@ -4,18 +4,18 @@ import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 
 import { searchResultStyles } from "@/styles/searchResultStyles";
 import NothingFound from "../NothingFound";
-import { MBaggage } from "@/types";
+import { MBaggage, MBaggageListItem } from "@/types";
 import { toTitleCase } from "@/utils/string.utility";
 
 interface FoundBaggageCardProps {
     searchFound: boolean;
-    foundBaggage: MBaggage | MBaggage[] | null;
+    foundBaggage: MBaggage | MBaggageListItem[] | null;
     resetSearch: () => void;
     goBackToResults?: () => void;
     viewBaggage?: (baggageId: string) => void;
     isViewing?: boolean;
     viewingBaggageId?: string | null;
-    searchResults?: MBaggage[];
+    searchResults?: MBaggageListItem[];
 }
 
 const FoundBaggageCard = ({
@@ -105,7 +105,7 @@ const FoundBaggageCard = ({
 
                 {isMultipleResults ? (
                     <ScrollView contentContainerStyle={searchResultStyles.resultsContainer}>
-                        {foundBaggage.map((baggage: MBaggage, index: number) => {
+                        {foundBaggage.map((baggage: MBaggageListItem, index: number) => {
                             if (!baggage?._id) return null;
                             return (
                                 <View key={baggage._id} style={searchResultStyles.card}>

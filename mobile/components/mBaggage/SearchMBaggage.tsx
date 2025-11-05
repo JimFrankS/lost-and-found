@@ -4,7 +4,7 @@ import SearchMBaggageCard from './SearchMBaggageCard'
 import FoundMBaggageCard from './FoundMBaggageCard'
 
 interface SearchMBaggageProps {
-  baggageHook: ReturnType<typeof import('@/hooks/useMBaggage').useBaggage>
+  baggageHook: ReturnType<typeof import('@/hooks/useMBaggage').useMBaggage>
 }
 
 const SearchMBaggage = ({ baggageHook }: SearchMBaggageProps) => {

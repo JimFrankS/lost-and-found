@@ -14,7 +14,7 @@ interface SearchNatIdModalProps {
         category: string;
         identifier: string;
     };
-    searchNatId: (params: { category: string; identifier: string }) => Promise<any>;
+    searchNatId: (params: { category: string; identifier: string }) => Promise<boolean>;
     updateFormData: (field: string, value: string) => void;
     isSearching: boolean;
     resetSearch: () => void;

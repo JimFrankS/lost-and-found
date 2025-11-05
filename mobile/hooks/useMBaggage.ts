@@ -5,7 +5,7 @@ import { extractErrorMessage, extractSuccessMessage } from "@/utils/alerts";
 import { showErrorToast, showSuccessToast } from "@/utils/toasts";
 import { MBaggage, MBaggageFoundData, MBaggageSearchParams, MBaggageListItem } from "@/types";
 
-export const useBaggage = () => {
+export const useMBaggage = () => {
     const queryClient = useQueryClient();
 
     const [isBaggageModalVisible, setIsBaggageModalVisible] = useState(false); 
@@ -49,8 +49,15 @@ export const useBaggage = () => {
 
     const searchBaggageMutation = useMutation<MBaggageListItem[], unknown, MBaggageSearchParams>({
         mutationFn: async (searchParams) => {
-            const response = await mBaggageApi.searchBaggage(searchParams);
-            return response.data;
+            try {
+                const response = await mBaggageApi.searchBaggage(searchParams);
+                return response.data;
+            } catch (error: any) {
+                if (error?.response?.status === 404) {
+                    return [];
+                }
+                throw error;
+            }
         },
         onSuccess: (data) => {
             const results = data ?? [];

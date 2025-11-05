@@ -52,15 +52,22 @@ export const useNatID = () => {
         },
     }); // end of the mutation for reporting found national ID.
 
-    const searchNatIdMutation = useMutation<NatId[], unknown, NatIdSearchParams>({
+    const searchNatIdMutation = useMutation({
         mutationFn: async (searchParams: NatIdSearchParams) => {
-            const response = await natIdApi.searchNatId(searchParams);
-            return response.data;
+            try {
+                return await natIdApi.searchNatId(searchParams);
+            } catch (error: any) {
+                if (error?.response?.status === 404) {
+                    return { data: [] };
+                }
+                throw error;
+            }
         },
-        onSuccess: (data: NatId[]) => {
+        onSuccess: (response: any) => {
+            const data = response.data;
             const safeResults = data === null ? [] : Array.isArray(data) ? data : [data];
             setSearchResults(safeResults);
-
+    
             setSearchFound(true);
         },
 
@@ -115,13 +122,13 @@ export const useNatID = () => {
             identifier: "",
         }); // reset search form data when opening the modal
         setIsSearchModalVisible(true); // set modal visibility
-        console.log('useNatID openSearchModal called - resetting form data and opening modal');
-    };
+        if (__DEV__) console.log('useNatID openSearchModal called - resetting form data and opening modal');
+        };
 
     const closeSearchModal = () => {
         setIsSearchModalVisible(false); // close the search modal
-        console.log('useNatID closeSearchModal called - closing modal');
-    };
+        if (__DEV__) console.log('useNatID closeSearchModal called - closing modal');
+        };
 
     const updateFormData = (field: string, value: string) => {
         setFormData((prevData) => ({ ...prevData, [field]: value })); // Function to update the form data state
@@ -146,8 +153,12 @@ export const useNatID = () => {
     );
     const searchNatId = useCallback(
         async (params: NatIdSearchParams) => {
-            const response = await searchNatIdMutation.mutateAsync(params);
-            return response;
+            try {
+                await searchNatIdMutation.mutateAsync(params);
+                return true;
+            } catch {
+                return false;
+            }
         },
         []
     );
