@@ -40,7 +40,6 @@ export const useDLicense = () => {
         }, // Api Call to report found driving license
 
         onSuccess: (response) => {
-            queryClient.invalidateQueries({ queryKey: ["dLicence"] }); // Invalidate dLicence queries to refetch updated data.
             setIsDLicenseModalVisible(false); // Close the modal
             const message = extractSuccessMessage(response, "Driving License reported successfully");
             showSuccessToast(message);
@@ -128,9 +127,30 @@ export const useDLicense = () => {
 
     // Wrapper helpers so callers can wait if needed.
 
-    const reportDLicense = async () => enterDLicenseMutation.mutateAsync(formData);
-    const searchDLicence = async (params: DLicenceSearchParams) => searchDLicenceMutation.mutateAsync(params);
-    const viewDLicence = async (licenceId: string) => viewDLicenceMutation.mutateAsync(licenceId);
+    const reportDLicense = async (): Promise<boolean> => {
+        try {
+            await enterDLicenseMutation.mutateAsync(formData);
+            return true;
+        } catch {
+            return false;
+        }
+    };
+    const searchDLicence = async (params: DLicenceSearchParams): Promise<boolean> => {
+        try {
+            await searchDLicenceMutation.mutateAsync(params);
+            return true;
+        } catch {
+            return false;
+        }
+    };
+    const viewDLicence = async (licenceId: string): Promise<boolean> => {
+        try {
+            await viewDLicenceMutation.mutateAsync(licenceId);
+            return true;
+        } catch {
+            return false;
+        }
+    };
 
     const resetSearch = () => {
         setSearchFound(false);
@@ -158,7 +178,6 @@ export const useDLicense = () => {
         isReporting: enterDLicenseMutation.isPending,
         isSearching: searchDLicenceMutation.isPending,
         isViewing: viewDLicenceMutation.isPending,
-        refetch: () => queryClient.invalidateQueries({ queryKey: ["dLicence"] }), //function to refetch driving license data.
         searchFound,
         searchPerformed,
         viewedDLicence,

@@ -39,7 +39,7 @@ const ReportSCertificateModal = ({ isVisible, onClose, formData, reportSCertific
 
     const handleSave = () => {
         if (!isFormComplete) {
-            Alert.alert("Error", "Please fill in all the required fields.");
+            showAlerts("Error", "Please fill in all the required fields.");
             return;
         }
 
@@ -154,8 +154,8 @@ const ReportSCertificateModal = ({ isVisible, onClose, formData, reportSCertific
                     <OptionPicker
                         visible={openPicker === 'certificateType'}
                         title="Select Certificate Type"
-                        options={SCERTIFICATE_TYPES as unknown as string[]}
-                        onSelect={(val) => updateFormData('certificateType', String(val))}
+                        options={SCERTIFICATE_TYPES}
+                        onSelect={(val) => updateFormData('certificateType', String(val).toLowerCase())}
                         onClose={() => setOpenPicker(null)}
                     />
 

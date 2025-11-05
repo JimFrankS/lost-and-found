@@ -5,6 +5,7 @@ import SearchBCertificate from '@/components/birthcertificate/SearchBCertificate
 import SearchDLicence from '@/components/dLicence/SearchDLicence'
 import SearchNatId from '@/components/natId/SearchNatId'
 import SearchPassport from '@/components/passport/SearchPassport'
+import SearchMBaggage from '@/components/mBaggage/SearchMBaggage'
 import { View, ScrollView } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { tabStyles } from '@/styles/tabStyles';
@@ -16,6 +17,7 @@ import { useBCertificate } from '@/hooks/useBCertificate'
 import { useDLicense } from '@/hooks/useDLicense'
 import { useNatID } from '@/hooks/useNatID'
 import { usePassport } from '@/hooks/usePassport'
+import { useMBaggage } from '@/hooks/useMBaggage'
 import BackToHomeButton from '@/components/BackToHomeButton'
 
 interface SearchScreenProps {
@@ -29,6 +31,7 @@ const SearchScreen = ({ onBack }: SearchScreenProps) => {
   const dlicenceHook = useDLicense();
   const natIdHook = useNatID();
   const passportHook = usePassport();
+  const mBaggageHook = useMBaggage();
 
   const showFullScreenResults =
     baggageHook.searchFound ||
@@ -36,7 +39,8 @@ const SearchScreen = ({ onBack }: SearchScreenProps) => {
     bcertificateHook.searchPerformed ||
     dlicenceHook.searchPerformed ||
     natIdHook.searchFound ||
-    passportHook.searchFound;
+    passportHook.searchFound ||
+    mBaggageHook.searchFound;
 
   return (
     <View style={{ flex: 1 }}>
@@ -52,6 +56,7 @@ const SearchScreen = ({ onBack }: SearchScreenProps) => {
             {(dlicenceHook.searchPerformed) && <SearchDLicence dlicenceHook={dlicenceHook} />}
             {natIdHook.searchFound && <SearchNatId natIdHook={natIdHook} />}
             {passportHook.searchFound && <SearchPassport passportHook={passportHook} />}
+            {mBaggageHook.searchFound && <SearchMBaggage baggageHook={mBaggageHook} />}
           </View>
         ) : (
           <ScrollView 
@@ -66,6 +71,7 @@ const SearchScreen = ({ onBack }: SearchScreenProps) => {
               <SearchNatId natIdHook={natIdHook} />
               <SearchPassport passportHook={passportHook} />
               <SearchScertificate scertificateHook={scertificateHook} />
+              <SearchMBaggage baggageHook={mBaggageHook} />
             </ResponsiveContainer>
           </ScrollView>
         )}

@@ -6,7 +6,9 @@ import {
     BCertificateFoundData,
     BirthCertificateSearchParams,
     DLicenceFoundData,
-    DLicenceSearchParams, NatIdFoundData, NatIdSearchParams, PassportFoundData, PassportSearchParams, SCertificateFoundData, SCertificateSearchParams
+    DLicenceSearchParams, NatIdFoundData, NatIdSearchParams, PassportFoundData, PassportSearchParams, SCertificateFoundData, SCertificateSearchParams,
+    MBaggageFoundData,
+    MBaggageSearchParams
 } from "../types";
 
 const DEFAULT_BASE_URL = "https://lost-and-found-opal.vercel.app/";
@@ -82,4 +84,11 @@ export const scertificateApi = {
     foundScertificate: (data: SCertificateFoundData) => apiClient.post("/api/sCertificate/found", data),
     searchScertificate: (params: SCertificateSearchParams) => apiClient.get("/api/sCertificate/search", {params}),
     viewScertificate: (scertificateId: string) => apiClient.get(`/api/sCertificate/view/${scertificateId}`)
+};
+
+export const mBaggageApi = {
+    lostBaggage: (data: MBaggageFoundData) => apiClient.post("/api/mBaggage/found", data),
+    searchBaggage: (params: MBaggageSearchParams) => apiClient.get("/api/mBaggage/search", {params}),
+    viewBaggage: (baggageId: string) => apiClient.get(`/api/mBaggage/view/${baggageId}`),
+    claimBaggage: (baggageId: string) => apiClient.get(`/api/mBaggage/claim/${baggageId}`),
 };

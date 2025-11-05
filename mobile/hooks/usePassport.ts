@@ -38,7 +38,6 @@ export const usePassport = () => {
         }, // Api Call to report lost passport
 
         onSuccess: (response) => {
-            queryClient.invalidateQueries({ queryKey: ["passport"] }); // Invalidate passport queries to refetch updated data.
             setIsPassportModalVisible(false); // Close the modal
             const message = extractSuccessMessage(response, "Passport reported successfully");
             showSuccessToast(message);
@@ -91,9 +90,6 @@ export const usePassport = () => {
                 setViewedPassport(data);
                 setSearchFound(true);
             }
-            // Do not show success toast for viewing, only for claiming
-            // Optionally refetch or update state
-            queryClient.invalidateQueries({ queryKey: ["passport"] });
         },
 
         onError: (error: any) => {
@@ -130,11 +126,30 @@ export const usePassport = () => {
 
     // Wrapper helpers so callers can wait if needed.
 
-    const reportPassport = async () => enterPassportMutation.mutateAsync(formData);
-    const searchPassport = async (params: PassportSearchParams) => searchPassportMutation.mutateAsync(params);
-    const viewPassport = async (passportId: string) => {
-        setViewingPassportId(passportId);
-        return viewPassportMutation.mutateAsync(passportId);
+    const reportPassport = async (): Promise<boolean> => {
+        try {
+            await enterPassportMutation.mutateAsync(formData);
+            return true;
+        } catch {
+            return false;
+        }
+    };
+    const searchPassport = async (params: PassportSearchParams): Promise<boolean> => {
+        try {
+            await searchPassportMutation.mutateAsync(params);
+            return true;
+        } catch {
+            return false;
+        }
+    };
+    const viewPassport = async (passportId: string): Promise<boolean> => {
+        try {
+            setViewingPassportId(passportId);
+            await viewPassportMutation.mutateAsync(passportId);
+            return true;
+        } catch {
+            return false;
+        }
     };
 
     const resetSearch = () => {
@@ -162,7 +177,6 @@ export const usePassport = () => {
         isReporting: enterPassportMutation.isPending,
         isSearching: searchPassportMutation.isPending,
         isViewing: viewPassportMutation.isPending,
-        refetch: () => queryClient.invalidateQueries({ queryKey: ["passport"] }), //function to refetch passport data.
         searchFound,
         viewedPassport,
         viewingPassportId,

@@ -14,7 +14,7 @@ interface SearchNatIdModalProps {
         category: string;
         identifier: string;
     };
-    searchNatId: (params: any) => Promise<any>;
+    searchNatId: (params: { category: string; identifier: string }) => Promise<boolean>;
     updateFormData: (field: string, value: string) => void;
     isSearching: boolean;
     resetSearch: () => void;
@@ -36,9 +36,18 @@ const SearchNatIdModal = ({ isVisible, onClose, formData, searchNatId, updateFor
         }
     };
 
-    const isFormComplete = Boolean(formData.identifier && validateInput(formData.category, formData.identifier));
+    const isFormComplete = Boolean(
+        formData.category &&
+        formData.identifier &&
+        validateInput(formData.category, formData.identifier)
+    );
 
     const handleSearch = async () => {
+        if (!formData.category) {
+            showAlerts("Error", "Please select a search category");
+            return;
+        }
+
         if (!formData.identifier.trim()) {
             showAlerts("Error", "Please fill in the identifier field");
             return;

@@ -105,7 +105,7 @@ const SearchScertificateModal = ({ isVisible, onClose, formData, searchScertific
                     <OptionPicker
                         visible={openPicker === 'certificateType'}
                         title="Select Certificate type"
-                        options={SCERTIFICATE_TYPES as unknown as string[]}
+                        options={SCERTIFICATE_TYPES}
                         onSelect={(val) => updateFormData('certificateType', String(val).toLowerCase())}
                         onClose={() => setOpenPicker(null)}
                     />

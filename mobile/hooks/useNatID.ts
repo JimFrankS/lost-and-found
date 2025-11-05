@@ -9,6 +9,7 @@ export const useNatID = () => {
     const queryClient = useQueryClient();
 
     const [isNatIDModalVisible, setIsNatIDModalVisible] = useState(false); // state for holding modal visibility
+    const [isSearchModalVisible, setIsSearchModalVisible] = useState(false); // state for search modal visibility
 
     const [formData, setFormData] = useState<NatIdFoundData>({
         lastName: "",
@@ -19,6 +20,7 @@ export const useNatID = () => {
     }); // State for holding the form data for enter national ID details.
 
     const [searchFormData, setSearchFormData] = useState({
+        category: "",
         identifier: "",
     }); // State for holding the search form data.
 
@@ -37,7 +39,6 @@ export const useNatID = () => {
         }, // Api Call to report found national ID
 
         onSuccess: (data) => {
-            queryClient.invalidateQueries({ queryKey: ["natId"] }); // Invalidate natId queries to refetch updated data.
             setIsNatIDModalVisible(false); // Close the modal
             const message = extractSuccessMessage({ data }, "National ID reported successfully");
             showSuccessToast(message);
@@ -50,22 +51,21 @@ export const useNatID = () => {
         },
     }); // end of the mutation for reporting found national ID.
 
-    const searchNatIdMutation = useMutation<NatId[], unknown, NatIdSearchParams>({
+    const searchNatIdMutation = useMutation({
         mutationFn: async (searchParams: NatIdSearchParams) => {
             try {
-                const response = await natIdApi.searchNatId(searchParams);
-                return response.data;
+                return await natIdApi.searchNatId(searchParams);
             } catch (error: any) {
                 if (error?.response?.status === 404) {
-                    return [];
+                    return { data: [] };
                 }
                 throw error;
             }
         },
-        onSuccess: (data: NatId[]) => {
+        onSuccess: (response: any) => {
+            const data = response.data;
             const safeResults = data === null ? [] : Array.isArray(data) ? data : [data];
             setSearchResults(safeResults);
-
             setSearchFound(true);
         },
 
@@ -73,6 +73,8 @@ export const useNatID = () => {
             const message = extractErrorMessage(error, "An error occurred whilst searching for the national ID");
             if (__DEV__) console.error("NatID search error: ", message);
             showError(message);
+            setSearchFound(false);
+            setSearchResults([]);
         },
     });
 
@@ -112,6 +114,18 @@ export const useNatID = () => {
         setIsNatIDModalVisible(true); // after reset is complete, make the modal to be visible
     };
 
+    const openSearchModal = () => {
+        setSearchFormData({
+            category: "",
+            identifier: "",
+        }); // reset search form data when opening the modal
+        setIsSearchModalVisible(true); // set modal visibility
+    };
+
+    const closeSearchModal = () => {
+        setIsSearchModalVisible(false); // close the search modal
+    };
+
     const updateFormData = (field: string, value: string) => {
         setFormData((prevData) => ({ ...prevData, [field]: value })); // Function to update the form data state
     };
@@ -123,15 +137,36 @@ export const useNatID = () => {
     // Wrapper helpers so callers can wait if needed.
 
     const reportNatID = useCallback(
-        async () => enterNatIDMutation.mutateAsync(formData),
+        async () => {
+            try {
+                await enterNatIDMutation.mutateAsync(formData);
+                return true;
+            } catch {
+                return false;
+            }
+        },
         [formData]
     );
     const searchNatId = useCallback(
-        async (params: NatIdSearchParams) => searchNatIdMutation.mutateAsync(params),
+        async (params: NatIdSearchParams) => {
+            try {
+                await searchNatIdMutation.mutateAsync(params);
+                return true;
+            } catch {
+                return false;
+            }
+        },
         []
     );
     const viewNatId = useCallback(
-        async (id: string) => viewNatIdMutation.mutateAsync(id),
+        async (id: string) => {
+            try {
+                await viewNatIdMutation.mutateAsync(id);
+                return true;
+            } catch {
+                return false;
+            }
+        },
         []
     );
 
@@ -148,10 +183,13 @@ export const useNatID = () => {
 
     return {
         isNatIDModalVisible,
+        isSearchModalVisible,
         formData,
         searchFormData,
         openNatIDModal,
         closeNatIDModal: () => setIsNatIDModalVisible(false), // Function to close the national ID modal.
+        openSearchModal,
+        closeSearchModal,
         reportNatID,
         searchNatId,
         viewNatId,
@@ -160,7 +198,6 @@ export const useNatID = () => {
         isReporting: enterNatIDMutation.isPending,
         isSearching: searchNatIdMutation.isPending,
         isViewing: viewNatIdMutation.isPending,
-        refetch: () => queryClient.invalidateQueries({ queryKey: ["natId"] }), //function to refetch national ID data.
         searchFound,
         viewedNatId,
         viewingNatIdId,

@@ -13,6 +13,7 @@ import dLicenceRoutes from "./routes/dLicence.route.js";
 import sCertificateRoutes from "./routes/scertificate.route.js";
 import bCertificateRoutes from "./routes/bcertificate.route.js";
 import baggageRoutes from "./routes/baggage.route.js";
+import mBaggageRoutes from "./routes/mBaggage.route.js"
 
 import { ensureStatsInitialized } from "./utility/stats.utility.js";
 
@@ -73,6 +74,7 @@ app.use("/api/dLicence", dLicenceRoutes);
 app.use("/api/sCertificate", sCertificateRoutes); 
 app.use("/api/bCertificate", bCertificateRoutes);
 app.use("/api/baggage", baggageRoutes);
+app.use("/api/mBaggage", mBaggageRoutes);
 
 // Health check endpoint
 app.get("/health", (req, res) => res.status(200).json({ 

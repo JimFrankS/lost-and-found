@@ -9,6 +9,7 @@ import ReportDLicenseCard from '@/components/dLicence/ReportDLicenseCard';
 import ReportNatIdCard from '@/components/natId/ReportNatIdCard';
 import ReportPassportCard from '@/components/passport/ReportPassportCard';
 import ReportSCertificateCard from '@/components/scertificate/ReportSCertificateCard';
+import ReportMBaggageCard from '@/components/mBaggage/ReportMBaggageCard';
 import ResponsiveContainer from '@/components/ResponsiveContainer';
 import BackToHomeButton from '@/components/BackToHomeButton';
 
@@ -34,6 +35,7 @@ const ReportScreen = ({ onBack }: ReportScreenProps) => {
             <ReportNatIdCard />
             <ReportPassportCard />
             <ReportSCertificateCard />
+            <ReportMBaggageCard />
           </ResponsiveContainer>
         </ScrollView>
       </SafeAreaView>

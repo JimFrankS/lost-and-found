@@ -60,27 +60,30 @@ export const foundId = asyncHandler(async (req, res) => {
 });
 
 export const searchNatId = asyncHandler(async (req, res) => {
-    const { identifier = "" } = req.query;
-    if (!identifier) {
-        return res.status(400).json({ message: "Identifier required (idNumber or lastName)" });
+    const { category, identifier = "" } = req.query;
+    if (!category || !identifier) {
+        return res.status(400).json({ message: "Category and identifier required" });
     }
 
     let natIds = null;
-    let isSingle = false;
 
-    if (idNumberRegex.test(identifier)) {
-        // Search by idNumber - single result
-        natIds = await NatId.findOne({
-            idNumber: { $regex: `^${escapeRegex(identifier)}$`, $options: 'i' },
-            status: { $in: ["lost", "found"] }
-        }).select('_id lastName firstName idNumber docLocation finderContact');
-        isSingle = true;
-    } else {
-        // Search by lastName - multiple results
-        natIds = await NatId.find({
-            lastName: { $regex: `^${escapeRegex(identifier)}$`, $options: 'i' },
-            status: { $in: ["lost", "found"] }
-        }).select('_id lastName firstName idNumber docLocation finderContact').limit(10);
+    switch (category) {
+        case 'idNumber':
+            // Search by idNumber - single result
+            natIds = await NatId.findOne({
+                idNumber: { $regex: `^${escapeRegex(identifier)}$`, $options: 'i' },
+                status: { $in: ["lost", "found"] }
+            }).select('_id lastName firstName idNumber docLocation finderContact');
+            break;
+        case 'surname':
+            // Search by lastName - multiple results
+            natIds = await NatId.find({
+                lastName: { $regex: `^${escapeRegex(identifier)}$`, $options: 'i' },
+                status: { $in: ["lost", "found"] }
+            }).select('_id lastName firstName idNumber docLocation finderContact').limit(10);
+            break;
+        default:
+            return res.status(400).json({ message: "Invalid category" });
     }
 
     if (!natIds || (Array.isArray(natIds) && natIds.length === 0)) {

@@ -41,22 +41,22 @@ const ReportDLicenseModal = ({ isVisible, onClose, formData, reportDLicense, upd
 
     const handleSave = () => {
         if (!isFormComplete) {
-            Alert.alert("Error", "Please fill in all the required fields.");
+            showAlerts("Error", "Please fill in all the required fields.");
             return;
         }
 
         if (!isLicenceValid) {
-            Alert.alert("Error", "Invalid licence number format. Example: 123456AB");
+            showAlerts("Error", "Invalid licence number format. Example: 123456AB");
             return;
         }
 
         if (!isIdValid) {
-            Alert.alert("Error", "Invalid ID number format.");
+            showAlerts("Error", "Invalid ID number format.");
             return;
         }
 
         if (!isPhoneValid) {
-            Alert.alert("Error", "Invalid phone number format. Example: 0719729537");
+            showAlerts("Error", "Invalid phone number format. Example: 0719729537");
             return;
         }
         reportDLicense();

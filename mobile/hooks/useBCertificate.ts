@@ -41,7 +41,6 @@ export const useBCertificate = () => {
             return await bcertificateApi.foundbCertificate(bcertificateData);
         },
         onSuccess: (response) => {
-            queryClient.invalidateQueries({ queryKey: ["bcertificate"] });
             setIsBCertificateModalVisible(false);
             const message = extractSuccessMessage(response, "Birth Certificate reported successfully");
             showSuccessToast(message);
@@ -111,9 +110,30 @@ export const useBCertificate = () => {
         setSearchFormData((prevData) => ({ ...prevData, [field]: value }));
     };
 
-    const reportBCertificate = async () => enterBCertificateMutation.mutateAsync(formData);
-    const searchBcertificate = async (params: BirthCertificateSearchParams) => searchBcertificateMutation.mutateAsync(params);
-    const viewBcertificate = async (bcertificateId: string) => viewBcertificateMutation.mutateAsync(bcertificateId);
+    const reportBCertificate = async (): Promise<boolean> => {
+        try {
+            await enterBCertificateMutation.mutateAsync(formData);
+            return true;
+        } catch {
+            return false;
+        }
+    };
+    const searchBcertificate = async (params: BirthCertificateSearchParams): Promise<boolean> => {
+        try {
+            await searchBcertificateMutation.mutateAsync(params);
+            return true;
+        } catch {
+            return false;
+        }
+    };
+    const viewBcertificate = async (bcertificateId: string): Promise<boolean> => {
+        try {
+            await viewBcertificateMutation.mutateAsync(bcertificateId);
+            return true;
+        } catch {
+            return false;
+        }
+    };
 
     const resetSearch = () => {
         setSearchFound(false);
@@ -144,7 +164,6 @@ export const useBCertificate = () => {
         isReporting: enterBCertificateMutation.isPending,
         isSearching: searchBcertificateMutation.isPending,
         isViewing: viewBcertificateMutation.isPending,
-        refetch: () => queryClient.invalidateQueries({ queryKey: ["bcertificate"] }),
         searchFound,
         searchPerformed,
         viewedBcertificate,

@@ -17,6 +17,14 @@ export const BAGGAGE_TYPES = [
   "travelingbag", "changanibag", "monarch", "plasticbag", "tsaga", "box", "other"
 ] as const;
 
+export const MBAGGAGE_TYPES = [
+  "clothing", "wallet", "handbag", "documents", "jewelry", "keys", "phone", "tablet", "laptop", "headphones", "charger", "earpods", "earphones", "money", "hustlebag", "monarch", "satchel", "laptopbag", "briefcase", "travelingbag", "changanibag", "box", "other"
+] as const;
+
+export const gatheringTypes = [
+  "entertainment", "church", "school", "other"
+] as const;
+
 export const TRANSPORT_TYPES = [
   "bus",
   "kombi",

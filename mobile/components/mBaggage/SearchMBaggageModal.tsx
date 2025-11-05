@@ -1,12 +1,12 @@
-import { Text, View, ScrollView, Alert, TouchableOpacity, ActivityIndicator, Dimensions, Platform } from "react-native";
+import { Text, View, ScrollView, TouchableOpacity, ActivityIndicator, Platform } from "react-native";
 import React, { useMemo, useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 
-import { BAGGAGE_TYPES, TRANSPORT_TYPES, ROUTE_TYPES, PROVINCES, PROVINCE_DISTRICT_MAP } from "@/constants/allowedValues";
+import { MBAGGAGE_TYPES, gatheringTypes, PROVINCES, PROVINCE_DISTRICT_MAP } from "@/constants/allowedValues";
 import { OptionPicker, SelectField, toTitleCase } from "../FormsHelper";
 import { showAlerts } from "@/utils/alerts";
-import { Baggage, BaggageSearchParams } from "@/types";
+import { MBaggageSearchParams } from "@/types";
 import ModalWrapper from "../ModalWrapper";
 
 interface SearchBaggageModalProps {
@@ -14,12 +14,11 @@ interface SearchBaggageModalProps {
     onClose: () => void;
     formData: {
         baggageType: string;
-        transportType: string;
-        routeType: string;
+        gatheringType: string;
         destinationProvince: string;
         destinationDistrict: string;
     };
-    searchBaggage: (params: BaggageSearchParams) => Promise<Baggage[]>;
+    searchBaggage: (params: MBaggageSearchParams) => Promise<boolean>;
     updateFormData: (field: string, value: string) => void;
     isSearching: boolean;
     resetSearch: () => void;
@@ -27,7 +26,7 @@ interface SearchBaggageModalProps {
 
 
 const SearchBaggageModal = ({ isVisible, onClose, formData, searchBaggage, updateFormData, isSearching, resetSearch }: SearchBaggageModalProps) => {
-    const [openPicker, setOpenPicker] = useState<null | 'baggageType' | 'transportType' | 'routeType' | 'destinationProvince' | 'destinationDistrict'>(null);
+    const [openPicker, setOpenPicker] = useState<null | 'baggageType' | 'gatheringType' | 'destinationProvince' | 'destinationDistrict'>(null);
 
     const insets = useSafeAreaInsets();
 
@@ -38,8 +37,7 @@ const SearchBaggageModal = ({ isVisible, onClose, formData, searchBaggage, updat
 
     const isFormComplete = Boolean(
         formData.baggageType &&
-        formData.transportType &&
-        formData.routeType &&
+        formData.gatheringType &&
         formData.destinationProvince &&
         formData.destinationDistrict
     );
@@ -54,7 +52,7 @@ const SearchBaggageModal = ({ isVisible, onClose, formData, searchBaggage, updat
         try {
             await searchBaggage(formData);
         } catch (error) {
-            showAlerts("Error", "Failed to search baggage. Please try again.");
+            showAlerts("Error", "Failed to search for the lost items. Please try again.");
             console.error("Search error:", error);
         }
     };
@@ -98,38 +96,31 @@ const SearchBaggageModal = ({ isVisible, onClose, formData, searchBaggage, updat
                             : undefined
                     }>
                     {renderSelect(
-                        'Baggage Type', // Title of the select field, as per the form requirements in Baggage.Helpers.tsx
+                        'Lost Item Type', // Title of the select field, as per the form requirements in Baggage.Helpers.tsx
                         formData.baggageType, // Current selected value for baggage type
                         () => setOpenPicker('baggageType'), // Function to open the baggage type picker
-                        'How would you classify the baggage you lost?' // Placeholder text when no value is selected
+                        'How best would you classify the item you lost?' // Placeholder text when no value is selected
                     )}
 
                     {renderSelect(
-                        'Transport Type',
-                        formData.transportType,
-                        () => setOpenPicker('transportType'),
-                        'How would you classify the mode of transport you were using?'
+                        'Gathering or Event Type',
+                        formData.gatheringType,
+                        () => setOpenPicker('gatheringType'),
+                        'What type of gathering were you attending?'
                     )}
 
                     {renderSelect(
-                        'Route Type',
-                        formData.routeType,
-                        () => setOpenPicker('routeType'),
-                        'Were you traveling within the same area / town (local) or from one town to another (intercity)?'
-                    )}
-
-                    {renderSelect(
-                        'Destination Province',
+                        'Province of occurrence',
                         formData.destinationProvince,
                         () => setOpenPicker('destinationProvince'),
-                        'Which province was the vehicle traveling to (or within, if local)?',
+                        'In which province were you when you lost the item?',
                     )}
 
                     <SelectField
-                        label="Destination District"
+                        label="District of occurrence"
                         value={formData.destinationDistrict}
                         displayValue={formData.destinationProvince ? (formData.destinationDistrict ? toTitleCase(formData.destinationDistrict) : '') : ''}
-                        placeholder={formData.destinationProvince ? 'Which district was the vehicle traveling to (or within, if local)?' : 'Select province first'}
+                        placeholder={formData.destinationProvince ? 'Which district were you in when you lost the item?' : 'Select province first'}
                         onPress={() => formData.destinationProvince && setOpenPicker('destinationDistrict')}
                         disabled={!formData.destinationProvince}
                     />
@@ -138,31 +129,23 @@ const SearchBaggageModal = ({ isVisible, onClose, formData, searchBaggage, updat
                     {/* Pickers */}
                     <OptionPicker
                         visible={openPicker === 'baggageType'}
-                        title="Select Baggage Type"
-                        options={BAGGAGE_TYPES}
+                        title="Select Lost Item Type"
+                        options={MBAGGAGE_TYPES}
                         onSelect={(val) => updateFormData('baggageType', String(val).toLowerCase())}
                         onClose={() => setOpenPicker(null)}
                     />
 
                     <OptionPicker
-                        visible={openPicker === 'transportType'}
-                        title="Select Transport Type"
-                        options={TRANSPORT_TYPES}
-                        onSelect={(val) => updateFormData('transportType', String(val).toLowerCase())}
-                        onClose={() => setOpenPicker(null)}
-                    />
-
-                    <OptionPicker
-                        visible={openPicker === 'routeType'}
-                        title="Select Route Type"
-                        options={ROUTE_TYPES}
-                        onSelect={(val) => updateFormData('routeType', String(val).toLowerCase())}
+                        visible={openPicker === 'gatheringType'}
+                        title="Select Gathering or Event Type"
+                        options={gatheringTypes}
+                        onSelect={(val) => updateFormData('gatheringType', String(val).toLowerCase())}
                         onClose={() => setOpenPicker(null)}
                     />
 
                     <OptionPicker
                         visible={openPicker === 'destinationProvince'}
-                        title="Select Destination Province"
+                        title="Select Province of occurrence"
                         options={PROVINCES}
                         onSelect={(val) => {
                             updateFormData('destinationProvince', String(val).toLowerCase());
@@ -175,7 +158,7 @@ const SearchBaggageModal = ({ isVisible, onClose, formData, searchBaggage, updat
 
                     <OptionPicker
                         visible={openPicker === 'destinationDistrict'}
-                        title="Select Destination District"
+                        title="Select District of occurrence"
                         options={districts}
                         onSelect={(val) => updateFormData('destinationDistrict', String(val).toLowerCase())}
                         onClose={() => setOpenPicker(null)}

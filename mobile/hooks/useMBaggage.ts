@@ -1,30 +1,29 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { baggageApi } from "@/utils/api";
+import { mBaggageApi } from "@/utils/api";
 import { useState } from "react";
-import { extractErrorMessage, extractSuccessMessage, showError } from "@/utils/alerts";
+import { extractErrorMessage, extractSuccessMessage } from "@/utils/alerts";
 import { showErrorToast, showSuccessToast } from "@/utils/toasts";
-import { Baggage, BaggageFoundData, BaggageSearchParams } from "@/types";
+import { MBaggage, MBaggageFoundData, MBaggageSearchParams, MBaggageListItem, MBaggageViewResponse } from "@/types";
 
-export const useBaggage = () => {
+export const useMBaggage = () => {
     const queryClient = useQueryClient();
 
     const [isBaggageModalVisible, setIsBaggageModalVisible] = useState(false); 
 
-    const [formData, setFormData] = useState<BaggageFoundData>({
-        baggageType: "",
-        transportType: "",
-        routeType: "",
-        destination: "",
+    const [formData, setFormData] = useState<MBaggageFoundData>({
+        baggageType: "clothing",
+        gatheringType: "other",
         destinationProvince: "",
         destinationDistrict: "",
+        gatheringLocation: "",
         docLocation: "",
         finderContact: ""
     });
 
     const [searchFound, setSearchFound] = useState(false); // whether search yielded results
-    const [viewedBaggage, setViewedBaggage] = useState<Baggage | null>(null); // viewed baggage details
+    const [viewedBaggage, setViewedBaggage] = useState<MBaggageViewResponse | null>(null); // viewed baggage details
     const [viewingBaggageId, setViewingBaggageId] = useState<string | null>(null); // currently viewing baggage ID
-    const [searchResults, setSearchResults] = useState<Baggage[]>([]); // store search results list
+    const [searchResults, setSearchResults] = useState<MBaggageListItem[]>([]); // store search results list
     
     // helpers
     const openBaggageModal = () => setIsBaggageModalVisible(true);
@@ -32,8 +31,8 @@ export const useBaggage = () => {
 
 
     const enterBaggageMutation = useMutation({
-        mutationFn: async (baggageData: BaggageFoundData) => {
-            return await baggageApi.lostBaggage(baggageData);
+        mutationFn: async (baggageData: MBaggageFoundData) => {
+            return await mBaggageApi.lostBaggage(baggageData);
         },
         onSuccess: (response) => {
             setIsBaggageModalVisible(false);
@@ -47,10 +46,10 @@ export const useBaggage = () => {
         },
     });
 
-    const searchBaggageMutation = useMutation<Baggage[], unknown, BaggageSearchParams>({
+    const searchBaggageMutation = useMutation<MBaggageListItem[], unknown, MBaggageSearchParams>({
         mutationFn: async (searchParams) => {
             try {
-                const response = await baggageApi.searchBaggage(searchParams);
+                const response = await mBaggageApi.searchBaggage(searchParams);
                 return response.data;
             } catch (error: any) {
                 if (error?.response?.status === 404) {
@@ -75,15 +74,15 @@ export const useBaggage = () => {
         },
     });
 
-    const viewBaggageMutation = useMutation({
+    const viewBaggageMutation = useMutation<MBaggageViewResponse, unknown, string>({
         onMutate: (baggageId: string) => {
             setViewingBaggageId(baggageId);
         },
         mutationFn: async (baggageId: string) => {
-            const response = await baggageApi.viewBaggage(baggageId);
+            const response = await mBaggageApi.viewBaggage(baggageId);
             return response.data;
         },
-        onSuccess: (data: Baggage, baggageId: string) => {
+        onSuccess: (data: MBaggageViewResponse, baggageId: string) => {
             setViewingBaggageId(null);
             if (data) {
                 setViewedBaggage(data);
@@ -98,19 +97,19 @@ export const useBaggage = () => {
         },
     });
 
-    const claimBaggageMutation = useMutation({
+    const claimBaggageMutation = useMutation<MBaggageViewResponse, unknown, string>({
         mutationFn: async (baggageId: string) => {
-            const response = await baggageApi.claimBaggage(baggageId);
+            const response = await mBaggageApi.claimBaggage(baggageId);
             return response.data;
         },
-        onSuccess: (data: Baggage) => {
+        onSuccess: (data: MBaggageViewResponse, baggageId: string) => {
             if (data) {
                 setViewedBaggage(data);
                 setSearchFound(true);
             }
             showSuccessToast('Baggage claimed successfully!');
         },
-        onError: (error: any) => {
+        onError: (error: any, baggageId: string) => {
             const message = extractErrorMessage(error, 'An error occurred while claiming baggage');
             if (__DEV__) console.error("Baggage claim error:", message);
             showErrorToast(message);
@@ -129,7 +128,7 @@ export const useBaggage = () => {
             return false;
         }
     };
-    const searchBaggage = async (params: BaggageSearchParams): Promise<boolean> => {
+    const searchBaggage = async (params: MBaggageSearchParams): Promise<boolean> => {
         try {
             await searchBaggageMutation.mutateAsync(params);
             return true;

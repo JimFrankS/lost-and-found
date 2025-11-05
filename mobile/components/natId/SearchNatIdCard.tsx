@@ -13,7 +13,7 @@ interface SearchNatIdCardProps {
     };
     openNatIDModal: () => void;
     closeNatIDModal: () => void;
-    searchNatId: (params: NatIdSearchParams) => Promise<NatId[]>;
+    searchNatId: (params: NatIdSearchParams) => Promise<boolean>;
     updateFormData: (field: string, value: string) => void;
     isSearching: boolean;
     resetSearch: () => void;

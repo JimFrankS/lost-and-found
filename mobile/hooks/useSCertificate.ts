@@ -42,7 +42,6 @@ export const useSCertificate = () => {
         }, // Api Call to report found school certificate
 
         onSuccess: (response) => {
-            queryClient.invalidateQueries({ queryKey: ["scertificate"] }); // Invalidate scertificate queries to refetch updated data.
             setIsSCertificateModalVisible(false); // Close the modal
             const message = extractSuccessMessage(response, "School Certificate reported successfully");
             showSuccessToast(message);
@@ -56,7 +55,9 @@ export const useSCertificate = () => {
     }); // end of the mutation for reporting found school certificate.
 
     const searchScertificateMutation = useMutation({
-        mutationFn: (searchParams: SCertificateSearchParams) => scertificateApi.searchScertificate(searchParams),
+        mutationFn: async (searchParams: SCertificateSearchParams) => {
+            return await scertificateApi.searchScertificate(searchParams);
+        },
     onSuccess: (response: any) => {
             const data = response.data;
 
@@ -110,12 +111,30 @@ export const useSCertificate = () => {
 
     // Wrapper helpers so callers can wait if needed.
 
-    const reportSCertificate = async () => enterSCertificateMutation.mutateAsync(formData);
-    const searchScertificate = async (params: SCertificateSearchParams) => {
-        const response = await searchScertificateMutation.mutateAsync(params);
-        return response.data;
+    const reportSCertificate = async (): Promise<boolean> => {
+        try {
+            await enterSCertificateMutation.mutateAsync(formData);
+            return true;
+        } catch {
+            return false;
+        }
     };
-    const viewScertificate = async (scertificateId: string) => viewScertificateMutation.mutateAsync(scertificateId);
+    const searchScertificate = async (params: SCertificateSearchParams): Promise<boolean> => {
+        try {
+            await searchScertificateMutation.mutateAsync(params);
+            return true;
+        } catch {
+            return false;
+        }
+    };
+    const viewScertificate = async (scertificateId: string): Promise<boolean> => {
+        try {
+            await viewScertificateMutation.mutateAsync(scertificateId);
+            return true;
+        } catch {
+            return false;
+        }
+    };
 
     const resetSearch = () => {
         setSearchFound(false);
@@ -142,7 +161,6 @@ export const useSCertificate = () => {
         isReporting: enterSCertificateMutation.isPending,
         isSearching: searchScertificateMutation.isPending,
         isViewing: viewScertificateMutation.isPending,
-        refetch: () => queryClient.invalidateQueries({ queryKey: ["scertificate"] }), //function to refetch school certificate data.
         searchFound,
         viewedScertificate,
         viewingScertificateId,
