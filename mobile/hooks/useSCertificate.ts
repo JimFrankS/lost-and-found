@@ -110,12 +110,30 @@ export const useSCertificate = () => {
 
     // Wrapper helpers so callers can wait if needed.
 
-    const reportSCertificate = async () => enterSCertificateMutation.mutateAsync(formData);
-    const searchScertificate = async (params: SCertificateSearchParams) => {
-        const response = await searchScertificateMutation.mutateAsync(params);
-        return response.data;
+    const reportSCertificate = async () => {
+        try {
+            await enterSCertificateMutation.mutateAsync(formData);
+            return true;
+        } catch {
+            return false;
+        }
     };
-    const viewScertificate = async (scertificateId: string) => viewScertificateMutation.mutateAsync(scertificateId);
+    const searchScertificate = async (params: SCertificateSearchParams) => {
+        try {
+            const response = await searchScertificateMutation.mutateAsync(params);
+            return response.data;
+        } catch {
+            return false;
+        }
+    };
+    const viewScertificate = async (scertificateId: string) => {
+        try {
+            await viewScertificateMutation.mutateAsync(scertificateId);
+            return true;
+        } catch {
+            return false;
+        }
+    };
 
     const resetSearch = () => {
         setSearchFound(false);

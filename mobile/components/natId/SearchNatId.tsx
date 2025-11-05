@@ -13,19 +13,6 @@ interface SearchNatIdProps {
 const SearchNatId = ({ natIdHook, isSearchModalVisible, openSearchModal, closeSearchModal }: SearchNatIdProps) => {
     const showingResults = !!natIdHook.searchFound;
 
-    // Diagnostic logs
-    console.log('SearchNatId Debug:', {
-        isSearchModalVisible,
-        hasOpenSearchModal: !!openSearchModal,
-        hasCloseSearchModal: !!closeSearchModal,
-        natIdHookHasOpenSearchModal: !!natIdHook.openSearchModal,
-        natIdHookHasCloseSearchModal: !!natIdHook.closeSearchModal,
-        natIdHookIsSearchModalVisible: natIdHook.isSearchModalVisible,
-        effectiveIsVisible: isSearchModalVisible ?? natIdHook.isSearchModalVisible,
-        effectiveOpen: openSearchModal ?? natIdHook.openSearchModal,
-        effectiveClose: closeSearchModal ?? natIdHook.closeSearchModal,
-    });
-
     return (
         <View style={styles.container}>
             {showingResults ? (

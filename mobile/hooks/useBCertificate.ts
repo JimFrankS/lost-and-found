@@ -111,9 +111,30 @@ export const useBCertificate = () => {
         setSearchFormData((prevData) => ({ ...prevData, [field]: value }));
     };
 
-    const reportBCertificate = async () => enterBCertificateMutation.mutateAsync(formData);
-    const searchBcertificate = async (params: BirthCertificateSearchParams) => searchBcertificateMutation.mutateAsync(params);
-    const viewBcertificate = async (bcertificateId: string) => viewBcertificateMutation.mutateAsync(bcertificateId);
+    const reportBCertificate = async () => {
+        try {
+            await enterBCertificateMutation.mutateAsync(formData);
+            return true;
+        } catch {
+            return false;
+        }
+    };
+    const searchBcertificate = async (params: BirthCertificateSearchParams) => {
+        try {
+            await searchBcertificateMutation.mutateAsync(params);
+            return true;
+        } catch {
+            return false;
+        }
+    };
+    const viewBcertificate = async (bcertificateId: string) => {
+        try {
+            await viewBcertificateMutation.mutateAsync(bcertificateId);
+            return true;
+        } catch {
+            return false;
+        }
+    };
 
     const resetSearch = () => {
         setSearchFound(false);

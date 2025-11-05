@@ -130,11 +130,30 @@ export const usePassport = () => {
 
     // Wrapper helpers so callers can wait if needed.
 
-    const reportPassport = async () => enterPassportMutation.mutateAsync(formData);
-    const searchPassport = async (params: PassportSearchParams) => searchPassportMutation.mutateAsync(params);
+    const reportPassport = async () => {
+        try {
+            await enterPassportMutation.mutateAsync(formData);
+            return true;
+        } catch {
+            return false;
+        }
+    };
+    const searchPassport = async (params: PassportSearchParams) => {
+        try {
+            await searchPassportMutation.mutateAsync(params);
+            return true;
+        } catch {
+            return false;
+        }
+    };
     const viewPassport = async (passportId: string) => {
-        setViewingPassportId(passportId);
-        return viewPassportMutation.mutateAsync(passportId);
+        try {
+            setViewingPassportId(passportId);
+            await viewPassportMutation.mutateAsync(passportId);
+            return true;
+        } catch {
+            return false;
+        }
     };
 
     const resetSearch = () => {

@@ -54,15 +54,8 @@ export const useNatID = () => {
 
     const searchNatIdMutation = useMutation<NatId[], unknown, NatIdSearchParams>({
         mutationFn: async (searchParams: NatIdSearchParams) => {
-            try {
-                const response = await natIdApi.searchNatId(searchParams);
-                return response.data;
-            } catch (error: any) {
-                if (error?.response?.status === 404) {
-                    return [];
-                }
-                throw error;
-            }
+            const response = await natIdApi.searchNatId(searchParams);
+            return response.data;
         },
         onSuccess: (data: NatId[]) => {
             const safeResults = data === null ? [] : Array.isArray(data) ? data : [data];
@@ -75,6 +68,8 @@ export const useNatID = () => {
             const message = extractErrorMessage(error, "An error occurred whilst searching for the national ID");
             if (__DEV__) console.error("NatID search error: ", message);
             showError(message);
+            setSearchFound(false);
+            setSearchResults([]);
         },
     });
 
@@ -139,15 +134,32 @@ export const useNatID = () => {
     // Wrapper helpers so callers can wait if needed.
 
     const reportNatID = useCallback(
-        async () => enterNatIDMutation.mutateAsync(formData),
+        async () => {
+            try {
+                await enterNatIDMutation.mutateAsync(formData);
+                return true;
+            } catch {
+                return false;
+            }
+        },
         [formData]
     );
     const searchNatId = useCallback(
-        async (params: NatIdSearchParams) => searchNatIdMutation.mutateAsync(params),
+        async (params: NatIdSearchParams) => {
+            const response = await searchNatIdMutation.mutateAsync(params);
+            return response;
+        },
         []
     );
     const viewNatId = useCallback(
-        async (id: string) => viewNatIdMutation.mutateAsync(id),
+        async (id: string) => {
+            try {
+                await viewNatIdMutation.mutateAsync(id);
+                return true;
+            } catch {
+                return false;
+            }
+        },
         []
     );
 

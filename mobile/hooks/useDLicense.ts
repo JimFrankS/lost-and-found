@@ -128,9 +128,30 @@ export const useDLicense = () => {
 
     // Wrapper helpers so callers can wait if needed.
 
-    const reportDLicense = async () => enterDLicenseMutation.mutateAsync(formData);
-    const searchDLicence = async (params: DLicenceSearchParams) => searchDLicenceMutation.mutateAsync(params);
-    const viewDLicence = async (licenceId: string) => viewDLicenceMutation.mutateAsync(licenceId);
+    const reportDLicense = async () => {
+        try {
+            await enterDLicenseMutation.mutateAsync(formData);
+            return true;
+        } catch {
+            return false;
+        }
+    };
+    const searchDLicence = async (params: DLicenceSearchParams) => {
+        try {
+            await searchDLicenceMutation.mutateAsync(params);
+            return true;
+        } catch {
+            return false;
+        }
+    };
+    const viewDLicence = async (licenceId: string) => {
+        try {
+            await viewDLicenceMutation.mutateAsync(licenceId);
+            return true;
+        } catch {
+            return false;
+        }
+    };
 
     const resetSearch = () => {
         setSearchFound(false);

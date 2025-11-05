@@ -114,10 +114,38 @@ export const useBaggage = () => {
         setFormData(prev => ({ ...prev, [field]: value }));
 
     // wrapper helpers so callers can await if needed
-    const reportBaggage = async () => enterBaggageMutation.mutateAsync(formData);
-    const searchBaggage = async (params: MBaggageSearchParams) => searchBaggageMutation.mutateAsync(params);
-    const viewBaggage = async (baggageId: string) => viewBaggageMutation.mutateAsync(baggageId);
-    const claimBaggage = async (baggageId: string) => claimBaggageMutation.mutateAsync(baggageId);
+    const reportBaggage = async () => {
+        try {
+            await enterBaggageMutation.mutateAsync(formData);
+            return true;
+        } catch {
+            return false;
+        }
+    };
+    const searchBaggage = async (params: MBaggageSearchParams) => {
+        try {
+            await searchBaggageMutation.mutateAsync(params);
+            return true;
+        } catch {
+            return false;
+        }
+    };
+    const viewBaggage = async (baggageId: string) => {
+        try {
+            await viewBaggageMutation.mutateAsync(baggageId);
+            return true;
+        } catch {
+            return false;
+        }
+    };
+    const claimBaggage = async (baggageId: string) => {
+        try {
+            await claimBaggageMutation.mutateAsync(baggageId);
+            return true;
+        } catch {
+            return false;
+        }
+    };
 
     const resetSearch = () => {
         setSearchFound(false);
