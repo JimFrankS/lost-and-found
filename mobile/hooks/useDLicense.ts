@@ -40,7 +40,6 @@ export const useDLicense = () => {
         }, // Api Call to report found driving license
 
         onSuccess: (response) => {
-            queryClient.invalidateQueries({ queryKey: ["dLicence"] }); // Invalidate dLicence queries to refetch updated data.
             setIsDLicenseModalVisible(false); // Close the modal
             const message = extractSuccessMessage(response, "Driving License reported successfully");
             showSuccessToast(message);
@@ -179,7 +178,6 @@ export const useDLicense = () => {
         isReporting: enterDLicenseMutation.isPending,
         isSearching: searchDLicenceMutation.isPending,
         isViewing: viewDLicenceMutation.isPending,
-        refetch: () => queryClient.invalidateQueries({ queryKey: ["dLicence"] }), //function to refetch driving license data.
         searchFound,
         searchPerformed,
         viewedDLicence,

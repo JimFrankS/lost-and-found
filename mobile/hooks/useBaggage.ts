@@ -36,7 +36,6 @@ export const useBaggage = () => {
             return await baggageApi.lostBaggage(baggageData);
         },
         onSuccess: (response) => {
-            queryClient.invalidateQueries({ queryKey: ['baggage'] });
             setIsBaggageModalVisible(false);
             const message = extractSuccessMessage(response, 'Baggage reported successfully');
             showSuccessToast(message);
@@ -181,7 +180,6 @@ export const useBaggage = () => {
         isSearching: searchBaggageMutation.isPending,
         isViewing: viewBaggageMutation.isPending,
         isClaiming: claimBaggageMutation.isPending,
-        refetch: () => queryClient.invalidateQueries({ queryKey: ['baggage'] }),
         searchFound,
         viewedBaggage,
         viewingBaggageId,

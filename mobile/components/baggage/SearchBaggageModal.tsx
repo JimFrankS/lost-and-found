@@ -139,7 +139,7 @@ const SearchBaggageModal = ({ isVisible, onClose, formData, searchBaggage, updat
                     <OptionPicker
                         visible={openPicker === 'baggageType'}
                         title="Select Baggage Type"
-                        options={BAGGAGE_TYPES as unknown as string[]}
+                        options={BAGGAGE_TYPES}
                         onSelect={(val) => updateFormData('baggageType', String(val).toLowerCase())}
                         onClose={() => setOpenPicker(null)}
                     />
@@ -147,7 +147,7 @@ const SearchBaggageModal = ({ isVisible, onClose, formData, searchBaggage, updat
                     <OptionPicker
                         visible={openPicker === 'transportType'}
                         title="Select Transport Type"
-                        options={TRANSPORT_TYPES as unknown as string[]}
+                        options={TRANSPORT_TYPES}
                         onSelect={(val) => updateFormData('transportType', String(val).toLowerCase())}
                         onClose={() => setOpenPicker(null)}
                     />
@@ -155,7 +155,7 @@ const SearchBaggageModal = ({ isVisible, onClose, formData, searchBaggage, updat
                     <OptionPicker
                         visible={openPicker === 'routeType'}
                         title="Select Route Type"
-                        options={ROUTE_TYPES as unknown as string[]}
+                        options={ROUTE_TYPES}
                         onSelect={(val) => updateFormData('routeType', String(val).toLowerCase())}
                         onClose={() => setOpenPicker(null)}
                     />
@@ -163,7 +163,7 @@ const SearchBaggageModal = ({ isVisible, onClose, formData, searchBaggage, updat
                     <OptionPicker
                         visible={openPicker === 'destinationProvince'}
                         title="Select Destination Province"
-                        options={PROVINCES as unknown as string[]}
+                        options={PROVINCES}
                         onSelect={(val) => {
                             updateFormData('destinationProvince', String(val).toLowerCase());
                             // reset district when province changes
@@ -176,7 +176,7 @@ const SearchBaggageModal = ({ isVisible, onClose, formData, searchBaggage, updat
                     <OptionPicker
                         visible={openPicker === 'destinationDistrict'}
                         title="Select Destination District"
-                        options={districts as unknown as string[]}
+                        options={districts}
                         onSelect={(val) => updateFormData('destinationDistrict', String(val).toLowerCase())}
                         onClose={() => setOpenPicker(null)}
                         getLabel={(v) => toTitleCase(v)}

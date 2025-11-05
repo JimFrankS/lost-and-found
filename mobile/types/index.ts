@@ -198,4 +198,15 @@ export interface MBaggageFoundData {
     finderContact: string;
 }
 
+export interface MBaggageViewResponse {
+    baggageType: (typeof MBAGGAGE_TYPES)[number];
+    gatheringType: (typeof gatheringTypes)[number];
+    destinationProvince: string;
+    destinationDistrict: string;
+    gatheringLocation: string;
+    docLocation: string;
+    finderContact: string;
+    claimed: boolean;
+}
+
 // This file defines TypeScript interfaces for various document types used in the application. These interfaces ensure type safety and consistency when handling data related to lost and found documents. Each interface corresponds to a specific document type, outlining the expected properties and their types.

@@ -39,7 +39,6 @@ export const useNatID = () => {
         }, // Api Call to report found national ID
 
         onSuccess: (data) => {
-            queryClient.invalidateQueries({ queryKey: ["natId"] }); // Invalidate natId queries to refetch updated data.
             setIsNatIDModalVisible(false); // Close the modal
             const message = extractSuccessMessage({ data }, "National ID reported successfully");
             showSuccessToast(message);
@@ -199,7 +198,6 @@ export const useNatID = () => {
         isReporting: enterNatIDMutation.isPending,
         isSearching: searchNatIdMutation.isPending,
         isViewing: viewNatIdMutation.isPending,
-        refetch: () => queryClient.invalidateQueries({ queryKey: ["natId"] }), //function to refetch national ID data.
         searchFound,
         viewedNatId,
         viewingNatIdId,

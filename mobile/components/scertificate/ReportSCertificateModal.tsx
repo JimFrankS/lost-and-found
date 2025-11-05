@@ -154,7 +154,7 @@ const ReportSCertificateModal = ({ isVisible, onClose, formData, reportSCertific
                     <OptionPicker
                         visible={openPicker === 'certificateType'}
                         title="Select Certificate Type"
-                        options={SCERTIFICATE_TYPES as unknown as string[]}
+                        options={SCERTIFICATE_TYPES}
                         onSelect={(val) => updateFormData('certificateType', String(val))}
                         onClose={() => setOpenPicker(null)}
                     />

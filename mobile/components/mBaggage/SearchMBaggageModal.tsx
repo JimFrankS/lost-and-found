@@ -117,10 +117,10 @@ const SearchBaggageModal = ({ isVisible, onClose, formData, searchBaggage, updat
                     )}
 
                     <SelectField
-                        label="District of occurance"
+                        label="District of occurrence"
                         value={formData.destinationDistrict}
                         displayValue={formData.destinationProvince ? (formData.destinationDistrict ? toTitleCase(formData.destinationDistrict) : '') : ''}
-                        placeholder={formData.destinationProvince ? 'Which district were you in when you loat the item?' : 'Select province first'}
+                        placeholder={formData.destinationProvince ? 'Which district were you in when you lost the item?' : 'Select province first'}
                         onPress={() => formData.destinationProvince && setOpenPicker('destinationDistrict')}
                         disabled={!formData.destinationProvince}
                     />
@@ -130,7 +130,7 @@ const SearchBaggageModal = ({ isVisible, onClose, formData, searchBaggage, updat
                     <OptionPicker
                         visible={openPicker === 'baggageType'}
                         title="Select Lost Item Type"
-                        options={MBAGGAGE_TYPES as unknown as string[]}
+                        options={MBAGGAGE_TYPES}
                         onSelect={(val) => updateFormData('baggageType', String(val).toLowerCase())}
                         onClose={() => setOpenPicker(null)}
                     />
@@ -138,7 +138,7 @@ const SearchBaggageModal = ({ isVisible, onClose, formData, searchBaggage, updat
                     <OptionPicker
                         visible={openPicker === 'gatheringType'}
                         title="Select Gathering or Event Type"
-                        options={gatheringTypes as unknown as string[]}
+                        options={gatheringTypes}
                         onSelect={(val) => updateFormData('gatheringType', String(val).toLowerCase())}
                         onClose={() => setOpenPicker(null)}
                     />
@@ -146,7 +146,7 @@ const SearchBaggageModal = ({ isVisible, onClose, formData, searchBaggage, updat
                     <OptionPicker
                         visible={openPicker === 'destinationProvince'}
                         title="Select Province of occurrence"
-                        options={PROVINCES as unknown as string[]}
+                        options={PROVINCES}
                         onSelect={(val) => {
                             updateFormData('destinationProvince', String(val).toLowerCase());
                             // reset district when province changes
@@ -158,8 +158,8 @@ const SearchBaggageModal = ({ isVisible, onClose, formData, searchBaggage, updat
 
                     <OptionPicker
                         visible={openPicker === 'destinationDistrict'}
-                        title="Select District of occurance"
-                        options={districts as unknown as string[]}
+                        title="Select District of occurrence"
+                        options={districts}
                         onSelect={(val) => updateFormData('destinationDistrict', String(val).toLowerCase())}
                         onClose={() => setOpenPicker(null)}
                         getLabel={(v) => toTitleCase(v)}

@@ -1,6 +1,6 @@
 import React from 'react';
 import {  Text } from 'react-native';
-import ReportMBaggageModa from '@/components/mBaggage/ReportMBaggageModa';
+import ReportMBaggageModal from '@/components/mBaggage/ReportMBaggageModal';
 import { useMBaggage } from '@/hooks/useMBaggage';
 import CardWrapper from '@/styles/CardWrapper';
 
@@ -17,11 +17,11 @@ const ReportMBaggageCard = () => {
 
   return (
     <>
-      <CardWrapper onPress={openBaggageModal} accessibilityLabel="Report lost mBaggage">
-        <Text className="ml-2 text-gray-600 font-bold text-lg">Report Items Found at a Gathering or Event or "Dropped" </Text>
+      <CardWrapper onPress={openBaggageModal} accessibilityLabel="Report found mBaggage">
+        <Text className="ml-2 text-gray-600 font-bold text-lg">Report Found Items from Gatherings, Events, or Other Locations</Text>
       </CardWrapper>
 
-      <ReportMBaggageModa
+      <ReportMBaggageModal
         isVisible={isBaggageModalVisible}
         onClose={closeBaggageModal}
         formData={formData}

@@ -41,7 +41,6 @@ export const useBCertificate = () => {
             return await bcertificateApi.foundbCertificate(bcertificateData);
         },
         onSuccess: (response) => {
-            queryClient.invalidateQueries({ queryKey: ["bcertificate"] });
             setIsBCertificateModalVisible(false);
             const message = extractSuccessMessage(response, "Birth Certificate reported successfully");
             showSuccessToast(message);
@@ -165,7 +164,6 @@ export const useBCertificate = () => {
         isReporting: enterBCertificateMutation.isPending,
         isSearching: searchBcertificateMutation.isPending,
         isViewing: viewBcertificateMutation.isPending,
-        refetch: () => queryClient.invalidateQueries({ queryKey: ["bcertificate"] }),
         searchFound,
         searchPerformed,
         viewedBcertificate,

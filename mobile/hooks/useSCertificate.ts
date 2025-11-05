@@ -42,7 +42,6 @@ export const useSCertificate = () => {
         }, // Api Call to report found school certificate
 
         onSuccess: (response) => {
-            queryClient.invalidateQueries({ queryKey: ["scertificate"] }); // Invalidate scertificate queries to refetch updated data.
             setIsSCertificateModalVisible(false); // Close the modal
             const message = extractSuccessMessage(response, "School Certificate reported successfully");
             showSuccessToast(message);
@@ -57,14 +56,7 @@ export const useSCertificate = () => {
 
     const searchScertificateMutation = useMutation({
         mutationFn: async (searchParams: SCertificateSearchParams) => {
-            try {
-                return await scertificateApi.searchScertificate(searchParams);
-            } catch (error: any) {
-                if (error?.response?.status === 404) {
-                    return { data: [] };
-                }
-                throw error;
-            }
+            return await scertificateApi.searchScertificate(searchParams);
         },
     onSuccess: (response: any) => {
             const data = response.data;
@@ -169,7 +161,6 @@ export const useSCertificate = () => {
         isReporting: enterSCertificateMutation.isPending,
         isSearching: searchScertificateMutation.isPending,
         isViewing: viewScertificateMutation.isPending,
-        refetch: () => queryClient.invalidateQueries({ queryKey: ["scertificate"] }), //function to refetch school certificate data.
         searchFound,
         viewedScertificate,
         viewingScertificateId,

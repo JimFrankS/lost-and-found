@@ -4,12 +4,12 @@ import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 
 import { searchResultStyles } from "@/styles/searchResultStyles";
 import NothingFound from "../NothingFound";
-import { MBaggage, MBaggageListItem } from "@/types";
+import { MBaggage, MBaggageListItem, MBaggageViewResponse } from "@/types";
 import { toTitleCase } from "@/utils/string.utility";
 
 interface FoundBaggageCardProps {
     searchFound: boolean;
-    foundBaggage: MBaggage | MBaggageListItem[] | null;
+    foundBaggage: MBaggageViewResponse | MBaggageListItem[] | null;
     resetSearch: () => void;
     goBackToResults?: () => void;
     viewBaggage?: (baggageId: string) => void;
