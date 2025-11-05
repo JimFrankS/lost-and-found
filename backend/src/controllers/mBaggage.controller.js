@@ -159,6 +159,10 @@ export const viewBaggage = expressAsyncHandler(async (req, res) => {
     return res.status(400).json({ message: "Baggage ID is required" });
   }
 
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ message: "Invalid baggage ID" });
+  }
+
   // Find the baggage by ID and update status to 'found' if it's still 'lost'
   const baggage = await MBaggage.findOneAndUpdate(
     { _id: id, claimed: false },

@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { mBaggageApi } from "@/utils/api";
 import { useState } from "react";
-import { extractErrorMessage, extractSuccessMessage, showError } from "@/utils/alerts";
+import { extractErrorMessage, extractSuccessMessage } from "@/utils/alerts";
 import { showErrorToast, showSuccessToast } from "@/utils/toasts";
 import { MBaggage, MBaggageFoundData, MBaggageSearchParams } from "@/types";
 

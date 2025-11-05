@@ -19,6 +19,7 @@ export const useNatID = () => {
     }); // State for holding the form data for enter national ID details.
 
     const [searchFormData, setSearchFormData] = useState({
+        category: "",
         identifier: "",
     }); // State for holding the search form data.
 
@@ -112,6 +113,13 @@ export const useNatID = () => {
         setIsNatIDModalVisible(true); // after reset is complete, make the modal to be visible
     };
 
+    const openSearchModal = () => {
+        setSearchFormData({
+            category: "",
+            identifier: "",
+        }); // reset search form data when opening the modal
+    };
+
     const updateFormData = (field: string, value: string) => {
         setFormData((prevData) => ({ ...prevData, [field]: value })); // Function to update the form data state
     };
@@ -152,6 +160,7 @@ export const useNatID = () => {
         searchFormData,
         openNatIDModal,
         closeNatIDModal: () => setIsNatIDModalVisible(false), // Function to close the national ID modal.
+        openSearchModal,
         reportNatID,
         searchNatId,
         viewNatId,

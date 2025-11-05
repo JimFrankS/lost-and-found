@@ -13,7 +13,7 @@ interface ReportBCertificateModalProps {
         motherLastName: string;
         lastName: string;
         firstName: string;
-        secondName: string;
+        secondName?: string;
         docLocation: string;
         finderContact: string
     };

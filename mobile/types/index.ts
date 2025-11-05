@@ -22,7 +22,9 @@ export interface MBaggage {
     gatheringLocation: string,
     docLocation: string,
     finderContact: string,
-    claimed?: boolean
+    status: "lost" | "found",
+    claimed?: boolean,
+    claimedAt?: string | null
 }
 
 

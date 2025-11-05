@@ -5,9 +5,12 @@ import FoundNatIDCard from "./FoundNatIDCard";
 
 interface SearchNatIdProps {
     natIdHook: ReturnType<typeof import("@/hooks/useNatID").useNatID>;
+    isSearchModalVisible?: boolean;
+    openSearchModal?: () => void;
+    closeSearchModal?: () => void;
 }
 
-const SearchNatId = ({ natIdHook }: SearchNatIdProps) => {
+const SearchNatId = ({ natIdHook, isSearchModalVisible, openSearchModal, closeSearchModal }: SearchNatIdProps) => {
     const showingResults = !!natIdHook.searchFound;
 
     return (
@@ -25,10 +28,10 @@ const SearchNatId = ({ natIdHook }: SearchNatIdProps) => {
                 />
             ) : (
                 <SearchNatIdCard
-                    isNatIDModalVisible={natIdHook.isNatIDModalVisible}
+                    isNatIDModalVisible={isSearchModalVisible || false}
                     formData={natIdHook.searchFormData}
-                    openNatIDModal={natIdHook.openNatIDModal}
-                    closeNatIDModal={natIdHook.closeNatIDModal}
+                    openNatIDModal={openSearchModal || natIdHook.openSearchModal}
+                    closeNatIDModal={closeSearchModal || (() => {})}
                     searchNatId={natIdHook.searchNatId}
                     updateFormData={natIdHook.updateSearchFormData}
                     isSearching={natIdHook.isSearching}

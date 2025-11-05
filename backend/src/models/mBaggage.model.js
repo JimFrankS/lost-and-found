@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 export const MBaggageTypes = [
-    "clothing", "wallet", "handbag", "documents", "jewelry", "keys", "phone", "tablet", "laptop", "headphones", "charger", "earpods", "earphones", "money", "hustlebag", "monarch", "satchel", "laptopBag", "briefcase", "travelingbag", "changanibag", "box", "other"
+    "clothing", "wallet", "handbag", "documents", "jewelry", "keys", "phone", "tablet", "laptop", "headphones", "charger", "earpods", "earphones", "money", "hustlebag", "monarch", "satchel", "laptopbag", "briefcase", "travelingbag", "changanibag", "box", "other"
 ];
 
 const mBaggageSchema = new mongoose.Schema({
