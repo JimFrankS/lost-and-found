@@ -22,6 +22,7 @@ export const useBaggage = () => {
     });
 
     const [searchFound, setSearchFound] = useState(false); // whether search yielded results
+    const [searchPerformed, setSearchPerformed] = useState(false); // whether a search has been performed
     const [viewedBaggage, setViewedBaggage] = useState<Baggage | null>(null); // viewed baggage details
     const [viewingBaggageId, setViewingBaggageId] = useState<string | null>(null); // currently viewing baggage ID
     const [searchResults, setSearchResults] = useState<Baggage[]>([]); // store search results list
@@ -64,6 +65,7 @@ export const useBaggage = () => {
             setSearchResults(results);
 
             setSearchFound(true);
+            setSearchPerformed(true);
             closeBaggageModal();
         },
         onError: (error: any) => {
@@ -71,6 +73,7 @@ export const useBaggage = () => {
             if (__DEV__) console.error("Baggage search error:", message);
             showErrorToast(message);
             setSearchFound(false);
+            setSearchPerformed(true);
             setSearchResults([]);
         },
     });
@@ -156,6 +159,7 @@ export const useBaggage = () => {
 
     const resetSearch = () => {
         setSearchFound(false);
+        setSearchPerformed(false);
         setViewedBaggage(null);
         setSearchResults([]);
         setViewingBaggageId(null);
@@ -181,6 +185,7 @@ export const useBaggage = () => {
         isViewing: viewBaggageMutation.isPending,
         isClaiming: claimBaggageMutation.isPending,
         searchFound,
+        searchPerformed,
         viewedBaggage,
         viewingBaggageId,
         searchResults,

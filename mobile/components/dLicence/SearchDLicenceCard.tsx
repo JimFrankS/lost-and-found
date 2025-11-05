@@ -1,6 +1,5 @@
 import React from "react";
 import { Text } from "react-native";
-import { Feather } from "@expo/vector-icons";
 import SearchDLicenceModal from "@/components/dLicence/SearchDLicenceModal";
 import CardWrapper from "@/styles/CardWrapper";
 import { DLicenceSearchParams, DLicence } from "@/types";
@@ -33,8 +32,7 @@ const SearchDLicenceCard = ({
     return (
         <>
             <CardWrapper onPress={openDLicenceModal} accessibilityLabel="Search Lost Driving Licence">
-                <Feather name="search" size={24} color="black" />
-                <Text className="ml-2 text-gray-600 font-bold text-lg">Search Lost Driving Licence</Text>
+                <Text className="text-gray-600 font-bold text-lg">Search Lost Driving Licence</Text>
             </CardWrapper>
 
             <SearchDLicenceModal

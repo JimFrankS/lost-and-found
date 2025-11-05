@@ -24,6 +24,7 @@ export const useSCertificate = () => {
     }); // State for holding the search form data.
 
     const [searchFound, setSearchFound] = useState(false); // Whether or not search yeilded results.
+    const [searchPerformed, setSearchPerformed] = useState(false); // Whether a search has been performed
 
     const [viewedScertificate, setViewedScertificate] = useState<Scertificate | null>(null); // viewed certificate details
 
@@ -65,6 +66,7 @@ export const useSCertificate = () => {
             setSearchResults(results);
 
             setSearchFound(true);
+            setSearchPerformed(true);
             closeSCertificateModal();
         },
 
@@ -73,6 +75,7 @@ export const useSCertificate = () => {
             if (__DEV__) console.error("Certificate search error: ", message);
             showError(message);
             setSearchFound(false);
+            setSearchPerformed(true);
             setSearchResults([]);
         },
     });
@@ -138,6 +141,7 @@ export const useSCertificate = () => {
 
     const resetSearch = () => {
         setSearchFound(false);
+        setSearchPerformed(false);
         setViewedScertificate(null);
         setSearchResults([]);
         setViewingScertificateId(null);
@@ -162,6 +166,7 @@ export const useSCertificate = () => {
         isSearching: searchScertificateMutation.isPending,
         isViewing: viewScertificateMutation.isPending,
         searchFound,
+        searchPerformed,
         viewedScertificate,
         viewingScertificateId,
         searchResults,

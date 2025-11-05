@@ -25,6 +25,7 @@ export const useNatID = () => {
     }); // State for holding the search form data.
 
     const [searchFound, setSearchFound] = useState(false); // Whether or not search yielded results.
+    const [searchPerformed, setSearchPerformed] = useState(false); // Whether a search has been performed
 
     const [viewedNatId, setViewedNatId] = useState<NatId | null>(null); // viewed id details
 
@@ -40,7 +41,7 @@ export const useNatID = () => {
 
         onSuccess: (data) => {
             setIsNatIDModalVisible(false); // Close the modal
-            const message = extractSuccessMessage({ data }, "National ID reported successfully");
+            const message = extractSuccessMessage(data, "National ID reported successfully");
             showSuccessToast(message);
         },
 
@@ -67,6 +68,7 @@ export const useNatID = () => {
             const safeResults = data === null ? [] : Array.isArray(data) ? data : [data];
             setSearchResults(safeResults);
             setSearchFound(true);
+            setSearchPerformed(true);
         },
 
         onError: (error: any) => {
@@ -74,6 +76,7 @@ export const useNatID = () => {
             if (__DEV__) console.error("NatID search error: ", message);
             showError(message);
             setSearchFound(false);
+            setSearchPerformed(true);
             setSearchResults([]);
         },
     });
@@ -172,6 +175,7 @@ export const useNatID = () => {
 
     const resetSearch = useCallback(() => {
         setSearchFound(false);
+        setSearchPerformed(false);
         setViewedNatId(null);
         setSearchResults([]);
         setViewingNatIdId(null);
@@ -199,6 +203,7 @@ export const useNatID = () => {
         isSearching: searchNatIdMutation.isPending,
         isViewing: viewNatIdMutation.isPending,
         searchFound,
+        searchPerformed,
         viewedNatId,
         viewingNatIdId,
         searchResults,

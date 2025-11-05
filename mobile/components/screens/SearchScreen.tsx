@@ -6,8 +6,9 @@ import SearchDLicence from '@/components/dLicence/SearchDLicence'
 import SearchNatId from '@/components/natId/SearchNatId'
 import SearchPassport from '@/components/passport/SearchPassport'
 import SearchMBaggage from '@/components/mBaggage/SearchMBaggage'
-import { View, ScrollView } from 'react-native'
+import { View, ScrollView, StyleSheet, Text, StatusBar } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
 import { tabStyles } from '@/styles/tabStyles';
 import BackGroundCard from '@/components/BackGroundCard'
 import ResponsiveContainer from '@/components/ResponsiveContainer'
@@ -22,9 +23,10 @@ import BackToHomeButton from '@/components/BackToHomeButton'
 
 interface SearchScreenProps {
   onBack?: () => void;
+  onToggleToReport?: () => void;
 }
 
-const SearchScreen = ({ onBack }: SearchScreenProps) => {
+const SearchScreen = ({ onBack, onToggleToReport }: SearchScreenProps) => {
   const baggageHook = useBaggage();
   const scertificateHook = useSCertificate();
   const bcertificateHook = useBCertificate();
@@ -40,31 +42,62 @@ const SearchScreen = ({ onBack }: SearchScreenProps) => {
     dlicenceHook.searchPerformed ||
     natIdHook.searchFound ||
     passportHook.searchFound ||
-    mBaggageHook.searchFound;
+    mBaggageHook.searchFound ||
+    baggageHook.searchPerformed ||
+    scertificateHook.searchPerformed ||
+    natIdHook.searchPerformed ||
+    passportHook.searchPerformed ||
+    mBaggageHook.searchPerformed;
 
   return (
     <View style={{ flex: 1 }}>
+      <StatusBar barStyle="dark-content" backgroundColor="white" />
       <BackGroundCard />
       <SafeAreaView style={tabStyles.safeArea}>
+        {!showFullScreenResults && (
+          /* Sticky Header */
+          <View style={[{
+            position: 'absolute',
+            top: StatusBar.currentHeight || 0,
+            left: 0,
+            right: 0,
+            paddingVertical: 10,
+            paddingHorizontal: 16,
+            zIndex: 1,
+            elevation: 5,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.1,
+            shadowRadius: 4,
+          }, tabStyles.header]}>
+            <Text style={{
+              fontSize: 18,
+              fontWeight: 'bold',
+              color: '#333',
+              textAlign: 'center',
+            }}>
+              Search Lost Items
+            </Text>
+          </View>
+        )}
         {showFullScreenResults ? (
           <View style={{ flex: 1 }}>
-            {baggageHook.searchFound && <SearchBaggage baggageHook={baggageHook} />}
-            {scertificateHook.searchFound && (
+            {(baggageHook.searchFound || baggageHook.searchPerformed) && <SearchBaggage baggageHook={baggageHook} />}
+            {(scertificateHook.searchFound || scertificateHook.searchPerformed) && (
               <SearchScertificate scertificateHook={scertificateHook} />
             )}
             {(bcertificateHook.searchPerformed) && <SearchBCertificate bcertificateHook={bcertificateHook} />}
             {(dlicenceHook.searchPerformed) && <SearchDLicence dlicenceHook={dlicenceHook} />}
-            {natIdHook.searchFound && <SearchNatId natIdHook={natIdHook} />}
-            {passportHook.searchFound && <SearchPassport passportHook={passportHook} />}
-            {mBaggageHook.searchFound && <SearchMBaggage baggageHook={mBaggageHook} />}
+            {(natIdHook.searchFound || natIdHook.searchPerformed) && <SearchNatId natIdHook={natIdHook} />}
+            {(passportHook.searchFound || passportHook.searchPerformed) && <SearchPassport passportHook={passportHook} />}
+            {(mBaggageHook.searchFound || mBaggageHook.searchPerformed) && <SearchMBaggage baggageHook={mBaggageHook} />}
           </View>
         ) : (
-          <ScrollView 
+          <ScrollView
             style={{ flex: 1 }}
-            contentContainerStyle={tabStyles.container}
+            contentContainerStyle={[tabStyles.container, { paddingTop: 60 }]}
           >
             <ResponsiveContainer>
-              {onBack && <BackToHomeButton onPress={onBack} />}
               <SearchBaggage baggageHook={baggageHook} />
               <SearchBCertificate bcertificateHook={bcertificateHook} />
               <SearchDLicence dlicenceHook={dlicenceHook} />
@@ -72,12 +105,34 @@ const SearchScreen = ({ onBack }: SearchScreenProps) => {
               <SearchPassport passportHook={passportHook} />
               <SearchScertificate scertificateHook={scertificateHook} />
               <SearchMBaggage baggageHook={mBaggageHook} />
+              {onBack && <BackToHomeButton onPress={onBack} onToggle={onToggleToReport} toggleLabel="Go to Report" />}
             </ResponsiveContainer>
           </ScrollView>
+        )}
+        {/* Gradient fade overlay at bottom to hide content behind tab bar */}
+        {!showFullScreenResults && (
+          <LinearGradient
+            colors={['rgba(255, 255, 255, 0.8)', 'rgba(255, 255, 255, 0.4)', 'transparent']}
+            style={styles.fadeGradient}
+            pointerEvents="none"
+          />
         )}
       </SafeAreaView>
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  fadeGradient: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 120,
+    zIndex: 10,
+  },
+});
+
+
 
 export default SearchScreen

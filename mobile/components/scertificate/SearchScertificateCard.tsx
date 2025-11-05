@@ -1,6 +1,5 @@
 import React from "react";
 import { Text } from "react-native";
-import { Feather } from "@expo/vector-icons";
 import SearchScertificateModal from "@/components/scertificate/SearchScertificateModal";
 import CardWrapper from "@/styles/CardWrapper";
 import { SCertificateSearchParams, Scertificate } from "@/types";
@@ -33,8 +32,7 @@ const SearchScertificateCard = ({
     return (
         <>
             <CardWrapper onPress={openScertificateModal} accessibilityLabel="Search Lost School Certificate">
-                <Feather name="search" size={24} color="black" />
-                <Text className="ml-2 text-gray-600 font-bold text-lg">Search Lost School Certificate</Text>
+                <Text className="text-gray-600 font-bold text-lg">Search Lost School Certificate</Text>
             </CardWrapper>
 
             <SearchScertificateModal

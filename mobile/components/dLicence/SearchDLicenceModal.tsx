@@ -4,7 +4,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { showAlerts } from "@/utils/alerts";
 import { isValidZimbabweIdNumber, idNumberRegex, sanitizeZimbabweIdNumber } from "@/utils/idValidator";
 import { OptionPicker, SelectField } from "../FormsHelper";
-import { escapeRegex } from "@/constants/allowedValues";
+import { escapeRegex, licenceNumberRegex } from "@/constants/allowedValues";
 import { DLicenceSearchParams } from "@/types";
 import ModalWrapper from "../ModalWrapper";
 
@@ -29,7 +29,7 @@ const SearchDLicenceModal = ({ isVisible, onClose, formData, searchDLicence, upd
         if (!value.trim()) return true; // Allow empty for now, but check on submit
         switch (category) {
             case 'licenceNumber':
-                return /^[A-Z0-9]{6,10}$/i.test(value); // Basic licence number validation
+                return licenceNumberRegex.test(value); // Use the same regex as report modal
             case 'idNumber':
                 return isValidZimbabweIdNumber(value);
             case 'surname':
@@ -131,14 +131,14 @@ const SearchDLicenceModal = ({ isVisible, onClose, formData, searchDLicence, upd
                             <TextInput
                                 className="border border-gray-300 rounded p-3"
                                 placeholder={
-                                    formData.category === 'licenceNumber' ? 'e.g., ABC123456' :
+                                    formData.category === 'licenceNumber' ? 'e.g., 123456AB' :
                                     formData.category === 'idNumber' ? 'e.g., 12-1234567A12' :
                                     'Enter surname'
                                 }
                                 value={formData.identifier}
                                 onChangeText={(value) => {
                                     if (formData.category === 'licenceNumber') {
-                                        updateFormData('identifier', escapeRegex(value.toUpperCase()).slice(0, 10));
+                                        updateFormData('identifier', escapeRegex(value.toUpperCase()).slice(0, 8));
                                     } else if (formData.category === 'idNumber') {
                                         updateFormData('identifier', sanitizeZimbabweIdNumber(value));
                                     } else {
@@ -146,11 +146,11 @@ const SearchDLicenceModal = ({ isVisible, onClose, formData, searchDLicence, upd
                                     }
                                 }}
                                 autoCapitalize={formData.category === 'surname' ? 'words' : 'none'}
-                                maxLength={formData.category === 'licenceNumber' ? 10 : formData.category === 'idNumber' ? 13 : 100}
+                                maxLength={formData.category === 'licenceNumber' ? 8 : formData.category === 'idNumber' ? 13 : 100}
                             />
                             {formData.identifier.length > 0 && !validateInput(formData.category, formData.identifier) && (
                                 <Text className="text-red-600 text-xs mt-1">
-                                    {formData.category === 'licenceNumber' ? 'Invalid licence number format.' :
+                                    {formData.category === 'licenceNumber' ? 'Invalid licence number format. Example: 123456AB' :
                                      formData.category === 'idNumber' ? 'Invalid ID number format.' :
                                      'Surname should contain only letters, spaces, hyphens, and apostrophes'}
                                 </Text>

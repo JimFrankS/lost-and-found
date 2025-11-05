@@ -25,6 +25,7 @@ export const usePassport = () => {
     }); // State for holding the search form data.
 
     const [searchFound, setSearchFound] = useState(false); // Whether or not search yielded results.
+    const [searchPerformed, setSearchPerformed] = useState(false); // Whether a search has been performed
 
     const [viewedPassport, setViewedPassport] = useState<Passport | null>(null); // viewed passport details
 
@@ -62,12 +63,13 @@ export const usePassport = () => {
             }
         },
         onSuccess: (response: any) => {
-            const data = response.data;
+            const { data } = response;
 
             const results = data === null ? [] : Array.isArray(data) ? data : [data];
             setSearchResults(results);
 
             setSearchFound(true);
+            setSearchPerformed(true);
         },
 
         onError: (error: any) => {
@@ -75,6 +77,7 @@ export const usePassport = () => {
             if (__DEV__) console.error("Passport search error: ", message);
             setSearchResults([]);
             setSearchFound(false);
+            setSearchPerformed(true);
             showError(message);
         },
     });
@@ -154,6 +157,7 @@ export const usePassport = () => {
 
     const resetSearch = () => {
         setSearchFound(false);
+        setSearchPerformed(false);
         setViewedPassport(null);
         setSearchResults([]);
         setViewingPassportId(null);
@@ -178,6 +182,7 @@ export const usePassport = () => {
         isSearching: searchPassportMutation.isPending,
         isViewing: viewPassportMutation.isPending,
         searchFound,
+        searchPerformed,
         viewedPassport,
         viewingPassportId,
         searchResults,
