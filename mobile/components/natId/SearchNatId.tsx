@@ -13,6 +13,19 @@ interface SearchNatIdProps {
 const SearchNatId = ({ natIdHook, isSearchModalVisible, openSearchModal, closeSearchModal }: SearchNatIdProps) => {
     const showingResults = !!natIdHook.searchFound;
 
+    // Diagnostic logs
+    console.log('SearchNatId Debug:', {
+        isSearchModalVisible,
+        hasOpenSearchModal: !!openSearchModal,
+        hasCloseSearchModal: !!closeSearchModal,
+        natIdHookHasOpenSearchModal: !!natIdHook.openSearchModal,
+        natIdHookHasCloseSearchModal: !!natIdHook.closeSearchModal,
+        natIdHookIsSearchModalVisible: natIdHook.isSearchModalVisible,
+        effectiveIsVisible: isSearchModalVisible ?? natIdHook.isSearchModalVisible,
+        effectiveOpen: openSearchModal ?? natIdHook.openSearchModal,
+        effectiveClose: closeSearchModal ?? natIdHook.closeSearchModal,
+    });
+
     return (
         <View style={styles.container}>
             {showingResults ? (
@@ -28,10 +41,10 @@ const SearchNatId = ({ natIdHook, isSearchModalVisible, openSearchModal, closeSe
                 />
             ) : (
                 <SearchNatIdCard
-                    isNatIDModalVisible={isSearchModalVisible || false}
+                    isNatIDModalVisible={isSearchModalVisible ?? natIdHook.isSearchModalVisible}
                     formData={natIdHook.searchFormData}
-                    openNatIDModal={openSearchModal || natIdHook.openSearchModal}
-                    closeNatIDModal={closeSearchModal || (() => {})}
+                    openNatIDModal={openSearchModal ?? natIdHook.openSearchModal}
+                    closeNatIDModal={closeSearchModal ?? natIdHook.closeSearchModal}
                     searchNatId={natIdHook.searchNatId}
                     updateFormData={natIdHook.updateSearchFormData}
                     isSearching={natIdHook.isSearching}

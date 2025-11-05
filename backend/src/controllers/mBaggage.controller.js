@@ -53,14 +53,19 @@ export const lostBaggage = expressAsyncHandler(async (req, res) => {
     return res.status(400).json({ message: gatheringTypeResult.error });
   const canonicalGatheringType = gatheringTypeResult.canonical;
 
+  // Normalize inputs for consistent duplicate checking and storage
+  const normalizedDestinationProvince = String(destinationProvince).trim().toLowerCase();
+  const normalizedDestinationDistrict = String(destinationDistrict).trim().toLowerCase();
+  const normalizedGatheringLocation = String(gatheringLocation).trim().toLowerCase();
+
   // Check for existing baggage based on core fields
   const query = {
     baggageType: canonicalBagType,
     gatheringType: canonicalGatheringType,
-    destinationProvince: String(destinationProvince).toLowerCase(),
-    destinationDistrict: String(destinationDistrict).toLowerCase(),
+    destinationProvince: normalizedDestinationProvince,
+    destinationDistrict: normalizedDestinationDistrict,
     gatheringLocation: {
-      $regex: `^${escapeRegex(gatheringLocation)}$`,
+      $regex: `^${escapeRegex(normalizedGatheringLocation)}$`,
       $options: "i",
     },
   };
@@ -90,9 +95,9 @@ export const lostBaggage = expressAsyncHandler(async (req, res) => {
   const newMBaggage = new MBaggage({
     baggageType: canonicalBagType,
     gatheringType: canonicalGatheringType,
-    destinationProvince: String(destinationProvince).trim().toLowerCase(),
-    destinationDistrict: String(destinationDistrict).trim().toLowerCase(),
-    gatheringLocation: String(gatheringLocation).trim().toLowerCase(),
+    destinationProvince: normalizedDestinationProvince,
+    destinationDistrict: normalizedDestinationDistrict,
+    gatheringLocation: normalizedGatheringLocation,
     docLocation,
     finderContact,
   });

@@ -27,6 +27,11 @@ export interface MBaggage {
     claimedAt?: string | null
 }
 
+export type MBaggageListItem = Pick<
+    MBaggage,
+    "_id" | "baggageType" | "gatheringType" | "destinationProvince" | "destinationDistrict" | "gatheringLocation"
+>;
+
 
 export interface Bcertificate {
     _id: string,
@@ -101,6 +106,7 @@ export interface DLicenceSearchParams {
 }
 
 export interface NatIdSearchParams {
+    category: string;
     identifier: string;
 }
 
@@ -183,8 +189,8 @@ export interface SCertificateFoundData {
 }
 
 export interface MBaggageFoundData {
-    baggageType: string;
-    gatheringType: string;
+    baggageType: (typeof MBAGGAGE_TYPES)[number];
+    gatheringType: (typeof gatheringTypes)[number];
     destinationProvince: string;
     destinationDistrict: string;
     gatheringLocation: string;

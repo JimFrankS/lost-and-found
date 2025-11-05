@@ -3,7 +3,7 @@ import { mBaggageApi } from "@/utils/api";
 import { useState } from "react";
 import { extractErrorMessage, extractSuccessMessage } from "@/utils/alerts";
 import { showErrorToast, showSuccessToast } from "@/utils/toasts";
-import { MBaggage, MBaggageFoundData, MBaggageSearchParams } from "@/types";
+import { MBaggage, MBaggageFoundData, MBaggageSearchParams, MBaggageListItem } from "@/types";
 
 export const useBaggage = () => {
     const queryClient = useQueryClient();
@@ -11,8 +11,8 @@ export const useBaggage = () => {
     const [isBaggageModalVisible, setIsBaggageModalVisible] = useState(false); 
 
     const [formData, setFormData] = useState<MBaggageFoundData>({
-        baggageType: "",
-        gatheringType: "",
+        baggageType: "clothing",
+        gatheringType: "other",
         destinationProvince: "",
         destinationDistrict: "",
         gatheringLocation: "",
@@ -23,7 +23,7 @@ export const useBaggage = () => {
     const [searchFound, setSearchFound] = useState(false); // whether search yielded results
     const [viewedBaggage, setViewedBaggage] = useState<MBaggage | null>(null); // viewed baggage details
     const [viewingBaggageId, setViewingBaggageId] = useState<string | null>(null); // currently viewing baggage ID
-    const [searchResults, setSearchResults] = useState<MBaggage[]>([]); // store search results list
+    const [searchResults, setSearchResults] = useState<MBaggageListItem[]>([]); // store search results list
     
     // helpers
     const openBaggageModal = () => setIsBaggageModalVisible(true);
@@ -47,7 +47,7 @@ export const useBaggage = () => {
         },
     });
 
-    const searchBaggageMutation = useMutation<MBaggage[], unknown, MBaggageSearchParams>({
+    const searchBaggageMutation = useMutation<MBaggageListItem[], unknown, MBaggageSearchParams>({
         mutationFn: async (searchParams) => {
             const response = await mBaggageApi.searchBaggage(searchParams);
             return response.data;

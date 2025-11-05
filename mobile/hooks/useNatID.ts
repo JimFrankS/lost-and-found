@@ -9,6 +9,7 @@ export const useNatID = () => {
     const queryClient = useQueryClient();
 
     const [isNatIDModalVisible, setIsNatIDModalVisible] = useState(false); // state for holding modal visibility
+    const [isSearchModalVisible, setIsSearchModalVisible] = useState(false); // state for search modal visibility
 
     const [formData, setFormData] = useState<NatIdFoundData>({
         lastName: "",
@@ -118,6 +119,13 @@ export const useNatID = () => {
             category: "",
             identifier: "",
         }); // reset search form data when opening the modal
+        setIsSearchModalVisible(true); // set modal visibility
+        console.log('useNatID openSearchModal called - resetting form data and opening modal');
+    };
+
+    const closeSearchModal = () => {
+        setIsSearchModalVisible(false); // close the search modal
+        console.log('useNatID closeSearchModal called - closing modal');
     };
 
     const updateFormData = (field: string, value: string) => {
@@ -156,11 +164,13 @@ export const useNatID = () => {
 
     return {
         isNatIDModalVisible,
+        isSearchModalVisible,
         formData,
         searchFormData,
         openNatIDModal,
         closeNatIDModal: () => setIsNatIDModalVisible(false), // Function to close the national ID modal.
         openSearchModal,
+        closeSearchModal,
         reportNatID,
         searchNatId,
         viewNatId,
