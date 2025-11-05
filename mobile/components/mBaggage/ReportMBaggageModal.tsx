@@ -49,11 +49,11 @@ const ReportBaggageModal = ({ isVisible, onClose, formData, reportBaggage, updat
 
     const handleSave = () => {
         if (!isFormComplete) {
-            Alert.alert("Error", "Please fill in all required fields.");
+            showAlerts("Error", "Please fill in all required fields.");
             return;
         }
         if (!isPhoneValid) {
-            Alert.alert("Error", `Invalid phone number format. Example: ${PHONE_EXAMPLE}`);
+            showAlerts("Error", `Invalid phone number format. Example: ${PHONE_EXAMPLE}`);
             return;
         }
         reportBaggage();

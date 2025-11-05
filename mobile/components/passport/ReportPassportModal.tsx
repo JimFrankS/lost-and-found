@@ -41,22 +41,22 @@ const ReportPassportModal = ({ isVisible, onClose, formData, reportPassport, upd
 
     const handleSave = () => {
         if (!isFormComplete) {
-            Alert.alert("Error", "Please fill in all the required fields.");
+            showAlerts("Error", "Please fill in all the required fields.");
             return;
         }
 
         if (!isPassportValid) {
-            Alert.alert("Error", "Invalid passport number format. Example: AB123456");
+            showAlerts("Error", "Invalid passport number format. Example: AB123456");
             return;
         }
 
         if (!isIdValid) {
-            Alert.alert("Error", "Invalid ID number format.");
+            showAlerts("Error", "Invalid ID number format.");
             return;
         }
 
         if (!isPhoneValid) {
-            Alert.alert("Error", "Invalid phone number format. Example: 0719729537");
+            showAlerts("Error", "Invalid phone number format. Example: 0719729537");
             return;
         }
         reportPassport();

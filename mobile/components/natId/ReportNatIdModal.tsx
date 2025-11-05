@@ -38,17 +38,17 @@ const ReportNatIdModal = ({ isVisible, onClose, formData, reportNatID, updateFor
 
     const handleSave = () => {
         if (!isFormComplete) {
-            Alert.alert("Error", "Please fill in all the required fields.");
+            showAlerts("Error", "Please fill in all the required fields.");
             return;
         }
 
         if (!isIdValid) {
-            Alert.alert("Error", "Invalid ID number format.");
+            showAlerts("Error", "Invalid ID number format.");
             return;
         }
 
         if (!isPhoneValid) {
-            Alert.alert("Error", "Invalid phone number format. Example: 0719729537");
+            showAlerts("Error", "Invalid phone number format. Example: 0719729537");
             return;
         }
         reportNatID();
