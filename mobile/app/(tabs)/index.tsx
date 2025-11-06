@@ -1,5 +1,5 @@
-import { View, ScrollView, TouchableOpacity, Text, ActivityIndicator, StatusBar } from 'react-native';
-import React, { useState } from 'react';
+import { View, TouchableOpacity, Text, ActivityIndicator, StatusBar } from 'react-native';
+import React from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import BackGroundCard from '@/components/BackGroundCard';
 import { tabStyles } from '@/styles/tabStyles';
@@ -7,27 +7,15 @@ import { tabStyles } from '@/styles/tabStyles';
 import ReportScreen from '@/components/screens/ReportScreen';
 import SearchScreen from '@/components/screens/SearchScreen';
 import { Feather } from '@expo/vector-icons';
+import { useNavigationWithLoading } from '@/components/useNavigationWithLoading';
+import Header from '@/components/Header';
 
 
 const HomeScreen = () => {
-  const [activeScreen, setActiveScreen] = useState<'home' | 'search' | 'report'>('home');
-  const [isLoading, setIsLoading] = useState(false);
-
-  const handleNavigation = (screen: 'search' | 'report') => {
-    setIsLoading(true);
-    setTimeout(() => {
-      setActiveScreen(screen);
-      setIsLoading(false);
-    }, 500);
-  };
-
-  const handleBackToHome = () => {
-    setIsLoading(true);
-    setTimeout(() => {
-      setActiveScreen('home');
-      setIsLoading(false);
-    }, 500);
-  };
+  const { activeScreen, isLoading, navigate } = useNavigationWithLoading('home');
+  const handleNavigation = (screen: 'search' | 'report') => navigate(screen);
+  const styles = tabStyles();
+  const handleBackToHome = () => navigate('home');
 
   // Show loading indicator during transitions
   if (isLoading) {
@@ -35,7 +23,7 @@ const HomeScreen = () => {
       <View style={{ flex: 1 }}>
         <BackGroundCard />
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <ActivityIndicator size="large" color="#0000ff" />
+          <ActivityIndicator size="large" color="#3B82F6" />
         </View>
       </View>
     );
@@ -44,25 +32,13 @@ const HomeScreen = () => {
   // If a screen is active, render only that screen
   if (activeScreen === 'search') {
     return (
-      <SearchScreen onBack={handleBackToHome} onToggleToReport={() => {
-        setIsLoading(true);
-        setTimeout(() => {
-          setActiveScreen('report');
-          setIsLoading(false);
-        }, 500);
-      }} />
+      <SearchScreen onBack={handleBackToHome} onToggleToReport={() => navigate('report')} />
     );
   }
 
   if (activeScreen === 'report') {
     return (
-      <ReportScreen onBack={handleBackToHome} onToggleToSearch={() => {
-        setIsLoading(true);
-        setTimeout(() => {
-          setActiveScreen('search');
-          setIsLoading(false);
-        }, 500);
-      }} />
+      <ReportScreen onBack={handleBackToHome} onToggleToSearch={() => navigate('search')} />
     );
   }
 
@@ -71,35 +47,13 @@ const HomeScreen = () => {
     <View style={{ flex: 1 }}>
       <StatusBar barStyle="dark-content" backgroundColor="white" />
       <BackGroundCard />
-      <SafeAreaView style={tabStyles.safeArea}>
-        {/* Sticky Header */}
-        <View style={[{
-          position: 'absolute',
-          top: StatusBar.currentHeight || 0,
-          left: 0,
-          right: 0,
-          paddingVertical: 10,
-          paddingHorizontal: 16,
-          zIndex: 1,
-          elevation: 5,
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.1,
-          shadowRadius: 4,
-        }, tabStyles.header]}>
-          <Text style={{
-            fontSize: 18,
-            fontWeight: 'bold',
-            color: '#333',
-            textAlign: 'center',
-          }}>
-            Home
-          </Text>
-        </View>
+      <SafeAreaView style={styles.safeArea}>
+        {/* Sticky Header */} 
+        <Header title="Home" />
         <View className="flex-1 justify-center items-center px-4" style={{ paddingTop: 60 }}>
           <View className="w-full max-w-md">
             <TouchableOpacity
-              onPress={() => handleNavigation('report')}
+              onPress={() => handleNavigation('report')} 
               className="bg-blue-400 border  border-gray-100 p-3 rounded-2xl mb-4 flex-row items-center justify-center"
               accessible={true}
               accessibilityRole="button"

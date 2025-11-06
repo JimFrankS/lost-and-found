@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { View, Modal, StyleSheet, TouchableWithoutFeedback, Dimensions, Platform } from 'react-native';
+import { View, Modal, StyleSheet, TouchableWithoutFeedback, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import BackGroundCard from './BackGroundCard';
 
@@ -16,7 +16,7 @@ const ModalWrapper: React.FC<{
   onClose,
 }) => {
   const insets = useSafeAreaInsets();
-  const { width, height } = Dimensions.get('window');
+  const { width } = useWindowDimensions();
   const isLargeScreen = width > 768; // Tablet or larger
 
   return (

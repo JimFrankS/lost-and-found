@@ -132,13 +132,8 @@ export const useBaggage = () => {
             return false;
         }
     };
-    const searchBaggage = async (params: BaggageSearchParams): Promise<boolean> => {
-        try {
-            await searchBaggageMutation.mutateAsync(params);
-            return true;
-        } catch {
-            return false;
-        }
+    const searchBaggage = async (params: BaggageSearchParams): Promise<Baggage[]> => {
+        return await searchBaggageMutation.mutateAsync(params);
     };
     const viewBaggage = async (baggageId: string): Promise<boolean> => {
         try {

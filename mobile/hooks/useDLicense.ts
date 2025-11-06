@@ -52,24 +52,22 @@ export const useDLicense = () => {
         },
     }); // end of the mutation for reporting found driving license.
 
-    const searchDLicenceMutation = useMutation({
+    const searchDLicenceMutation = useMutation<DLicence[], unknown, DLicenceSearchParams>({
         mutationFn: async (searchParams: DLicenceSearchParams) => {
             try {
-                return await dLicenceApi.searchDLicence(searchParams);
+                const response = await dLicenceApi.searchDLicence(searchParams);
+                return response.data;
             } catch (error: any) {
                 if (error?.response?.status === 404) {
-                    return { data: [] };
+                    return [];
                 }
                 throw error;
             }
         },
-        onSuccess: (response: any) => {
-            const data = response.data;
+        onSuccess: (data: DLicence[]) => {
+            setSearchResults(data);
 
-            const results = data == null ? [] : Array.isArray(data) ? data : [data];
-            setSearchResults(results);
-
-            setSearchFound(results.length > 0);
+            setSearchFound(data.length > 0);
             setSearchPerformed(true);
         },
 
@@ -77,6 +75,9 @@ export const useDLicense = () => {
             const message = extractErrorMessage(error, "An error occurred whilst searching for the licence");
             if (__DEV__) console.error("Licence search error: ", message);
             showError(message);
+            setSearchFound(false);
+            setSearchPerformed(true);
+            setSearchResults([]);
         },
     });
 
@@ -135,13 +136,8 @@ export const useDLicense = () => {
             return false;
         }
     };
-    const searchDLicence = async (params: DLicenceSearchParams): Promise<boolean> => {
-        try {
-            await searchDLicenceMutation.mutateAsync(params);
-            return true;
-        } catch {
-            return false;
-        }
+    const searchDLicence = async (params: DLicenceSearchParams): Promise<DLicence[]> => {
+        return await searchDLicenceMutation.mutateAsync(params);
     };
     const viewDLicence = async (licenceId: string): Promise<boolean> => {
         try {

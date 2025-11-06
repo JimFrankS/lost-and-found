@@ -63,11 +63,10 @@ export const useNatID = () => {
                 throw error;
             }
         },
-        onSuccess: (response: any) => {
-            const data = response.data;
-            const safeResults = data === null ? [] : Array.isArray(data) ? data : [data];
+        onSuccess: ({ data }: any) => {
+            const safeResults = data === null ? [] : Array.isArray(data) ? data : [data]; // Ensure results are in array format
             setSearchResults(safeResults);
-            setSearchFound(true);
+            setSearchFound(safeResults.length > 0);
             setSearchPerformed(true);
         },
 

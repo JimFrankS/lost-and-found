@@ -1,6 +1,6 @@
 import { Tabs } from 'expo-router'
 import React, { useState } from 'react'
-import { Text, TouchableOpacity, View, StyleSheet, Linking, Platform, Modal } from 'react-native'
+import { Text, TouchableOpacity, View, StyleSheet, Linking, Platform, Modal, Alert } from 'react-native'
 import { Feather } from '@expo/vector-icons' // icon library
 import { useSafeAreaInsets } from 'react-native-safe-area-context' // to handle safe area insets which is useful for devices with notches or rounded corners
 
@@ -13,7 +13,13 @@ const TabsLayout = () => {
     const handleContactDeveloper = () => {
         const email = 'jimmakayikayi@gmail.com';
         const url = `mailto:${email}`;
-        Linking.openURL(url).catch(err => console.error('Failed to open email client:', err));
+        Linking.openURL(url).catch(err => {
+            console.error('Failed to open email client:', err);
+            Alert.alert(
+                "Unable to open mail client",
+                "Please check your email app or try again later."
+            );
+        });
     };
 
     const handleDonate = () => {
@@ -21,7 +27,8 @@ const TabsLayout = () => {
             setShowDonateModal(true);
         } else {
             const phoneNumber = '*153*1*1*0779729537#';
-            const url = `tel:${phoneNumber}`;
+            const encodedPhoneNumber = encodeURIComponent(phoneNumber);
+            const url = `tel:${encodedPhoneNumber}`;
             Linking.openURL(url).catch(err => console.error('Failed to open dialer:', err));
         }
     };
@@ -36,7 +43,7 @@ const TabsLayout = () => {
 
                 tabBarStyle: {
                     backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                    height: 80 + insets.bottom,
+                    height: 60 + insets.bottom,
                     paddingTop: 8,
                     paddingBottom: insets.bottom,
                     position: 'absolute',

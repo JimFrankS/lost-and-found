@@ -52,26 +52,26 @@ export const useBCertificate = () => {
         },
     });
 
-    const searchBcertificateMutation = useMutation({
-        mutationFn: async (searchParams: BirthCertificateSearchParams) => {
+    const searchBcertificateMutation = useMutation<Bcertificate[], unknown, BirthCertificateSearchParams>({
+        mutationFn: async (searchParams) => {
             try {
-                return await bcertificateApi.searchbCertificate(searchParams);
+                const response = await bcertificateApi.searchbCertificate(searchParams);
+                return response.data;
             } catch (error: any) {
                 if (error?.response?.status === 404) {
-                    return { data: [] };
+                    return [];
                 }
                 throw error;
             }
         },
-    onSuccess: (response: any) => {
-        setViewedBcertificate(null);
-        const data = response.data;
-        const results = data == null ? [] : Array.isArray(data) ? data : [data];
-        setSearchResults(results);
-        setSearchFound(results.length > 0);
-        setSearchPerformed(true);
-        closeSearchModal();
-    },
+        onSuccess: (data: Bcertificate[]) => {
+            setViewedBcertificate(null);
+            const results = data == null ? [] : Array.isArray(data) ? data : [data];
+            setSearchResults(results);
+            setSearchFound(results.length > 0);
+            setSearchPerformed(true);
+            closeSearchModal();
+        },
         onError: (error: any) => {
             const message = extractErrorMessage(error, "An error occurred whilst searching for the certificate");
             if (__DEV__) console.error("Birth Certificate search error: ", message);
@@ -118,12 +118,11 @@ export const useBCertificate = () => {
             return false;
         }
     };
-    const searchBcertificate = async (params: BirthCertificateSearchParams): Promise<boolean> => {
+    const searchBcertificate = async (params: BirthCertificateSearchParams): Promise<Bcertificate[]> => {
         try {
-            await searchBcertificateMutation.mutateAsync(params);
-            return true;
+            return await searchBcertificateMutation.mutateAsync(params);
         } catch {
-            return false;
+            return [];
         }
     };
     const viewBcertificate = async (bcertificateId: string): Promise<boolean> => {

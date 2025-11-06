@@ -4,7 +4,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { showAlerts } from "@/utils/alerts";
 import { isValidZimbabweIdNumber, idNumberRegex, sanitizeZimbabweIdNumber } from "@/utils/idValidator";
 import { OptionPicker, SelectField } from "../FormsHelper";
-import { escapeRegex, licenceNumberRegex } from "@/constants/allowedValues";
+import { licenceNumberRegex } from "@/constants/allowedValues";
 import { DLicenceSearchParams } from "@/types";
 import ModalWrapper from "../ModalWrapper";
 
@@ -138,7 +138,7 @@ const SearchDLicenceModal = ({ isVisible, onClose, formData, searchDLicence, upd
                                 value={formData.identifier}
                                 onChangeText={(value) => {
                                     if (formData.category === 'licenceNumber') {
-                                        updateFormData('identifier', escapeRegex(value.toUpperCase()).slice(0, 8));
+                                        updateFormData('identifier', value.toUpperCase().slice(0, 8));
                                     } else if (formData.category === 'idNumber') {
                                         updateFormData('identifier', sanitizeZimbabweIdNumber(value));
                                     } else {

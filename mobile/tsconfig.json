@@ -2,8 +2,9 @@
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "strict": true,
-    "skipLibCheck": true,
-    "module": "esnext",
+    "skipLibCheck": false,
+    "module": "ESNext",
+    "forceConsistentCasingInFileNames": true,
     "paths": {
       "@/*": [
         "./*"

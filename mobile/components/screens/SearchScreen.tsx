@@ -20,6 +20,7 @@ import { useNatID } from '@/hooks/useNatID'
 import { usePassport } from '@/hooks/usePassport'
 import { useMBaggage } from '@/hooks/useMBaggage'
 import BackToHomeButton from '@/components/BackToHomeButton'
+import Header from '@/components/Header'
 
 interface SearchScreenProps {
   onBack?: () => void;
@@ -53,32 +54,10 @@ const SearchScreen = ({ onBack, onToggleToReport }: SearchScreenProps) => {
     <View style={{ flex: 1 }}>
       <StatusBar barStyle="dark-content" backgroundColor="white" />
       <BackGroundCard />
-      <SafeAreaView style={tabStyles.safeArea}>
+      <SafeAreaView style={tabStyles().safeArea}>
         {!showFullScreenResults && (
           /* Sticky Header */
-          <View style={[{
-            position: 'absolute',
-            top: StatusBar.currentHeight || 0,
-            left: 0,
-            right: 0,
-            paddingVertical: 10,
-            paddingHorizontal: 16,
-            zIndex: 1,
-            elevation: 5,
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.1,
-            shadowRadius: 4,
-          }, tabStyles.header]}>
-            <Text style={{
-              fontSize: 18,
-              fontWeight: 'bold',
-              color: '#333',
-              textAlign: 'center',
-            }}>
-              Search Lost Items
-            </Text>
-          </View>
+          <Header title="Search Lost Items" />
         )}
         {showFullScreenResults ? (
           <View style={{ flex: 1 }}>
@@ -95,7 +74,7 @@ const SearchScreen = ({ onBack, onToggleToReport }: SearchScreenProps) => {
         ) : (
           <ScrollView
             style={{ flex: 1 }}
-            contentContainerStyle={[tabStyles.container, { paddingTop: 60 }]}
+            contentContainerStyle={[tabStyles().container, { paddingTop: 60 }]}
           >
             <ResponsiveContainer>
               <SearchBaggage baggageHook={baggageHook} />

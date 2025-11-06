@@ -51,24 +51,23 @@ export const usePassport = () => {
         },
     }); // end of the mutation for reporting lost passport.
 
-    const searchPassportMutation = useMutation({
-        mutationFn: async (searchParams: PassportSearchParams) => {
+    const searchPassportMutation = useMutation<Passport[], unknown, PassportSearchParams>({
+        mutationFn: async (searchParams) => {
             try {
-                return await passportApi.searchPassport(searchParams);
+                const response = await passportApi.searchPassport(searchParams);
+                return response.data;
             } catch (error: any) {
                 if (error?.response?.status === 404) {
-                    return { data: [] };
+                    return [];
                 }
                 throw error;
             }
         },
-        onSuccess: (response: any) => {
-            const { data } = response;
-
-            const results = data === null ? [] : Array.isArray(data) ? data : [data];
+        onSuccess: (data: Passport[]) => {
+            setViewedPassport(null);
+            const results = data == null ? [] : Array.isArray(data) ? data : [data];
             setSearchResults(results);
-
-            setSearchFound(true);
+            setSearchFound(results.length > 0);
             setSearchPerformed(true);
         },
 
@@ -137,12 +136,11 @@ export const usePassport = () => {
             return false;
         }
     };
-    const searchPassport = async (params: PassportSearchParams): Promise<boolean> => {
+    const searchPassport = async (params: PassportSearchParams): Promise<Passport[]> => {
         try {
-            await searchPassportMutation.mutateAsync(params);
-            return true;
+            return await searchPassportMutation.mutateAsync(params);
         } catch {
-            return false;
+            return [];
         }
     };
     const viewPassport = async (passportId: string): Promise<boolean> => {
