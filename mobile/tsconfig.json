@@ -5,6 +5,8 @@
     "skipLibCheck": false,
     "module": "ESNext",
     "forceConsistentCasingInFileNames": true,
+    "baseUrl": ".",
+    "types": ["expo/types"],
     "paths": {
       "@/*": [
         "./*"

@@ -119,9 +119,10 @@ export const useBCertificate = () => {
     };
     const searchBcertificate = async (params: BirthCertificateSearchParams): Promise<Bcertificate[]> => {
         try {
-            return await searchBcertificateMutation.mutateAsync(params);
-        } catch {
-            return [];
+            return await searchBcertificateMutation.mutateAsync(params); 
+        } catch (error) {
+            // Re-throw the error to be handled by the caller
+            throw error;
         }
     };
     const viewBcertificate = async (bcertificateId: string): Promise<boolean> => {

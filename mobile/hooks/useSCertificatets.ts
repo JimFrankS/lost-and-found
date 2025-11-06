@@ -1,10 +1,10 @@
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { scertificateApi } from "@/utils/api";
 import { useState } from "react";
-import { extractErrorMessage, extractSuccessMessage, showError } from "@/utils/alerts";
+import { extractErrorMessage, extractSuccessMessage, showError,  } from "@/utils/alerts";
 import { showSuccessToast } from "@/utils/toasts"; 
 import { Scertificate, SCertificateFoundData, SCertificateSearchParams } from "@/types";
-
+declare const __DEV__: boolean;
 export const useSCertificate = () => {
     const queryClient = useQueryClient();
 
@@ -110,8 +110,8 @@ export const useSCertificate = () => {
         },
     });
 
-    const updateFormData = (field: string, value: string) => {
-        setFormData((prevData: SCertificateFoundData) => ({ ...prevData, [field]: value })); // Function to update the form data state
+    const updateFormData = (field: string, value: string): void => {
+        setFormData((prevData) => ({ ...prevData, [field]: value })); // Function to update the form data state
     };
 
     const updateSearchFormData = (field: string, value: string) => {

@@ -1,5 +1,5 @@
-import { View, ScrollView, Text, StatusBar } from 'react-native';
-import React from 'react';
+import { View, ScrollView, StatusBar } from 'react-native';
+import React, {  } from 'react';
 import BackGroundCard from '@/components/BackGroundCard';
 import { tabStyles } from '@/styles/tabStyles';
 import ReportBaggageCard from '@/components/baggage/ReportBaggageCard';
@@ -12,7 +12,7 @@ import ReportMBaggageCard from '@/components/mBaggage/ReportMBaggageCard';
 import ResponsiveContainer from '@/components/ResponsiveContainer';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import BackToHomeButton from '@/components/BackToHomeButton';
-import Header from '@/components/Header';
+import Header from '@/components/Header'
 
 
 
@@ -32,7 +32,7 @@ const ReportScreen = ({ onBack, onToggleToSearch }: ReportScreenProps) => {
         <Header title="Report Lost Items" />
         <ScrollView
           style={{ flex: 1 }}
-          contentContainerStyle={[tabViewStyles.container, { paddingTop: 60 }]}
+          contentContainerStyle={[tabViewStyles.container, { paddingTop: tabViewStyles.HEADER_TOP_SPACING }]}
         >
           <ResponsiveContainer>
             <ReportBaggageCard />
@@ -49,5 +49,4 @@ const ReportScreen = ({ onBack, onToggleToSearch }: ReportScreenProps) => {
     </View>
   );
 };
-
 export default ReportScreen;

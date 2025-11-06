@@ -133,7 +133,12 @@ export const useBaggage = () => {
         }
     };
     const searchBaggage = async (params: BaggageSearchParams): Promise<Baggage[]> => {
-        return await searchBaggageMutation.mutateAsync(params);
+        try {
+            return await searchBaggageMutation.mutateAsync(params);
+        } catch (error) {
+            // Re-throw the error to be handled by the caller
+            throw error;
+        }
     };
     const viewBaggage = async (baggageId: string): Promise<boolean> => {
         try {

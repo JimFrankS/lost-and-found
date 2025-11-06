@@ -6,7 +6,7 @@ import SearchDLicence from '@/components/dLicence/SearchDLicence'
 import SearchNatId from '@/components/natId/SearchNatId'
 import SearchPassport from '@/components/passport/SearchPassport'
 import SearchMBaggage from '@/components/mBaggage/SearchMBaggage'
-import { View, ScrollView, StyleSheet, Text, StatusBar } from 'react-native'
+import { View, ScrollView, StyleSheet, StatusBar } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { tabStyles } from '@/styles/tabStyles';
