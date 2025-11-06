@@ -111,7 +111,7 @@ export const useSCertificate = () => {
     });
 
     const updateFormData = (field: string, value: string) => {
-        setFormData((prevData: SCertificateFoundData) => ({ ...prevData, [field]: value })); // Function to update the form data state
+        setFormData((prevData) => ({ ...prevData, [field]: value })); // Function to update the form data state
     };
 
     const updateSearchFormData = (field: string, value: string) => {

@@ -31,6 +31,5 @@ export const tabStyles = () => {
 
   return {
     ...styles,
-    HEADER_TOP_SPACING: 60,
   };
 };

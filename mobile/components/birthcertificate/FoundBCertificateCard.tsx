@@ -12,7 +12,7 @@ interface FoundBCertificateCardProps {
     foundBcertificate: Bcertificate | Bcertificate[] | null;
     resetSearch: () => void;
     goBackToResults?: () => void;
-    viewBcertificate?: (bcertificateId: string) => void;
+    viewBcertificate?: (bcertificateId: string) => Promise<void>;
     isViewing?: boolean;
     viewingBcertificateId?: string | null;
     searchResults?: Bcertificate[];
@@ -66,9 +66,13 @@ const FoundBCertificateCard: React.FC<FoundBCertificateCardProps> = ({
 
     const isViewingSingleItem = !isMultipleResults && !!searchResults && searchResults.length > 0;
 
-    const handleViewDetails = (id?: string) => {
+    const handleViewDetails = async (id?: string) => {
         if (!id || !viewBcertificate) return;
-        viewBcertificate(id);
+        try {
+            await viewBcertificate(id);
+        } catch {
+            // mutation handles alert
+        }
     };
 
     return (

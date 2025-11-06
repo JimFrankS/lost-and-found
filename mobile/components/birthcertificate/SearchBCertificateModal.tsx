@@ -35,8 +35,8 @@ const SearchBCertificateModal = ({ isVisible, onClose, formData, searchBCertific
         resetSearch();
         try {
             await searchBCertificate(formData);
-        } catch (error) {
-            showAlerts("Error", "Failed to search birth certificate. Please try again.");
+        } catch {
+            // mutation handles alert
         }
     };
 

@@ -1,7 +1,7 @@
 import { View, ScrollView, StatusBar } from 'react-native';
 import React, {  } from 'react';
 import BackGroundCard from '@/components/BackGroundCard';
-import { tabStyles } from '@/styles/tabStyles';
+import { tabStyles, HEADER_TOP_SPACING } from '@/styles/tabStyles';
 import ReportBaggageCard from '@/components/baggage/ReportBaggageCard';
 import ReportBCertificateCard from '@/components/birthcertificate/ReportBCertificateCard';
 import ReportDLicenseCard from '@/components/dLicence/ReportDLicenseCard';
@@ -32,7 +32,7 @@ const ReportScreen = ({ onBack, onToggleToSearch }: ReportScreenProps) => {
         <Header title="Report Lost Items" />
         <ScrollView
           style={{ flex: 1 }}
-          contentContainerStyle={[tabViewStyles.container, { paddingTop: tabViewStyles.HEADER_TOP_SPACING }]}
+          contentContainerStyle={[tabViewStyles.container, { paddingTop: HEADER_TOP_SPACING }]}
         >
           <ResponsiveContainer>
             <ReportBaggageCard />

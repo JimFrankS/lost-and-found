@@ -9,7 +9,7 @@ import SearchMBaggage from '@/components/mBaggage/SearchMBaggage'
 import { View, ScrollView, StyleSheet, StatusBar } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { tabStyles } from '@/styles/tabStyles';
+import { tabStyles, HEADER_TOP_SPACING } from '@/styles/tabStyles';
 import BackGroundCard from '@/components/BackGroundCard'
 import ResponsiveContainer from '@/components/ResponsiveContainer'
 import { useBaggage } from '@/hooks/useBaggage'
@@ -40,7 +40,9 @@ const SearchScreen = ({ onBack, onToggleToReport }: SearchScreenProps) => {
   const showFullScreenResults =
     baggageHook.searchFound ||
     scertificateHook.searchFound ||
+    bcertificateHook.searchFound ||
     bcertificateHook.searchPerformed ||
+    dlicenceHook.searchFound ||
     dlicenceHook.searchPerformed ||
     natIdHook.searchFound ||
     passportHook.searchFound ||
@@ -75,7 +77,7 @@ const SearchScreen = ({ onBack, onToggleToReport }: SearchScreenProps) => {
         ) : (
           <ScrollView
             style={{ flex: 1 }}
-            contentContainerStyle={[container, { paddingTop: 60 }]}
+            contentContainerStyle={[container, { paddingTop: HEADER_TOP_SPACING }]}
           >
             <ResponsiveContainer>
               <SearchBaggage baggageHook={baggageHook} />
