@@ -7,7 +7,7 @@ import SearchNatId from '@/components/natId/SearchNatId'
 import SearchPassport from '@/components/passport/SearchPassport'
 import SearchMBaggage from '@/components/mBaggage/SearchMBaggage'
 import { View, ScrollView, StyleSheet, StatusBar } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTabStyles, HEADER_TOP_SPACING, TAB_BAR_HEIGHT, EXTRA_SPACE } from '@/styles/tabStyles';
 import BackGroundCard from '@/components/BackGroundCard'
@@ -31,6 +31,7 @@ interface SearchScreenProps {
 
 const SearchScreen = ({ onBack, onToggleToReport }: SearchScreenProps) => {
   const { safeArea, container } = useTabStyles();
+  const insets = useSafeAreaInsets();
   const baggageHook = useBaggage();
   const scertificateHook = useSCertificate();
   const bcertificateHook = useBCertificate();
@@ -41,6 +42,17 @@ const SearchScreen = ({ onBack, onToggleToReport }: SearchScreenProps) => {
 
   const hooks = [baggageHook, scertificateHook, bcertificateHook, dlicenceHook, natIdHook, passportHook, mBaggageHook];
   const showFullScreenResults = hooks.some(hook => hook.searchFound || hook.searchPerformed);
+
+  const styles = StyleSheet.create({
+    fadeGradient: {
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      right: 0,
+      height: TAB_BAR_HEIGHT + EXTRA_SPACE + insets.bottom,
+      zIndex: 10,
+    },
+  });
 
   return (
     <View style={{ flex: 1 }}>
@@ -83,7 +95,7 @@ const SearchScreen = ({ onBack, onToggleToReport }: SearchScreenProps) => {
         {/* Gradient fade overlay at bottom to hide content behind tab bar */}
         {!showFullScreenResults && (
           <LinearGradient
-            colors={['rgba(255, 255, 255, 0.8)', 'rgba(255, 255, 255, 0.4)', 'transparent']}
+            colors={['transparent', 'rgba(255, 255, 255, 0.4)', 'rgba(255, 255, 255, 0.8)']}
             style={styles.fadeGradient}
             pointerEvents="none"
           />
@@ -92,17 +104,6 @@ const SearchScreen = ({ onBack, onToggleToReport }: SearchScreenProps) => {
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  fadeGradient: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: TAB_BAR_HEIGHT + EXTRA_SPACE,
-    zIndex: 10,
-  },
-});
 
 
 
