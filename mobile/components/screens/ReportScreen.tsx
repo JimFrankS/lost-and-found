@@ -14,7 +14,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import BackToHomeButton from '@/components/BackToHomeButton';
 import Header from '@/components/Header';
 
-
+const contentPaddingStyle = { paddingTop: HEADER_TOP_SPACING };
 
 interface ReportScreenProps {
   onBack?: () => void;
@@ -32,7 +32,7 @@ const ReportScreen = ({ onBack, onToggleToSearch }: ReportScreenProps) => {
         <Header title="Report Lost Items" />
         <ScrollView
           style={{ flex: 1 }}
-          contentContainerStyle={[tabViewStyles.container, { paddingTop: HEADER_TOP_SPACING }]}
+          contentContainerStyle={[tabViewStyles.container, contentPaddingStyle]}
         >
           <ResponsiveContainer>
             <ReportBaggageCard />

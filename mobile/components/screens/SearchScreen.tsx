@@ -22,6 +22,8 @@ import { useMBaggage } from '@/hooks/useMBaggage'
 import BackToHomeButton from '@/components/BackToHomeButton'
 import Header from '@/components/Header'
 
+const contentPaddingStyle = { paddingTop: HEADER_TOP_SPACING };
+
 interface SearchScreenProps {
   onBack?: () => void;
   onToggleToReport?: () => void;
@@ -68,8 +70,8 @@ const SearchScreen = ({ onBack, onToggleToReport }: SearchScreenProps) => {
             {(scertificateHook.searchFound || scertificateHook.searchPerformed) && (
               <SearchScertificate scertificateHook={scertificateHook} />
             )}
-            {(bcertificateHook.searchPerformed) && <SearchBCertificate bcertificateHook={bcertificateHook} />}
-            {(dlicenceHook.searchPerformed) && <SearchDLicence dlicenceHook={dlicenceHook} />}
+            {(bcertificateHook.searchFound || bcertificateHook.searchPerformed) && <SearchBCertificate bcertificateHook={bcertificateHook} />}
+            {(dlicenceHook.searchFound || dlicenceHook.searchPerformed) && <SearchDLicence dlicenceHook={dlicenceHook} />}
             {(natIdHook.searchFound || natIdHook.searchPerformed) && <SearchNatId natIdHook={natIdHook} />}
             {(passportHook.searchFound || passportHook.searchPerformed) && <SearchPassport passportHook={passportHook} />}
             {(mBaggageHook.searchFound || mBaggageHook.searchPerformed) && <SearchMBaggage baggageHook={mBaggageHook} />}
@@ -77,7 +79,7 @@ const SearchScreen = ({ onBack, onToggleToReport }: SearchScreenProps) => {
         ) : (
           <ScrollView
             style={{ flex: 1 }}
-            contentContainerStyle={[container, { paddingTop: HEADER_TOP_SPACING }]}
+            contentContainerStyle={[container, contentPaddingStyle]}
           >
             <ResponsiveContainer>
               <SearchBaggage baggageHook={baggageHook} />
