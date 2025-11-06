@@ -1,3 +1,6 @@
+import { StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 // Static styles created once
 const staticStyles = StyleSheet.create({
   safeArea: {
@@ -18,9 +21,6 @@ const staticStyles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.9)',
   },
 });
-
-import { StyleSheet } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export const TAB_BAR_HEIGHT = 80; // Actual tab bar height
 export const EXTRA_SPACE = 40;    // Extra space to avoid content being too close to the tab bar

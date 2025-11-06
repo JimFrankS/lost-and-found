@@ -39,21 +39,8 @@ const SearchScreen = ({ onBack, onToggleToReport }: SearchScreenProps) => {
   const passportHook = usePassport();
   const mBaggageHook = useMBaggage();
 
-  const showFullScreenResults =
-    baggageHook.searchFound ||
-    scertificateHook.searchFound ||
-    bcertificateHook.searchFound ||
-    bcertificateHook.searchPerformed ||
-    dlicenceHook.searchFound ||
-    dlicenceHook.searchPerformed ||
-    natIdHook.searchFound ||
-    passportHook.searchFound ||
-    mBaggageHook.searchFound ||
-    baggageHook.searchPerformed ||
-    scertificateHook.searchPerformed ||
-    natIdHook.searchPerformed ||
-    passportHook.searchPerformed ||
-    mBaggageHook.searchPerformed;
+  const hooks = [baggageHook, scertificateHook, bcertificateHook, dlicenceHook, natIdHook, passportHook, mBaggageHook];
+  const showFullScreenResults = hooks.some(hook => hook.searchFound || hook.searchPerformed);
 
   return (
     <View style={{ flex: 1 }}>
