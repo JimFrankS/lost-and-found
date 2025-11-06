@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import SearchBaggage from '@/components/baggage/SearchBaggage'
 import SearchScertificate from '@/components/scertificate/SearchScertificate'
 import SearchBCertificate from '@/components/birthcertificate/SearchBCertificate'
@@ -43,7 +43,7 @@ const SearchScreen = ({ onBack, onToggleToReport }: SearchScreenProps) => {
   const hooks = [baggageHook, scertificateHook, bcertificateHook, dlicenceHook, natIdHook, passportHook, mBaggageHook];
   const showFullScreenResults = hooks.some(hook => hook.searchFound || hook.searchPerformed);
 
-  const styles = StyleSheet.create({
+  const styles = useMemo(() => StyleSheet.create({
     fadeGradient: {
       position: 'absolute',
       bottom: 0,
@@ -52,7 +52,7 @@ const SearchScreen = ({ onBack, onToggleToReport }: SearchScreenProps) => {
       height: TAB_BAR_HEIGHT + EXTRA_SPACE + insets.bottom,
       zIndex: 10,
     },
-  });
+  }), [insets.bottom]);
 
   return (
     <View style={{ flex: 1 }}>
