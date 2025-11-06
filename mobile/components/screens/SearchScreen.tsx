@@ -9,7 +9,7 @@ import SearchMBaggage from '@/components/mBaggage/SearchMBaggage'
 import { View, ScrollView, StyleSheet, StatusBar } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { tabStyles, HEADER_TOP_SPACING } from '@/styles/tabStyles';
+import { useTabStyles, HEADER_TOP_SPACING, TAB_BAR_HEIGHT, EXTRA_SPACE } from '@/styles/tabStyles';
 import BackGroundCard from '@/components/BackGroundCard'
 import ResponsiveContainer from '@/components/ResponsiveContainer'
 import { useBaggage } from '@/hooks/useBaggage'
@@ -28,7 +28,7 @@ interface SearchScreenProps {
 }
 
 const SearchScreen = ({ onBack, onToggleToReport }: SearchScreenProps) => {
-  const { safeArea, container } = tabStyles();
+  const { safeArea, container } = useTabStyles();
   const baggageHook = useBaggage();
   const scertificateHook = useSCertificate();
   const bcertificateHook = useBCertificate();
@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    height: 120,
+    height: TAB_BAR_HEIGHT + EXTRA_SPACE,
     zIndex: 10,
   },
 });

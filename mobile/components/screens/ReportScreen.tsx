@@ -1,7 +1,7 @@
 import { View, ScrollView, StatusBar } from 'react-native';
-import React, {  } from 'react';
+import React from 'react';
 import BackGroundCard from '@/components/BackGroundCard';
-import { tabStyles, HEADER_TOP_SPACING } from '@/styles/tabStyles';
+import { useTabStyles, HEADER_TOP_SPACING } from '@/styles/tabStyles';
 import ReportBaggageCard from '@/components/baggage/ReportBaggageCard';
 import ReportBCertificateCard from '@/components/birthcertificate/ReportBCertificateCard';
 import ReportDLicenseCard from '@/components/dLicence/ReportDLicenseCard';
@@ -12,7 +12,7 @@ import ReportMBaggageCard from '@/components/mBaggage/ReportMBaggageCard';
 import ResponsiveContainer from '@/components/ResponsiveContainer';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import BackToHomeButton from '@/components/BackToHomeButton';
-import Header from '@/components/Header'
+import Header from '@/components/Header';
 
 
 
@@ -22,7 +22,7 @@ interface ReportScreenProps {
 }
 
 const ReportScreen = ({ onBack, onToggleToSearch }: ReportScreenProps) => {
-  const tabViewStyles = tabStyles();
+  const tabViewStyles = useTabStyles();
   return (
     <View style={{ flex: 1 }}>
       <StatusBar barStyle="dark-content" backgroundColor="white" />

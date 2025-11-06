@@ -1,14 +1,14 @@
 import { StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-const TAB_BAR_HEIGHT = 80; // Actual tab bar height
-const EXTRA_SPACE = 40;    // Extra space to avoid content being too close to the tab bar
+export const TAB_BAR_HEIGHT = 80; // Actual tab bar height
+export const EXTRA_SPACE = 40;    // Extra space to avoid content being too close to the tab bar
 export const HEADER_TOP_SPACING = 60; // Spacing for header top padding
 
-export const tabStyles = () => {
+export const useTabStyles = () => {
   const insets = useSafeAreaInsets();
 
-  const styles = StyleSheet.create({
+  return StyleSheet.create({
     safeArea: {
       flex: 1,
     },
@@ -28,8 +28,4 @@ export const tabStyles = () => {
       backgroundColor: 'rgba(255, 255, 255, 0.9)',
     },
   });
-
-  return {
-    ...styles,
-  };
 };
