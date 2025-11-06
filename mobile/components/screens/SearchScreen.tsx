@@ -28,6 +28,7 @@ interface SearchScreenProps {
 }
 
 const SearchScreen = ({ onBack, onToggleToReport }: SearchScreenProps) => {
+  const { safeArea, container } = tabStyles();
   const baggageHook = useBaggage();
   const scertificateHook = useSCertificate();
   const bcertificateHook = useBCertificate();
@@ -54,7 +55,7 @@ const SearchScreen = ({ onBack, onToggleToReport }: SearchScreenProps) => {
     <View style={{ flex: 1 }}>
       <StatusBar barStyle="dark-content" backgroundColor="white" />
       <BackGroundCard />
-      <SafeAreaView style={tabStyles().safeArea}>
+      <SafeAreaView style={safeArea}>
         {!showFullScreenResults && (
           /* Sticky Header */
           <Header title="Search Lost Items" />
@@ -74,7 +75,7 @@ const SearchScreen = ({ onBack, onToggleToReport }: SearchScreenProps) => {
         ) : (
           <ScrollView
             style={{ flex: 1 }}
-            contentContainerStyle={[tabStyles().container, { paddingTop: 60 }]}
+            contentContainerStyle={[container, { paddingTop: 60 }]}
           >
             <ResponsiveContainer>
               <SearchBaggage baggageHook={baggageHook} />

@@ -22,16 +22,17 @@ interface ReportScreenProps {
 }
 
 const ReportScreen = ({ onBack, onToggleToSearch }: ReportScreenProps) => {
+  const tabViewStyles = tabStyles();
   return (
     <View style={{ flex: 1 }}>
       <StatusBar barStyle="dark-content" backgroundColor="white" />
       <BackGroundCard />
-      <SafeAreaView style={tabStyles().safeArea}>
+      <SafeAreaView style={tabViewStyles.safeArea}>
         {/* Sticky Header */}
         <Header title="Report Lost Items" />
         <ScrollView
           style={{ flex: 1 }}
-          contentContainerStyle={[tabStyles().container, { paddingTop: 60 }]}
+          contentContainerStyle={[tabViewStyles.container, { paddingTop: 60 }]}
         >
           <ResponsiveContainer>
             <ReportBaggageCard />

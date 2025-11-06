@@ -64,7 +64,7 @@ export const useBaggage = () => {
             const results = data ?? [];
             setSearchResults(results);
 
-            setSearchFound(true);
+            setSearchFound(results.length > 0);
             setSearchPerformed(true);
             closeBaggageModal();
         },

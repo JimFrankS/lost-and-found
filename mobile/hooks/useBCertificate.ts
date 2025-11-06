@@ -66,9 +66,8 @@ export const useBCertificate = () => {
         },
         onSuccess: (data: Bcertificate[]) => {
             setViewedBcertificate(null);
-            const results = data == null ? [] : Array.isArray(data) ? data : [data];
-            setSearchResults(results);
-            setSearchFound(results.length > 0);
+            setSearchResults(data);
+            setSearchFound(data.length > 0);
             setSearchPerformed(true);
             closeSearchModal();
         },
