@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { tabStyles } from '@/styles/tabStyles';
+import { useTabStyles } from '@/styles/tabStyles';
 
 interface HeaderProps {
   title: string;
@@ -9,7 +9,7 @@ interface HeaderProps {
 
 const Header = ({ title }: HeaderProps) => {
   const insets = useSafeAreaInsets();
-  const externalStyles = tabStyles();
+  const externalStyles = useTabStyles();
 
   return (
     <View style={[

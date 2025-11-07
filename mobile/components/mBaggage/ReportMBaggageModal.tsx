@@ -1,4 +1,4 @@
-import { Text, View, ScrollView, Alert, TouchableOpacity, TextInput, ActivityIndicator, Dimensions, Platform } from "react-native";
+import { Text, View, ScrollView, TouchableOpacity, TextInput, ActivityIndicator, Dimensions, Platform } from "react-native";
 import React, { useMemo, useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -7,6 +7,7 @@ import { MBAGGAGE_TYPES, gatheringTypes, PROVINCES, PROVINCE_DISTRICT_MAP, PHONE
 import { OptionPicker, SelectField, toTitleCase } from "../FormsHelper";
 import { showAlerts } from "@/utils/alerts";
 import ModalWrapper from "../ModalWrapper";
+import SuccessView from "../SuccessView";
 
 interface ReportBaggageModalProps {
     isVisible: boolean;
@@ -28,6 +29,7 @@ interface ReportBaggageModalProps {
 
 const ReportBaggageModal = ({ isVisible, onClose, formData, reportBaggage, updateFormData, isReporting }: ReportBaggageModalProps) => {
     const [openPicker, setOpenPicker] = useState<null | 'baggageType' | 'gatheringType' | 'destinationProvince' | 'destinationDistrict'>(null);
+    const [reportedSuccessfully, setReportedSuccessfully] = useState(false);
 
     const insets = useSafeAreaInsets();
 
@@ -47,7 +49,7 @@ const ReportBaggageModal = ({ isVisible, onClose, formData, reportBaggage, updat
         formData.finderContact
     );
 
-    const handleSave = () => {
+    const handleSave = async () => {
         if (!isFormComplete) {
             showAlerts("Error", "Please fill in all required fields.");
             return;
@@ -56,7 +58,12 @@ const ReportBaggageModal = ({ isVisible, onClose, formData, reportBaggage, updat
             showAlerts("Error", `Invalid phone number format. Example: ${PHONE_EXAMPLE}`);
             return;
         }
-        reportBaggage();
+        try {
+            await reportBaggage();
+            setReportedSuccessfully(true);
+        } catch {
+            // Error is handled by the hook
+        }
     };
 
     const renderSelect = (label: string, value: string, onPress: () => void, placeholder: string, displayValue?: string) => (
@@ -66,42 +73,46 @@ const ReportBaggageModal = ({ isVisible, onClose, formData, reportBaggage, updat
     return (
         <ModalWrapper visible={isVisible} onClose={onClose}>
             <View className="flex-1">
-                {/* Header */}
-                <View className='flex-row items-center justify-between px-4 py-3 border-b border-gray-100'>
-                    <TouchableOpacity onPress={() => {
-                        showAlerts("Cancel", "Are you sure you want to cancel?", [
-                            { text: "No", style: "cancel" },
-                            {
-                                text: "Yes",
-                                style: "destructive",
-                                onPress: onClose,
-                            },
-                        ]);
-                    }}>
-                        <Text className="text-red-500 font-semibold">Close</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={handleSave} disabled={isReporting || !isFormComplete || !isPhoneValid}>
-                        {(!isFormComplete || !isPhoneValid) ? (
-                            <Text className="text-gray-500 font-semibold">Upload</Text>
-                        ) :
-                            isReporting ? (
-                                <ActivityIndicator size="small" color="blue" />
-                            ) : (
-                                <Text className="text-blue-500 font-bold">Upload</Text>
-                            )}
-                    </TouchableOpacity>
-                </View>
+                {reportedSuccessfully ? (
+                    <SuccessView onClose={onClose} documentType="Lost Item" insets={insets} />
+                ) : (
+                    <View className="flex-1">
+                        {/* Header */}
+                        <View className='flex-row items-center justify-between px-4 py-3 border-b border-gray-100'>
+                            <TouchableOpacity onPress={() => {
+                                showAlerts("Cancel", "Are you sure you want to cancel?", [
+                                    { text: "No", style: "cancel" },
+                                    {
+                                        text: "Yes",
+                                        style: "destructive",
+                                        onPress: onClose,
+                                    },
+                                ]);
+                            }}>
+                                <Text className="text-red-500 font-semibold">Close</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={handleSave} disabled={isReporting || !isFormComplete || !isPhoneValid}>
+                                {(!isFormComplete || !isPhoneValid) ? (
+                                    <Text className="text-gray-500 font-semibold">Upload</Text>
+                                ) :
+                                    isReporting ? (
+                                        <ActivityIndicator size="small" color="blue" />
+                                    ) : (
+                                        <Text className="text-blue-500 font-bold">Upload</Text>
+                                    )}
+                            </TouchableOpacity>
+                        </View>
 
-                {/* Form */}
-                <ScrollView className="flex-1 p-4"
-                    style={
-                        Platform.OS === 'web'
-                            ? {
-                                maxHeight: Dimensions.get('window').height - insets.top - insets.bottom,
-                                overflow: 'scroll',
-                            }
-                            : undefined
-                    }>
+                        {/* Form */}
+                        <ScrollView className="flex-1 p-4"
+                            style={
+                                Platform.OS === 'web'
+                                    ? {
+                                        maxHeight: Dimensions.get('window').height - insets.top - insets.bottom,
+                                        overflow: 'scroll',
+                                    }
+                                    : undefined
+                            }>
                     {renderSelect(
                         'Lost Item Type', // Title of the select field, as per the form requirements in Baggage.Helpers.tsx
                         formData.baggageType, // Current selected value for baggage type
@@ -210,6 +221,8 @@ const ReportBaggageModal = ({ isVisible, onClose, formData, reportBaggage, updat
                         getLabel={(v: string) => toTitleCase(v)}
                     />
                 </ScrollView>
+                    </View>
+                )}
             </View>
         </ModalWrapper>
     );

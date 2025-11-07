@@ -1,5 +1,5 @@
 import React from "react";
-import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 
 import { searchResultStyles } from "@/styles/searchResultStyles";
@@ -30,8 +30,6 @@ const FoundScertificateCard = ({
     searchResults,
 }: FoundScertificateCardProps) => {
     const insets = useSafeAreaInsets();
-
-    if (!searchFound) return null;
 
     if (!foundScertificate) return null; // safety checks to prevent errors in the render method in case nothing is found
 

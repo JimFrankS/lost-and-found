@@ -35,11 +35,6 @@ export const useMBaggage = () => {
         mutationFn: async (baggageData: MBaggageFoundData) => {
             return await mBaggageApi.lostBaggage(baggageData);
         },
-        onSuccess: (response) => {
-            setIsBaggageModalVisible(false);
-            const message = extractSuccessMessage(response, 'Baggage reported successfully');
-            showSuccessToast(message);
-        },
         onError: (error: any) => {
             const message = extractErrorMessage(error, 'An error occurred while reporting baggage');
             if (__DEV__) console.error("Baggage reporting error:", message);

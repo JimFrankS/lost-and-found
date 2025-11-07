@@ -30,8 +30,6 @@ const FoundNatIDCard: React.FC<FoundNatIDCardProps> = ({
 }) => {
     const insets = useSafeAreaInsets();
 
-    if (!searchFound) return null;
-
     if (!foundNatId) return null; // safety checks to prevent errors in the render method in case nothing is found
 
     //check if we have no results (empty array)

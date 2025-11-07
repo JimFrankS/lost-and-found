@@ -39,12 +39,6 @@ export const useNatID = () => {
             return response.data;
         }, // Api Call to report found national ID
 
-        onSuccess: (data) => {
-            setIsNatIDModalVisible(false); // Close the modal
-            const message = extractSuccessMessage(data, "National ID reported successfully");
-            showSuccessToast(message);
-        },
-
         onError: (error: any) => {
             const message = extractErrorMessage(error, "An error occurred whilst reporting found national ID.");
             if (__DEV__) console.error("Error Reporting National ID:", message);

@@ -24,32 +24,38 @@ const ModalWrapper: React.FC<{
       visible={visible}
       animationType={isLargeScreen ? "fade" : "slide"}
       transparent={transparent}
-      onRequestClose={() => onClose?.()}
+      onRequestClose={() => { if (!transparent) onClose?.(); }}
     >
-      <TouchableWithoutFeedback onPress={onClose}>
-        <View
-          style={[
-            styles.container,
-            isLargeScreen && styles.largeScreenContainer,
-            {
-              paddingTop: insets.top,
-              paddingBottom: insets.bottom,
-              paddingLeft: insets.left,
-              paddingRight: insets.right,
-            }
-          ]}
-        >
-          {isLargeScreen && <BackGroundCard />}
-          <TouchableWithoutFeedback>
-            <View style={[
-              styles.contentWrapper,
-              isLargeScreen && styles.largeScreenContentWrapper
-            ]}>
-              {children}
-            </View>
-          </TouchableWithoutFeedback>
+      {transparent ? (
+        <View style={styles.transparentContainer}>
+          {children}
         </View>
-      </TouchableWithoutFeedback>
+      ) : (
+        <TouchableWithoutFeedback onPress={onClose}>
+          <View
+            style={[
+              styles.container,
+              isLargeScreen && styles.largeScreenContainer,
+              {
+                paddingTop: insets.top,
+                paddingBottom: insets.bottom,
+                paddingLeft: insets.left,
+                paddingRight: insets.right,
+              }
+            ]}
+          >
+            {isLargeScreen && <BackGroundCard />}
+            <TouchableWithoutFeedback>
+              <View style={[
+                styles.contentWrapper,
+                isLargeScreen && styles.largeScreenContentWrapper
+              ]}>
+                {children}
+              </View>
+            </TouchableWithoutFeedback>
+          </View>
+        </TouchableWithoutFeedback>
+      )}
     </Modal>
   );
 };
@@ -58,6 +64,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'rgba(250, 250, 250, 0.9)', // Semi-transparent white background
+  },
+  transparentContainer: {
+    flex: 1,
+    backgroundColor: 'transparent',
   },
   largeScreenContainer: {
     justifyContent: 'center',

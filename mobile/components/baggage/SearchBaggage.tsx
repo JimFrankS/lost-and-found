@@ -1,7 +1,5 @@
-import { View, Text, StyleSheet } from 'react-native'
+import { View, StyleSheet } from 'react-native'
 import React from 'react'
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { tabStyles } from '@/styles/tabStyles'
 import SearchBaggageCard from '@/components/baggage/SearchBaggageCard'
 import FoundBaggageCard from '@/components/baggage/FoundBaggageCard'
 
@@ -10,13 +8,12 @@ interface SearchBaggageProps {
 }
 
 const SearchBaggage = ({ baggageHook }: SearchBaggageProps) => {
-  const showingResults = !!baggageHook.searchFound;
+  const showingResults = baggageHook.searchPerformed;
 
   return (
     <View style={styles.container}>
       {showingResults ? (
         <FoundBaggageCard
-          searchFound={baggageHook.searchFound}
           foundBaggage={baggageHook.viewedBaggage || baggageHook.searchResults}
           resetSearch={baggageHook.resetSearch}
           goBackToResults={baggageHook.goBackToResults}

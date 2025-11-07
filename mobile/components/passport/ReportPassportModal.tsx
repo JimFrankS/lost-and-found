@@ -1,10 +1,11 @@
-import { Text, View, ScrollView, Alert, TouchableOpacity, TextInput, ActivityIndicator, Dimensions, Platform } from "react-native";
-import React from "react";
+import { Text, View, ScrollView, TouchableOpacity, TextInput, ActivityIndicator, Platform } from "react-native";
+import React, { useEffect, useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { PHONE_NUMBER_REGEX, passportNumberRegex, escapeRegex } from "@/constants/allowedValues";
 import { isValidZimbabweIdNumber, sanitizeZimbabweIdNumber } from "@/utils/idValidator";
 import { showAlerts } from "@/utils/alerts";
 import ModalWrapper from "../ModalWrapper";
+import SuccessView from "../SuccessView";
 
 interface ReportPassportModalProps {
     isVisible: boolean;
@@ -17,12 +18,19 @@ interface ReportPassportModalProps {
         docLocation: string;
         finderContact: string;
     };
-    reportPassport: () => void;
+    reportPassport: () => Promise<boolean>;
     updateFormData: (field: string, value: string) => void;
     isReporting: boolean;
 } // Props to be used in the modal and their data types and arguments.
 
 const ReportPassportModal = ({ isVisible, onClose, formData, reportPassport, updateFormData, isReporting }: ReportPassportModalProps) => {
+    const [reportedSuccessfully, setReportedSuccessfully] = useState(false);
+
+    useEffect(() => {
+        if (!isVisible) {
+            setReportedSuccessfully(false);
+        }
+    }, [isVisible]);
 
     const insets = useSafeAreaInsets();
 
@@ -39,7 +47,7 @@ const ReportPassportModal = ({ isVisible, onClose, formData, reportPassport, upd
         formData.finderContact
     ); // define the compulsory fields that must be filled before the form can be submitable.
 
-    const handleSave = () => {
+    const handleSave = async () => {
         if (!isFormComplete) {
             showAlerts("Error", "Please fill in all the required fields.");
             return;
@@ -59,47 +67,52 @@ const ReportPassportModal = ({ isVisible, onClose, formData, reportPassport, upd
             showAlerts("Error", "Invalid phone number format. Example: 0719729537");
             return;
         }
-        reportPassport();
+        const success = await reportPassport();
+        if (success) setReportedSuccessfully(true);
     };
 
     return (
         <ModalWrapper visible={isVisible} onClose={onClose}>
             <View className="flex-1">
-                {/* Header */}
-                <View className="flex-row items-center justify-between px-4 py-3 border-b border-gray-100">
-                    <TouchableOpacity onPress={() => {
-                        showAlerts("Cancel", "Are you sure you want to cancel?", [
-                            { text: "No", style: "cancel" },
-                            {
-                                text: "Yes",
-                                style: "destructive",
-                                onPress: onClose,
-                            },
-                        ]);
-                    }}>
-                        <Text className="text-red-500 font-semibold">Close</Text>
-                    </TouchableOpacity>
+                {reportedSuccessfully && !isReporting ? (
+                    <SuccessView onClose={onClose} documentType="Passport" insets={insets} />
+                ) : (
+                    <View className="flex-1">
+                        {/* Header */}
+                        <View className="flex-row items-center justify-between px-4 py-3 border-b border-gray-100">
+                            <TouchableOpacity onPress={() => {
+                                showAlerts("Cancel", "Are you sure you want to cancel?", [
+                                    { text: "No", style: "cancel" },
+                                    {
+                                        text: "Yes",
+                                        style: "destructive",
+                                        onPress: onClose,
+                                    },
+                                ]);
+                            }}>
+                                <Text className="text-red-500 font-semibold">Close</Text>
+                            </TouchableOpacity>
 
-                    <TouchableOpacity onPress={handleSave} disabled={isReporting || !isFormComplete || !isPassportValid || !isIdValid || !isPhoneValid}>
-                        {(!isFormComplete || !isPassportValid || !isIdValid || !isPhoneValid) ? (
-                            <Text className="text-gray-500 font-semibold">Upload</Text>
-                        ) :
-                            isReporting ? (
-                                <ActivityIndicator size="small" color="blue" />
-                            ) : (
-                                <Text className="text-blue-500 font-bold">Upload</Text>
-                            )}
-                    </TouchableOpacity>
-                </View>
+                            <TouchableOpacity onPress={handleSave} disabled={isReporting || !isFormComplete || !isPassportValid || !isIdValid || !isPhoneValid}>
+                                {(!isFormComplete || !isPassportValid || !isIdValid || !isPhoneValid) ? (
+                                    <Text className="text-gray-500 font-semibold">Upload</Text>
+                                ) :
+                                    isReporting ? (
+                                        <ActivityIndicator size="small" color="blue" />
+                                    ) : (
+                                        <Text className="text-blue-500 font-bold">Upload</Text>
+                                    )}
+                            </TouchableOpacity>
+                        </View>
 
-                {/* Input Form */}
-                <ScrollView className="flex-1 p-4"
-                    style={
-                        Platform.OS === 'web'
-                            ? {
-                                overflow: 'scroll',
-                            } : undefined
-                    }>
+                        {/* Input Form */}
+                        <ScrollView className="flex-1 p-4"
+                            style={
+                                Platform.OS === 'web'
+                                    ? {
+                                        overflow: 'scroll',
+                                    } : undefined
+                            }>
 
                     <Text className="text-lg font-semibold text-gray-600 mb-2">Passport Number</Text>
                     <TextInput
@@ -184,6 +197,8 @@ const ReportPassportModal = ({ isVisible, onClose, formData, reportPassport, upd
                     )}
 
                 </ScrollView>
+                    </View>
+                )}
             </View>
         </ModalWrapper>
     );

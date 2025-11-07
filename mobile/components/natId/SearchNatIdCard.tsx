@@ -2,7 +2,7 @@ import React from "react";
 import { Text } from "react-native";
 import SearchNatIdModal from "@/components/natId/SearchNatIdModal";
 import CardWrapper from "@/styles/CardWrapper";
-import { NatIdSearchParams, NatId } from "@/types";
+import { NatIdSearchParams } from "@/types";
 
 interface SearchNatIdCardProps {
     isNatIDModalVisible: boolean;

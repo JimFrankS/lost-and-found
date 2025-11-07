@@ -1,6 +1,5 @@
 import React from 'react';
 import { Text } from 'react-native';
-import { tabStyles } from '@/styles/tabStyles';
 import ReportPassportModal from './ReportPassportModal';
 import { usePassport } from '@/hooks/usePassport';
 import CardWrapper from '@/styles/CardWrapper';

@@ -40,11 +40,6 @@ export const useBCertificate = () => {
         mutationFn: async (bcertificateData: BCertificateFoundData) => {
             return await bcertificateApi.foundbCertificate(bcertificateData);
         },
-        onSuccess: (response) => {
-            setIsBCertificateModalVisible(false);
-            const message = extractSuccessMessage(response, "Birth Certificate reported successfully");
-            showSuccessToast(message);
-        },
         onError: (error: any) => {
             const message = extractErrorMessage(error, "An error occurred whilst reporting found birth certificate.");
             if (__DEV__) console.error("Error Reporting Birth Certificate:", message);

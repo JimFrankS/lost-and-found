@@ -4,12 +4,11 @@ import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 
 import { searchResultStyles } from "@/styles/searchResultStyles";
 import NothingFound from "../NothingFound";
-import { MBaggage, MBaggageListItem, MBaggageViewResponse } from "@/types";
+import { MBaggageListItem, MBaggageViewResponse } from "@/types";
 import { toTitleCase } from "@/utils/string.utility";
 import { TAB_BAR_HEIGHT, EXTRA_SPACE } from "@/styles/tabStyles";
 
 interface FoundBaggageCardProps {
-    searchFound: boolean;
     foundBaggage: MBaggageViewResponse | MBaggageListItem[] | null;
     resetSearch: () => void;
     goBackToResults?: () => void;
@@ -20,7 +19,6 @@ interface FoundBaggageCardProps {
 }
 
 const FoundBaggageCard = ({
-    searchFound,
     foundBaggage,
     goBackToResults,
     resetSearch,
@@ -31,7 +29,7 @@ const FoundBaggageCard = ({
 }: FoundBaggageCardProps) => {
     const insets = useSafeAreaInsets();
 
-    if (!searchFound || !foundBaggage) return null;
+    if (!foundBaggage) return null;
 
     const hasNoResults = Array.isArray(foundBaggage) && foundBaggage.length === 0;
 

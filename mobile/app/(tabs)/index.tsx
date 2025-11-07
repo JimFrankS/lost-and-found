@@ -2,7 +2,7 @@ import { View, TouchableOpacity, Text, ActivityIndicator, StatusBar } from 'reac
 import React from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import BackGroundCard from '@/components/BackGroundCard';
-import { tabStyles } from '@/styles/tabStyles';
+import { useTabStyles } from '@/styles/tabStyles';
 
 import ReportScreen from '@/components/screens/ReportScreen';
 import SearchScreen from '@/components/screens/SearchScreen';
@@ -14,7 +14,7 @@ import Header from '@/components/Header';
 const HomeScreen = () => {
   const { activeScreen, isLoading, navigate } = useNavigationWithLoading('home');
   const handleNavigation = (screen: 'search' | 'report') => navigate(screen);
-  const styles = tabStyles();
+  const styles = useTabStyles();
   const handleBackToHome = () => navigate('home');
 
   // Show loading indicator during transitions

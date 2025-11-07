@@ -8,7 +8,7 @@ interface SearchPassportProps {
 }
 
 const SearchPassport = ({ passportHook }: SearchPassportProps) => {
-    const showingResults = !!passportHook.searchFound;
+    const showingResults = passportHook.searchPerformed;
 
     return (
         <View style={styles.container}>

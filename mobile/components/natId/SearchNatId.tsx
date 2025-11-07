@@ -11,7 +11,7 @@ interface SearchNatIdProps {
 }
 
 const SearchNatId = ({ natIdHook, isSearchModalVisible, openSearchModal, closeSearchModal }: SearchNatIdProps) => {
-    const showingResults = !!natIdHook.searchFound;
+    const showingResults = natIdHook.searchPerformed;
 
     return (
         <View style={styles.container}>

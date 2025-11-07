@@ -1,8 +1,7 @@
-import { Text, View, ScrollView, TouchableOpacity, ActivityIndicator, Dimensions, Platform, TextInput } from "react-native";
+import { Text, View, ScrollView, TouchableOpacity, ActivityIndicator, Platform, TextInput } from "react-native";
 import React, { useState } from "react";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { showAlerts } from "@/utils/alerts";
-import { isValidZimbabweIdNumber, idNumberRegex, sanitizeZimbabweIdNumber } from "@/utils/idValidator";
+import { isValidZimbabweIdNumber, sanitizeZimbabweIdNumber } from "@/utils/idValidator";
 import { OptionPicker, SelectField } from "../FormsHelper";
 import { licenceNumberRegex } from "@/constants/allowedValues";
 import { DLicenceSearchParams } from "@/types";
@@ -22,7 +21,6 @@ interface SearchDLicenceModalProps {
 };
 
 const SearchDLicenceModal = ({ isVisible, onClose, formData, searchDLicence, updateFormData, isSearching, resetSearch }: SearchDLicenceModalProps) => {
-    const insets = useSafeAreaInsets();
     const [openPicker, setOpenPicker] = useState<null | 'category'>(null);
 
     const validateInput = (category: string, value: string) => {

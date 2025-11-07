@@ -1,8 +1,7 @@
-import { Text, View, ScrollView, TouchableOpacity, ActivityIndicator, Dimensions, Platform, TextInput } from "react-native";
+import { Text, View, ScrollView, TouchableOpacity, ActivityIndicator, Platform, TextInput } from "react-native";
 import React, { useState } from "react";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { showAlerts } from "@/utils/alerts";
-import { isValidZimbabweIdNumber, idNumberRegex, sanitizeZimbabweIdNumber } from "@/utils/idValidator";
+import { isValidZimbabweIdNumber, sanitizeZimbabweIdNumber } from "@/utils/idValidator";
 import { OptionPicker, SelectField } from "../FormsHelper";
 import ModalWrapper from "../ModalWrapper";
 
@@ -35,7 +34,6 @@ interface SearchPassportModalProps {
 };
 
 const SearchPassportModal = ({ isVisible, onClose, formData, searchPassport, updateFormData, isSearching, resetSearch }: SearchPassportModalProps) => {
-    const insets = useSafeAreaInsets();
     const [openPicker, setOpenPicker] = useState<null | 'category'>(null);
 
     const validateInput = (category: string, value: string) => {
@@ -44,7 +42,7 @@ const SearchPassportModal = ({ isVisible, onClose, formData, searchPassport, upd
             case 'passportNumber':
                 return value.length >= 8 && /^[A-Z]{2}\d{6}$/i.test(value);
             case 'idNumber':
-                return value.length >= 13 && isValidZimbabweIdNumber(value);
+                return isValidZimbabweIdNumber(value);
             case 'surname':
                 return value.length >= 1 && /^[a-zA-Z\s\-']+$/.test(value.trim()); // Basic name validation
             default:

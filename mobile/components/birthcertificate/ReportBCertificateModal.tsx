@@ -1,9 +1,10 @@
-import { Text, View, ScrollView, Alert, TouchableOpacity, TextInput, ActivityIndicator, Dimensions, Platform } from "react-native";
-import React from "react";
+import { Text, View, ScrollView, TouchableOpacity, TextInput, ActivityIndicator, Platform } from "react-native";
+import React, { useState, useEffect } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { PHONE_NUMBER_REGEX } from "@/constants/allowedValues";
 import { showAlerts } from "@/utils/alerts";
 import ModalWrapper from "../ModalWrapper";
+import SuccessView from "../SuccessView";
 
 
 interface ReportBCertificateModalProps {
@@ -23,6 +24,11 @@ interface ReportBCertificateModalProps {
 } // Props to be used in the modal and their data types and arguments. 
 
 const ReportBCertificateModal = ({ isVisible, onClose, formData, reportBCertificate, updateFormData, isReporting }: ReportBCertificateModalProps) => {
+    const [reportedSuccessfully, setReportedSuccessfully] = useState(false);
+
+    useEffect(() => {
+        if (!isVisible) setReportedSuccessfully(false);
+    }, [isVisible]);
 
     const insets = useSafeAreaInsets();
 
@@ -48,50 +54,55 @@ const ReportBCertificateModal = ({ isVisible, onClose, formData, reportBCertific
         }
         try {
             await reportBCertificate();
+            setReportedSuccessfully(true);
         } catch {
-            // mutation handles alert
+            // Error is handled by the hook
         }
     };
 
     return (
         <ModalWrapper visible={isVisible} onClose={onClose}>
             <View className="flex-1">
-                {/* Header */}
-                <View className="flex-row items-center justify-between px-4 py-3 border-b border-gray-100">
-                    <TouchableOpacity onPress={() => {
-                        showAlerts("Cancel", "Are you sure you want to cancel?", [
-                            { text: "No", style: "cancel" },
-                            {
-                                text: "Yes",
-                                style: "destructive",
-                                onPress: onClose,
-                            },
-                        ]);
-                    }}>
-                        <Text className="text-red-500 font-semibold">Close</Text>
-                    </TouchableOpacity>
+                {reportedSuccessfully ? (
+                    <SuccessView onClose={onClose} documentType="Birth Certificate" insets={insets} />
+                ) : (
+                    <View className="flex-1">
+                        {/* Header */}
+                        <View className="flex-row items-center justify-between px-4 py-3 border-b border-gray-100">
+                            <TouchableOpacity onPress={() => {
+                                showAlerts("Cancel", "Are you sure you want to cancel?", [
+                                    { text: "No", style: "cancel" },
+                                    {
+                                        text: "Yes",
+                                        style: "destructive",
+                                        onPress: onClose,
+                                    },
+                                ]);
+                            }}>
+                                <Text className="text-red-500 font-semibold">Close</Text>
+                            </TouchableOpacity>
 
 
-                    <TouchableOpacity onPress={handleSave} disabled={isReporting || !isFormComplete || !isPhoneValid}>
-                        {(!isFormComplete || !isPhoneValid) ? (
-                            <Text className="text-gray-500 font-semibold">Upload</Text>
-                        ) :
-                            isReporting ? (
-                                <ActivityIndicator size="small" color="blue" />
-                            ) : (
-                                <Text className="text-blue-500 font-bold">Upload</Text>
-                            )}
-                    </TouchableOpacity>
-                </View>
+                            <TouchableOpacity onPress={handleSave} disabled={isReporting || !isFormComplete || !isPhoneValid}>
+                                {(!isFormComplete || !isPhoneValid) ? (
+                                    <Text className="text-gray-500 font-semibold">Upload</Text>
+                                ) :
+                                    isReporting ? (
+                                        <ActivityIndicator size="small" color="blue" />
+                                    ) : (
+                                        <Text className="text-blue-500 font-bold">Upload</Text>
+                                    )}
+                            </TouchableOpacity>
+                        </View>
 
-                {/* Input Form */}
-                <ScrollView className="flex-1 p-4"
-                    style={
-                        Platform.OS === 'web'
-                            ? {
-                                overflow: 'scroll',
-                            } : undefined
-                    }>
+                        {/* Input Form */}
+                        <ScrollView className="flex-1 p-4"
+                            style={
+                                Platform.OS === 'web'
+                                    ? {
+                                        overflow: 'scroll',
+                                    } : undefined
+                            }>
                     
                     <Text className="text-lg font-semibold text-gray-600 mb-2">Mother's LastName</Text>
                     <TextInput
@@ -165,6 +176,8 @@ const ReportBCertificateModal = ({ isVisible, onClose, formData, reportBCertific
                     )}
 
                 </ScrollView>
+                    </View>
+                )}
             </View>
         </ModalWrapper>
     );
