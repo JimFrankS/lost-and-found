@@ -12,7 +12,6 @@ export const searchResultStyles = StyleSheet.create({
   contentWrapper: {
     flex: 1,
     zIndex: 1,
-    paddingBottom: 0
   },
   header: {
     height: 56,

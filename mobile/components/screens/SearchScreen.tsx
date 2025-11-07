@@ -22,7 +22,9 @@ import { useMBaggage } from '@/hooks/useMBaggage'
 import BackToHomeButton from '@/components/BackToHomeButton'
 import Header from '@/components/Header'
 
-const contentPaddingStyle = { paddingTop: HEADER_TOP_SPACING };
+const staticStyles = StyleSheet.create({
+  contentPadding: { paddingTop: HEADER_TOP_SPACING },
+});
 
 interface SearchScreenProps {
   onBack?: () => void;
@@ -78,7 +80,7 @@ const SearchScreen = ({ onBack, onToggleToReport }: SearchScreenProps) => {
         ) : (
           <ScrollView
             style={{ flex: 1 }}
-            contentContainerStyle={[container, contentPaddingStyle]}
+            contentContainerStyle={[container, staticStyles.contentPadding]}
           >
             <ResponsiveContainer>
               <SearchBaggage baggageHook={baggageHook} />

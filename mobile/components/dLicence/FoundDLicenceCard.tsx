@@ -75,7 +75,7 @@ const FoundDLicenceCard: React.FC<FoundDLicenceCardProps> = ({
         <View style={{ flex: 1, position: "relative" }}>
             <View
                 style={[
-                    { flex: 1, zIndex: 1, paddingTop: insets.top, paddingBottom: 0 },
+                    { flex: 1, zIndex: 1, paddingTop: insets.top, paddingBottom: insets.bottom },
                 ]}
             >
                 <View style={searchResultStyles.header}>
@@ -93,7 +93,7 @@ const FoundDLicenceCard: React.FC<FoundDLicenceCardProps> = ({
                 </View>
 
                 {isMultipleResults ? (
-                    <ScrollView contentContainerStyle={searchResultStyles.resultsContainer}>
+                    <ScrollView contentContainerStyle={[searchResultStyles.resultsContainer, { paddingBottom: insets.bottom }]}>
                         {foundDLicence.map((dlicence: any, index: number) => {
                             if (!dlicence || typeof dlicence !== 'object' || !dlicence._id) return null;
                             return (
@@ -113,7 +113,7 @@ const FoundDLicenceCard: React.FC<FoundDLicenceCardProps> = ({
                         })}
                     </ScrollView>
                 ) : (
-                    <ScrollView contentContainerStyle={searchResultStyles.singleContainer}>
+                    <ScrollView contentContainerStyle={[searchResultStyles.singleContainer, { paddingBottom: insets.bottom }]}>
                         {foundDLicence && !Array.isArray(foundDLicence) && (
                             <View style={searchResultStyles.detailCard}>
                                 <Text style={searchResultStyles.cardTitle}>Licence Number: {String(foundDLicence.licenceNumber || 'NA')}</Text>

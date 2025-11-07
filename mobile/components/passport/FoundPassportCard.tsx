@@ -73,7 +73,7 @@ const FoundPassportCard: React.FC<FoundPassportCardProps> = ({
         <View style={{ flex: 1, position: "relative" }}>
             <View
                 style={[
-                    { flex: 1, zIndex: 1, paddingTop: insets.top, paddingBottom: 0 },
+                    { flex: 1, zIndex: 1, paddingTop: insets.top, paddingBottom: insets.bottom },
                 ]}
             >
                 <View style={searchResultStyles.header}>
@@ -91,7 +91,7 @@ const FoundPassportCard: React.FC<FoundPassportCardProps> = ({
                 </View>
 
                 {isMultipleResults ? (
-                    <ScrollView contentContainerStyle={searchResultStyles.resultsContainer}>
+                    <ScrollView contentContainerStyle={[searchResultStyles.resultsContainer, { paddingBottom: insets.bottom }]}>
                         {foundPassport.map((passport: any, index: number) => {
                             if (!passport || typeof passport !== 'object' || !passport._id) return null;
                             return (
@@ -111,7 +111,7 @@ const FoundPassportCard: React.FC<FoundPassportCardProps> = ({
                         })}
                     </ScrollView>
                 ) : (
-                    <ScrollView contentContainerStyle={searchResultStyles.singleContainer}>
+                    <ScrollView contentContainerStyle={[searchResultStyles.singleContainer, { paddingBottom: insets.bottom }]}>
                         {foundPassport && !Array.isArray(foundPassport) && (
                             <View style={searchResultStyles.detailCard}>
                                 <Text style={searchResultStyles.cardTitle}>Passport Number: {String(foundPassport.passportNumber || 'NA')}</Text>

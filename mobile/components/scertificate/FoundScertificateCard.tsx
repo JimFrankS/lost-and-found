@@ -74,7 +74,7 @@ const FoundScertificateCard = ({
         <View style={{ flex: 1, position: "relative" }}>
             <View
                 style={[
-                    { flex: 1, zIndex: 1, paddingTop: insets.top, paddingBottom: 0 },
+                    { flex: 1, zIndex: 1, paddingTop: insets.top, paddingBottom: insets.bottom },
                 ]}
             >
                 <View style={searchResultStyles.header}>
@@ -92,7 +92,7 @@ const FoundScertificateCard = ({
                 </View>
 
                 {isMultipleResults ? (
-                    <ScrollView contentContainerStyle={searchResultStyles.resultsContainer}>
+                    <ScrollView contentContainerStyle={[searchResultStyles.resultsContainer, { paddingBottom: insets.bottom }]}>
                         {foundScertificate.map((scertificate: Scertificate, index: number) => {
                             if (!scertificate || typeof scertificate !== 'object' || !scertificate._id) return null;
                             return (
@@ -111,7 +111,7 @@ const FoundScertificateCard = ({
                         })}
                     </ScrollView>
                 ) : (
-                    <ScrollView contentContainerStyle={searchResultStyles.singleContainer}>
+                    <ScrollView contentContainerStyle={[searchResultStyles.singleContainer, { paddingBottom: insets.bottom }]}>
                         {foundScertificate && !Array.isArray(foundScertificate) && (
                             <View style={searchResultStyles.detailCard}>
                                 <Text style={searchResultStyles.cardTitle}>Certificate Type: {toTitleCase(String(foundScertificate.certificateType || 'NA'))} </Text>
