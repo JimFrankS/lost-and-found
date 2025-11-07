@@ -44,7 +44,7 @@ const SearchPassportModal = ({ isVisible, onClose, formData, searchPassport, upd
             case 'passportNumber':
                 return value.length >= 8 && /^[A-Z]{2}\d{6}$/i.test(value);
             case 'idNumber':
-                return value.length >= 13 && isValidZimbabweIdNumber(value);
+                return isValidZimbabweIdNumber(value);
             case 'surname':
                 return value.length >= 1 && /^[a-zA-Z\s\-']+$/.test(value.trim()); // Basic name validation
             default:

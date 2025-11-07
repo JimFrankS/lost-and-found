@@ -1,10 +1,13 @@
 import { Text, View, ScrollView, Alert, TouchableOpacity, TextInput, ActivityIndicator, Dimensions, Platform } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { PHONE_NUMBER_REGEX, licenceNumberRegex, escapeRegex } from "@/constants/allowedValues";
 import { isValidZimbabweIdNumber, sanitizeZimbabweIdNumber } from "@/utils/idValidator";
 import { showAlerts } from "@/utils/alerts";
+import { searchResultStyles } from "@/styles/searchResultStyles";
 import ModalWrapper from "../ModalWrapper";
+import ReportedSuccessfully from "../ReportedSuccessfullyCard";
+import BackToHomeButton from "../BackToHomeButton";
 
 interface ReportDLicenseModalProps {
     isVisible: boolean;
@@ -23,6 +26,13 @@ interface ReportDLicenseModalProps {
 } // Props to be used in the modal and their data types and arguments.
 
 const ReportDLicenseModal = ({ isVisible, onClose, formData, reportDLicense, updateFormData, isReporting }: ReportDLicenseModalProps) => {
+    const [reportedSuccessfully, setReportedSuccessfully] = useState(false);
+
+    useEffect(() => {
+        if (!isVisible) {
+            setReportedSuccessfully(false);
+        }
+    }, [isVisible]);
 
     const insets = useSafeAreaInsets();
 
@@ -39,7 +49,7 @@ const ReportDLicenseModal = ({ isVisible, onClose, formData, reportDLicense, upd
         formData.finderContact
     ); // define the compulsory fields that must be filled before the form can be submitable.
 
-    const handleSave = () => {
+    const handleSave = async () => {
         if (!isFormComplete) {
             showAlerts("Error", "Please fill in all the required fields.");
             return;
@@ -59,47 +69,74 @@ const ReportDLicenseModal = ({ isVisible, onClose, formData, reportDLicense, upd
             showAlerts("Error", "Invalid phone number format. Example: 0719729537");
             return;
         }
-        reportDLicense();
+        try {
+            await reportDLicense();
+            setReportedSuccessfully(true);
+        } catch (error) {
+            // Error is handled by the hook
+        }
     };
 
     return (
         <ModalWrapper visible={isVisible} onClose={onClose}>
             <View className="flex-1">
-                {/* Header */}
-                <View className="flex-row items-center justify-between px-4 py-3 border-b border-gray-100">
-                    <TouchableOpacity onPress={() => {
-                        showAlerts("Cancel", "Are you sure you want to cancel?", [
-                            { text: "No", style: "cancel" },
-                            {
-                                text: "Yes",
-                                style: "destructive",
-                                onPress: onClose,
-                            },
-                        ]);
-                    }}>
-                        <Text className="text-red-500 font-semibold">Close</Text>
-                    </TouchableOpacity>
+                {reportedSuccessfully && !isReporting ? (
+                    <View style={{ flex: 1, position: "relative" }}>
+                        <View
+                            style={[
+                                { flex: 1, zIndex: 1, paddingTop: insets.top, paddingBottom: 0 },
+                            ]}
+                        >
+                            <View style={searchResultStyles.header}>
+                                <TouchableOpacity
+                                    onPress={onClose}
+                                    style={searchResultStyles.backButton}
+                                >
+                                    <Text style={searchResultStyles.backText}>Back</Text>
+                                </TouchableOpacity>
+                                <Text style={searchResultStyles.headerTitle}>Success</Text>
+                                <View style={searchResultStyles.headerSpacer} />
+                            </View>
+                            <ReportedSuccessfully hookname="Driver's Licence" />
+                        </View>
+                    </View>
+                ) : (
+                    <View className="flex-1">
+                        {/* Header */}
+                        <View className="flex-row items-center justify-between px-4 py-3 border-b border-gray-100">
+                            <TouchableOpacity onPress={() => {
+                                showAlerts("Cancel", "Are you sure you want to cancel?", [
+                                    { text: "No", style: "cancel" },
+                                    {
+                                        text: "Yes",
+                                        style: "destructive",
+                                        onPress: onClose,
+                                    },
+                                ]);
+                            }}>
+                                <Text className="text-red-500 font-semibold">Close</Text>
+                            </TouchableOpacity>
 
-                    <TouchableOpacity onPress={handleSave} disabled={isReporting || !isFormComplete || !isLicenceValid || !isIdValid || !isPhoneValid}>
-                        {(!isFormComplete || !isLicenceValid || !isIdValid || !isPhoneValid) ? (
-                            <Text className="text-gray-500 font-semibold">Upload</Text>
-                        ) :
-                            isReporting ? (
-                                <ActivityIndicator size="small" color="blue" />
-                            ) : (
-                                <Text className="text-blue-500 font-bold">Upload</Text>
-                            )}
-                    </TouchableOpacity>
-                </View>
+                            <TouchableOpacity onPress={handleSave} disabled={isReporting || !isFormComplete || !isLicenceValid || !isIdValid || !isPhoneValid}>
+                                {(!isFormComplete || !isLicenceValid || !isIdValid || !isPhoneValid) ? (
+                                    <Text className="text-gray-500 font-semibold">Upload</Text>
+                                ) :
+                                    isReporting ? (
+                                        <ActivityIndicator size="small" color="blue" />
+                                    ) : (
+                                        <Text className="text-blue-500 font-bold">Upload</Text>
+                                    )}
+                            </TouchableOpacity>
+                        </View>
 
-                {/* Input Form */}
-                <ScrollView className="flex-1 p-4"
-                    style={
-                        Platform.OS === 'web'
-                            ? {
-                                overflow: 'scroll',
-                            } : undefined
-                    }>
+                        {/* Input Form */}
+                        <ScrollView className="flex-1 p-4"
+                            style={
+                                Platform.OS === 'web'
+                                    ? {
+                                        overflow: 'scroll',
+                                    } : undefined
+                            }>
 
                     <Text className="text-lg font-semibold text-gray-600 mb-2">Licence Number</Text>
                     <TextInput
@@ -183,6 +220,8 @@ const ReportDLicenseModal = ({ isVisible, onClose, formData, reportDLicense, upd
                     )}
 
                 </ScrollView>
+                    </View>
+                )}
             </View>
         </ModalWrapper>
     );

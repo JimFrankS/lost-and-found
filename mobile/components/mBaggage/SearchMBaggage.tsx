@@ -8,7 +8,7 @@ interface SearchMBaggageProps {
 }
 
 const SearchMBaggage = ({ baggageHook }: SearchMBaggageProps) => {
-  const showingResults = !!baggageHook.searchFound;
+  const showingResults = baggageHook.searchPerformed;
 
   return (
     <View style={styles.container}>

@@ -38,12 +38,6 @@ export const usePassport = () => {
             return await passportApi.lostPassport(passportData);
         }, // Api Call to report lost passport
 
-        onSuccess: (response) => {
-            setIsPassportModalVisible(false); // Close the modal
-            const message = extractSuccessMessage(response, "Passport reported successfully");
-            showSuccessToast(message);
-        },
-
         onError: (error: any) => {
             const message = extractErrorMessage(error, "An error occurred whilst reporting lost passport.");
             if (__DEV__) console.error("Error Reporting Passport:", message);

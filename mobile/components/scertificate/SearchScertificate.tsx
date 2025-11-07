@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet } from 'react-native'
 import React from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { tabStyles } from '@/styles/tabStyles'
+import { useTabStyles } from '@/styles/tabStyles'
 
 import SearchScertificateCard from './SearchScertificateCard'
 import FoundScertificateCard from './FoundScertificateCard'
@@ -11,7 +11,7 @@ interface SearchScertificateProps {
 }
 
 const SearchScertificate = ({ scertificateHook }: SearchScertificateProps) => {
-    const showingResults = !!scertificateHook.searchFound;
+    const showingResults = scertificateHook.searchPerformed;
 
     return (
         <View style={styles.container}>

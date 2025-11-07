@@ -1,9 +1,12 @@
 import { Text, View, ScrollView, Alert, TouchableOpacity, TextInput, ActivityIndicator, Dimensions, Platform } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { PHONE_NUMBER_REGEX } from "@/constants/allowedValues";
 import { showAlerts } from "@/utils/alerts";
+import { searchResultStyles } from "@/styles/searchResultStyles";
 import ModalWrapper from "../ModalWrapper";
+import ReportedSuccessfully from "../ReportedSuccessfullyCard";
+import BackToHomeButton from "../BackToHomeButton";
 
 
 interface ReportBCertificateModalProps {
@@ -23,6 +26,7 @@ interface ReportBCertificateModalProps {
 } // Props to be used in the modal and their data types and arguments. 
 
 const ReportBCertificateModal = ({ isVisible, onClose, formData, reportBCertificate, updateFormData, isReporting }: ReportBCertificateModalProps) => {
+    const [reportedSuccessfully, setReportedSuccessfully] = useState(false);
 
     const insets = useSafeAreaInsets();
 
@@ -48,50 +52,73 @@ const ReportBCertificateModal = ({ isVisible, onClose, formData, reportBCertific
         }
         try {
             await reportBCertificate();
-        } catch {
-            // mutation handles alert
+            setReportedSuccessfully(true);
+        } catch (error) {
+            // Error is handled by the hook
         }
     };
 
     return (
         <ModalWrapper visible={isVisible} onClose={onClose}>
             <View className="flex-1">
-                {/* Header */}
-                <View className="flex-row items-center justify-between px-4 py-3 border-b border-gray-100">
-                    <TouchableOpacity onPress={() => {
-                        showAlerts("Cancel", "Are you sure you want to cancel?", [
-                            { text: "No", style: "cancel" },
-                            {
-                                text: "Yes",
-                                style: "destructive",
-                                onPress: onClose,
-                            },
-                        ]);
-                    }}>
-                        <Text className="text-red-500 font-semibold">Close</Text>
-                    </TouchableOpacity>
+                {reportedSuccessfully ? (
+                    <View style={{ flex: 1, position: "relative" }}>
+                        <View
+                            style={[
+                                { flex: 1, zIndex: 1, paddingTop: insets.top, paddingBottom: 0 },
+                            ]}
+                        >
+                            <View style={searchResultStyles.header}>
+                                <TouchableOpacity
+                                    onPress={onClose}
+                                    style={searchResultStyles.backButton}
+                                >
+                                    <Text style={searchResultStyles.backText}>Back</Text>
+                                </TouchableOpacity>
+                                <Text style={searchResultStyles.headerTitle}>Success</Text>
+                                <View style={searchResultStyles.headerSpacer} />
+                            </View>
+                            <ReportedSuccessfully hookname="Birth Certificate" />
+                        </View>
+                    </View>
+                ) : (
+                    <View className="flex-1">
+                        {/* Header */}
+                        <View className="flex-row items-center justify-between px-4 py-3 border-b border-gray-100">
+                            <TouchableOpacity onPress={() => {
+                                showAlerts("Cancel", "Are you sure you want to cancel?", [
+                                    { text: "No", style: "cancel" },
+                                    {
+                                        text: "Yes",
+                                        style: "destructive",
+                                        onPress: onClose,
+                                    },
+                                ]);
+                            }}>
+                                <Text className="text-red-500 font-semibold">Close</Text>
+                            </TouchableOpacity>
 
 
-                    <TouchableOpacity onPress={handleSave} disabled={isReporting || !isFormComplete || !isPhoneValid}>
-                        {(!isFormComplete || !isPhoneValid) ? (
-                            <Text className="text-gray-500 font-semibold">Upload</Text>
-                        ) :
-                            isReporting ? (
-                                <ActivityIndicator size="small" color="blue" />
-                            ) : (
-                                <Text className="text-blue-500 font-bold">Upload</Text>
-                            )}
-                    </TouchableOpacity>
-                </View>
+                            <TouchableOpacity onPress={handleSave} disabled={isReporting || !isFormComplete || !isPhoneValid}>
+                                {(!isFormComplete || !isPhoneValid) ? (
+                                    <Text className="text-gray-500 font-semibold">Upload</Text>
+                                ) :
+                                    isReporting ? (
+                                        <ActivityIndicator size="small" color="blue" />
+                                    ) : (
+                                        <Text className="text-blue-500 font-bold">Upload</Text>
+                                    )}
+                            </TouchableOpacity>
+                        </View>
 
-                {/* Input Form */}
-                <ScrollView className="flex-1 p-4"
-                    style={
-                        Platform.OS === 'web'
-                            ? {
-                                overflow: 'scroll',
-                            } : undefined
-                    }>
+                        {/* Input Form */}
+                        <ScrollView className="flex-1 p-4"
+                            style={
+                                Platform.OS === 'web'
+                                    ? {
+                                        overflow: 'scroll',
+                                    } : undefined
+                            }>
                     
                     <Text className="text-lg font-semibold text-gray-600 mb-2">Mother's LastName</Text>
                     <TextInput
@@ -165,6 +192,8 @@ const ReportBCertificateModal = ({ isVisible, onClose, formData, reportBCertific
                     )}
 
                 </ScrollView>
+                    </View>
+                )}
             </View>
         </ModalWrapper>
     );

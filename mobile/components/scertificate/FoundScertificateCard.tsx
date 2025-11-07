@@ -31,8 +31,6 @@ const FoundScertificateCard = ({
 }: FoundScertificateCardProps) => {
     const insets = useSafeAreaInsets();
 
-    if (!searchFound) return null;
-
     if (!foundScertificate) return null; // safety checks to prevent errors in the render method in case nothing is found
 
     //check if we have no results (empty array)

@@ -31,7 +31,7 @@ const FoundBaggageCard = ({
 }: FoundBaggageCardProps) => {
     const insets = useSafeAreaInsets();
 
-    if (!searchFound || !foundBaggage) return null;
+    if (!foundBaggage) return null;
 
     const hasNoResults = Array.isArray(foundBaggage) && foundBaggage.length === 0;
 

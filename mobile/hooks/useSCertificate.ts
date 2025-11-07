@@ -42,12 +42,6 @@ export const useSCertificate = () => {
             return await scertificateApi.foundScertificate(scertificateData);
         }, // Api Call to report found school certificate
 
-        onSuccess: (response) => {
-            setIsSCertificateModalVisible(false); // Close the modal
-            const message = extractSuccessMessage(response, "School Certificate reported successfully");
-            showSuccessToast(message);
-        },
-
         onError: (error: any) => {
             const message = extractErrorMessage(error, "An error occurred whilst reporting found school certificate.");
             if (__DEV__) console.error("Error Reporting School Certificate:", message);

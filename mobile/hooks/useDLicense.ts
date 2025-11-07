@@ -39,12 +39,6 @@ export const useDLicense = () => {
             return await dLicenceApi.foundLicence(dLicenceData);
         }, // Api Call to report found driving license
 
-        onSuccess: (response) => {
-            setIsDLicenseModalVisible(false); // Close the modal
-            const message = extractSuccessMessage(response, "Driving License reported successfully");
-            showSuccessToast(message);
-        },
-
         onError: (error: any) => {
             const message = extractErrorMessage(error, "An error occurred whilst reporting found driving license.");
             if (__DEV__) console.error("Error Reporting Driving License:", message);

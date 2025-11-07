@@ -6,7 +6,9 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BAGGAGE_TYPES, TRANSPORT_TYPES, ROUTE_TYPES, PROVINCES, PROVINCE_DISTRICT_MAP, PHONE_NUMBER_REGEX, PHONE_EXAMPLE } from "@/constants/allowedValues";
 import { OptionPicker, SelectField, toTitleCase } from "../FormsHelper";
 import { showAlerts } from "@/utils/alerts";
+import { searchResultStyles } from "@/styles/searchResultStyles";
 import ModalWrapper from "../ModalWrapper";
+import ReportedSuccessfully from "../ReportedSuccessfullyCard";
 
 interface ReportBaggageModalProps {
     isVisible: boolean;
@@ -21,7 +23,7 @@ interface ReportBaggageModalProps {
         docLocation: string;
         finderContact: string;
     };
-    reportBaggage: () => void;
+    reportBaggage: () => Promise<boolean>;
     updateFormData: (field: string, value: string) => void;
     isReporting: boolean;
 }
@@ -29,6 +31,14 @@ interface ReportBaggageModalProps {
 
 const ReportBaggageModal = ({ isVisible, onClose, formData, reportBaggage, updateFormData, isReporting }: ReportBaggageModalProps) => {
     const [openPicker, setOpenPicker] = useState<null | 'baggageType' | 'transportType' | 'routeType' | 'destinationProvince' | 'destinationDistrict'>(null);
+    const [reportedSuccessfully, setReportedSuccessfully] = useState(false);
+
+    // Reset success state when modal closes
+    React.useEffect(() => {
+        if (!isVisible) {
+            setReportedSuccessfully(false);
+        }
+    }, [isVisible]);
 
     const insets = useSafeAreaInsets();
 
@@ -49,7 +59,7 @@ const ReportBaggageModal = ({ isVisible, onClose, formData, reportBaggage, updat
         formData.finderContact
     );
 
-    const handleSave = () => {
+    const handleSave = async () => {
         if (!isFormComplete) {
             showAlerts("Error", "Please fill in all required fields.");
             return;
@@ -58,7 +68,12 @@ const ReportBaggageModal = ({ isVisible, onClose, formData, reportBaggage, updat
             showAlerts("Error", `Invalid phone number format. Example: ${PHONE_EXAMPLE}`);
             return;
         }
-        reportBaggage();
+        try {
+            await reportBaggage();
+            setReportedSuccessfully(true);
+        } catch (error) {
+            // Error is handled by the hook
+        }
     };
 
     const renderSelect = (label: string, value: string, onPress: () => void, placeholder: string, displayValue?: string) => (
@@ -68,157 +83,181 @@ const ReportBaggageModal = ({ isVisible, onClose, formData, reportBaggage, updat
     return (
         <ModalWrapper visible={isVisible} onClose={onClose}>
             <View className="flex-1">
-                {/* Header */}
-                <View className='flex-row items-center justify-between px-4 py-3 border-b border-gray-100'>
-                    <TouchableOpacity onPress={() => {
-                        showAlerts("Cancel", "Are you sure you want to cancel?", [
-                            { text: "No", style: "cancel" },
-                            {
-                                text: "Yes",
-                                style: "destructive",
-                                onPress: onClose,
-                            },
-                        ]);
-                    }}>
-                        <Text className="text-red-500 font-semibold">Close</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={handleSave} disabled={isReporting || !isFormComplete || !isPhoneValid}>
-                        {(!isFormComplete || !isPhoneValid) ? (
-                            <Text className="text-gray-500 font-semibold">Upload</Text>
-                        ) :
-                            isReporting ? (
-                                <ActivityIndicator size="small" color="blue" />
-                            ) : (
-                                <Text className="text-blue-500 font-bold">Upload</Text>
+                {reportedSuccessfully ? (
+                    <View style={{ flex: 1, position: "relative" }}>
+                        <View
+                            style={[
+                                { flex: 1, zIndex: 1, paddingTop: insets.top, paddingBottom: 0 },
+                            ]}
+                        >
+                            <View style={searchResultStyles.header}>
+                                <TouchableOpacity
+                                    onPress={onClose}
+                                    style={searchResultStyles.backButton}
+                                >
+                                    <Text style={searchResultStyles.backText}>Back</Text>
+                                </TouchableOpacity>
+                                <Text style={searchResultStyles.headerTitle}>Success</Text>
+                                <View style={searchResultStyles.headerSpacer} />
+                            </View>
+                            <ReportedSuccessfully hookname="Baggage" />
+                        </View>
+                    </View>
+                ) : (
+                    <View className="flex-1">
+                        {/* Header */}
+                        <View className='flex-row items-center justify-between px-4 py-3 border-b border-gray-100'>
+                            <TouchableOpacity onPress={() => {
+                                showAlerts("Cancel", "Are you sure you want to cancel?", [
+                                    { text: "No", style: "cancel" },
+                                    {
+                                        text: "Yes",
+                                        style: "destructive",
+                                        onPress: onClose,
+                                    },
+                                ]);
+                            }}>
+                                <Text className="text-red-500 font-semibold">Close</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={handleSave} disabled={isReporting || !isFormComplete || !isPhoneValid}>
+                                {(!isFormComplete || !isPhoneValid) ? (
+                                    <Text className="text-gray-500 font-semibold">Upload</Text>
+                                ) :
+                                    isReporting ? (
+                                        <ActivityIndicator size="small" color="blue" />
+                                    ) : (
+                                        <Text className="text-blue-500 font-bold">Upload</Text>
+                                    )}
+                            </TouchableOpacity>
+                        </View>
+
+                        {/* Form */}
+                        <ScrollView className="flex-1 p-4">
+                            {renderSelect(
+                                'Baggage Type', // Title of the select field, as per the form requirements in Baggage.Helpers.tsx
+                                formData.baggageType, // Current selected value for baggage type
+                                () => setOpenPicker('baggageType'), // Function to open the baggage type picker
+                                'How would you classify the baggage you found?' // Placeholder text when no value is selected
                             )}
-                    </TouchableOpacity>
-                </View>
 
-                {/* Form */}
-                <ScrollView className="flex-1 p-4">
-                    {renderSelect(
-                        'Baggage Type', // Title of the select field, as per the form requirements in Baggage.Helpers.tsx
-                        formData.baggageType, // Current selected value for baggage type
-                        () => setOpenPicker('baggageType'), // Function to open the baggage type picker
-                        'How would you classify the baggage you found?' // Placeholder text when no value is selected
-                    )}
+                            {renderSelect(
+                                'Transport Type',
+                                formData.transportType,
+                                () => setOpenPicker('transportType'),
+                                'How would you classify the mode of transport you were using?'
+                            )}
 
-                    {renderSelect(
-                        'Transport Type',
-                        formData.transportType,
-                        () => setOpenPicker('transportType'),
-                        'How would you classify the mode of transport you were using?'
-                    )}
+                            {renderSelect(
+                                'Route Type',
+                                formData.routeType,
+                                () => setOpenPicker('routeType'),
+                                'Where you traveling within the same area / town (local) or from one town to another (intercity)?'
+                            )}
 
-                    {renderSelect(
-                        'Route Type',
-                        formData.routeType,
-                        () => setOpenPicker('routeType'),
-                        'Where you traveling within the same area / town (local) or from one town to another (intercity)?'
-                    )}
+                            {renderSelect(
+                                'Destination Province',
+                                formData.destinationProvince,
+                                () => setOpenPicker('destinationProvince'),
+                                'Which province was the vehicle traveling to (or within, if local)?',
+                            )}
 
-                    {renderSelect(
-                        'Destination Province',
-                        formData.destinationProvince,
-                        () => setOpenPicker('destinationProvince'),
-                        'Which province was the vehicle traveling to (or within, if local)?',
-                    )}
+                            <SelectField
+                                label="Destination District"
+                                value={formData.destinationDistrict}
+                                displayValue={formData.destinationProvince ? (formData.destinationDistrict ? toTitleCase(formData.destinationDistrict) : '') : ''}
+                                placeholder={formData.destinationProvince ? 'Which district was the vehicle traveling to (or within, if local)?' : 'Select province first'}
+                                onPress={() => formData.destinationProvince && setOpenPicker('destinationDistrict')}
+                                disabled={!formData.destinationProvince}
+                            />
 
-                    <SelectField
-                        label="Destination District"
-                        value={formData.destinationDistrict}
-                        displayValue={formData.destinationProvince ? (formData.destinationDistrict ? toTitleCase(formData.destinationDistrict) : '') : ''}
-                        placeholder={formData.destinationProvince ? 'Which district was the vehicle traveling to (or within, if local)?' : 'Select province first'}
-                        onPress={() => formData.destinationProvince && setOpenPicker('destinationDistrict')}
-                        disabled={!formData.destinationProvince}
-                    />
+                            <Text className="text-lg font-semibold text-gray-600 mb-2">Destination</Text>
+                            <TextInput
+                                className="border border-gray-300 rounded p-2 mb-4"
+                                placeholder='Where was the vehicle "ending its trip"?'
+                                value={formData.destination}
+                                onChangeText={(value) => updateFormData('destination', value)}
+                                multiline
+                                maxLength={100}
+                            />
 
-                    <Text className="text-lg font-semibold text-gray-600 mb-2">Destination</Text>
-                    <TextInput
-                        className="border border-gray-300 rounded p-2 mb-4"
-                        placeholder='Where was the vehicle "ending its trip"?'
-                        value={formData.destination}
-                        onChangeText={(value) => updateFormData('destination', value)}
-                        multiline
-                        maxLength={100}
-                    />
+                            <Text className="text-lg font-semibold text-gray-600 mb-2">Baggage Location</Text>
+                            <TextInput
+                                className="border border-gray-300 rounded p-2 mb-4"
+                                placeholder="Where can the owner come to collect the baggage?"
+                                value={formData.docLocation}
+                                onChangeText={(value) => updateFormData('docLocation', value)}
+                                multiline
+                                maxLength={200}
+                            />
 
-                    <Text className="text-lg font-semibold text-gray-600 mb-2">Baggage Location</Text>
-                    <TextInput
-                        className="border border-gray-300 rounded p-2 mb-4"
-                        placeholder="Where can the owner come to collect the baggage?"
-                        value={formData.docLocation}
-                        onChangeText={(value) => updateFormData('docLocation', value)}
-                        multiline
-                        maxLength={200}
-                    />
+                            <Text className="text-lg font-semibold text-gray-600 mb-2">Finder Contact</Text>
+                            <TextInput
+                                className="border border-gray-300 rounded p-2 mb-4"
+                                placeholder="On what number can the owner reach you?"
+                                value={formData.finderContact}
+                                onChangeText={(value) => {
+                                    const digits = value.replace(/\D/g, '');
+                                    updateFormData('finderContact', digits);
+                                }}
+                                keyboardType="number-pad"
+                                maxLength={10}
+                            />
+                            {formData.finderContact.length > 0 && !isPhoneValid && (
+                                <Text className="text-red-600 text-xs mb-7">Invalid phone number format. Example: {PHONE_EXAMPLE}</Text>
+                            )}
+                            {formData.finderContact.length === 0 && (
+                                <View className="mb-7" />
+                            )}
 
-                    <Text className="text-lg font-semibold text-gray-600 mb-2">Finder Contact</Text>
-                    <TextInput
-                        className="border border-gray-300 rounded p-2 mb-4"
-                        placeholder="On what number can the owner reach you?"
-                        value={formData.finderContact}
-                        onChangeText={(value) => {
-                            const digits = value.replace(/\D/g, '');
-                            updateFormData('finderContact', digits);
-                        }}
-                        keyboardType="number-pad"
-                        maxLength={10}
-                    />
-                    {formData.finderContact.length > 0 && !isPhoneValid && (
-                        <Text className="text-red-600 text-xs mb-7">Invalid phone number format. Example: {PHONE_EXAMPLE}</Text>
-                    )}
-                    {formData.finderContact.length === 0 && (
-                        <View className="mb-7" />
-                    )}
+                            {/* Pickers */}
+                            <OptionPicker
+                                visible={openPicker === 'baggageType'}
+                                title="Select Baggage Type"
+                                options={BAGGAGE_TYPES}
+                                onSelect={(val: string) => updateFormData('baggageType', String(val).toLowerCase())}
+                                onClose={() => setOpenPicker(null)}
+                            />
 
-                    {/* Pickers */}
-                    <OptionPicker
-                        visible={openPicker === 'baggageType'}
-                        title="Select Baggage Type"
-                        options={BAGGAGE_TYPES}
-                        onSelect={(val: string) => updateFormData('baggageType', String(val).toLowerCase())}
-                        onClose={() => setOpenPicker(null)}
-                    />
+                            <OptionPicker
+                                visible={openPicker === 'transportType'}
+                                title="Select Transport Type"
+                                options={TRANSPORT_TYPES}
+                                onSelect={(val: string) => updateFormData('transportType', String(val).toLowerCase())}
+                                onClose={() => setOpenPicker(null)}
+                            />
 
-                    <OptionPicker
-                        visible={openPicker === 'transportType'}
-                        title="Select Transport Type"
-                        options={TRANSPORT_TYPES}
-                        onSelect={(val: string) => updateFormData('transportType', String(val).toLowerCase())}
-                        onClose={() => setOpenPicker(null)}
-                    />
+                            <OptionPicker
+                                visible={openPicker === 'routeType'}
+                                title="Select Route Type"
+                                options={ROUTE_TYPES}
+                                onSelect={(val: string) => updateFormData('routeType', String(val).toLowerCase())}
+                                onClose={() => setOpenPicker(null)}
+                            />
 
-                    <OptionPicker
-                        visible={openPicker === 'routeType'}
-                        title="Select Route Type"
-                        options={ROUTE_TYPES}
-                        onSelect={(val: string) => updateFormData('routeType', String(val).toLowerCase())}
-                        onClose={() => setOpenPicker(null)}
-                    />
+                            <OptionPicker
+                                visible={openPicker === 'destinationProvince'}
+                                title="Select Destination Province"
+                                options={PROVINCES}
+                                onSelect={(val: string) => {
+                                    updateFormData('destinationProvince', String(val).toLowerCase());
+                                    // reset district when province changes
+                                    updateFormData('destinationDistrict', '');
+                                }}
+                                onClose={() => setOpenPicker(null)}
+                                getLabel={(v: string) => toTitleCase(v)}
+                            />
 
-                    <OptionPicker
-                        visible={openPicker === 'destinationProvince'}
-                        title="Select Destination Province"
-                        options={PROVINCES}
-                        onSelect={(val: string) => {
-                            updateFormData('destinationProvince', String(val).toLowerCase());
-                            // reset district when province changes
-                            updateFormData('destinationDistrict', '');
-                        }}
-                        onClose={() => setOpenPicker(null)}
-                        getLabel={(v: string) => toTitleCase(v)}
-                    />
-
-                    <OptionPicker
-                        visible={openPicker === 'destinationDistrict'}
-                        title="Select Destination District"
-                        options={districts}
-                        onSelect={(val: string) => updateFormData('destinationDistrict', String(val).toLowerCase())}
-                        onClose={() => setOpenPicker(null)}
-                        getLabel={(v: string) => toTitleCase(v)}
-                    />
-                </ScrollView>
+                            <OptionPicker
+                                visible={openPicker === 'destinationDistrict'}
+                                title="Select Destination District"
+                                options={districts}
+                                onSelect={(val: string) => updateFormData('destinationDistrict', String(val).toLowerCase())}
+                                onClose={() => setOpenPicker(null)}
+                                getLabel={(v: string) => toTitleCase(v)}
+                            />
+                        </ScrollView>
+                    </View>
+                )}
             </View>
         </ModalWrapper>
     );
