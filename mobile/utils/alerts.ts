@@ -58,20 +58,21 @@ export function showAlerts(title: string, message: string, buttons?: any[]) {
       if (confirmed) {
         // OK clicked, call the "Yes" button's onPress
         if (buttons[1]?.onPress) buttons[1].onPress();
-      } else {
-        // Cancel clicked, call the "No" button's onPress
-        if (buttons[0]?.onPress) buttons[0].onPress();
-      }
+      } else if (buttons[0]?.onPress) {
+        buttons[0].onPress();
+      } 
     } else {
       // No buttons, use alert
       window.alert(`${title}: ${message}`);
     }
-  } else {
+  } else if (buttons && buttons.length > 0) {
     // Native: map buttons to Cancel (non-destructive) and OK (destructive)
-    const nativeButtons = buttons && buttons.length > 0 ? [
+    const nativeButtons = [
       { text: "Cancel", onPress: buttons[0]?.onPress },
       { text: "OK", onPress: buttons[1]?.onPress }
-    ] : undefined;
+    ];
     Alert.alert(title, message, nativeButtons);
+  } else {
+    Alert.alert(title, message);
   }
 }

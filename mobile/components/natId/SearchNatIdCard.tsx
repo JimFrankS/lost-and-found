@@ -1,6 +1,5 @@
 import React from "react";
 import { Text } from "react-native";
-import { Feather } from "@expo/vector-icons";
 import SearchNatIdModal from "@/components/natId/SearchNatIdModal";
 import CardWrapper from "@/styles/CardWrapper";
 import { NatIdSearchParams, NatId } from "@/types";
@@ -33,8 +32,7 @@ const SearchNatIdCard = ({
     return (
         <>
             <CardWrapper onPress={openNatIDModal} accessibilityLabel="Search Lost National ID">
-                <Feather name="search" size={24} color="black" />
-                <Text className="ml-2 text-gray-600 font-bold text-lg">Search Lost National ID</Text>
+                <Text className="text-gray-600 font-bold text-lg">Search Lost National ID</Text>
             </CardWrapper>
 
             <SearchNatIdModal

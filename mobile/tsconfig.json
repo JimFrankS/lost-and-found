@@ -2,6 +2,11 @@
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "strict": true,
+    "skipLibCheck": false,
+    "module": "ESNext",
+    "forceConsistentCasingInFileNames": true,
+    "baseUrl": ".",
+    "types": ["expo/types"],
     "paths": {
       "@/*": [
         "./*"

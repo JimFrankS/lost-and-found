@@ -95,15 +95,7 @@ const ReportBaggageModal = ({ isVisible, onClose, formData, reportBaggage, updat
                 </View>
 
                 {/* Form */}
-                <ScrollView className="flex-1 p-4"
-                    style={
-                        Platform.OS === 'web'
-                            ? {
-                                maxHeight: Dimensions.get('window').height - insets.top - insets.bottom,
-                                overflow: 'scroll',
-                            }
-                            : undefined
-                    }>
+                <ScrollView className="flex-1 p-4">
                     {renderSelect(
                         'Baggage Type', // Title of the select field, as per the form requirements in Baggage.Helpers.tsx
                         formData.baggageType, // Current selected value for baggage type

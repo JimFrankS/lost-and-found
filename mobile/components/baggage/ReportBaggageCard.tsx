@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
-import { Feather } from '@expo/vector-icons';
 import ReportBaggageModal from '@/components/baggage/ReportBaggageModal';
 import { useBaggage } from '@/hooks/useBaggage';
 import CardWrapper from '@/styles/CardWrapper';
@@ -19,8 +18,7 @@ const ReportBaggageCard = () => {
   return (
     <>
       <CardWrapper onPress={openBaggageModal} accessibilityLabel="Report lost baggage">
-        <Feather name="plus" size={20} color="black" />
-        <Text className="ml-2 text-gray-600 font-bold text-lg">Report Lost Baggage</Text>
+        <Text className="text-gray-600 font-bold text-lg">Report Lost Baggage</Text>
       </CardWrapper>
 
       <ReportBaggageModal

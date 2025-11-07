@@ -6,6 +6,7 @@ import { searchResultStyles } from "@/styles/searchResultStyles";
 import NothingFound from "../NothingFound";
 import { Scertificate } from "@/types";
 import { toTitleCase } from "@/utils/string.utility";
+import { TAB_BAR_HEIGHT, EXTRA_SPACE } from "@/styles/tabStyles";
 
 export interface FoundScertificateCardProps {
     searchFound: boolean;
@@ -92,7 +93,7 @@ const FoundScertificateCard = ({
                 </View>
 
                 {isMultipleResults ? (
-                    <ScrollView contentContainerStyle={searchResultStyles.resultsContainer}>
+                    <ScrollView contentContainerStyle={[searchResultStyles.resultsContainer, { paddingBottom: insets.bottom + TAB_BAR_HEIGHT + EXTRA_SPACE }]}>
                         {foundScertificate.map((scertificate: Scertificate, index: number) => {
                             if (!scertificate || typeof scertificate !== 'object' || !scertificate._id) return null;
                             return (
@@ -111,7 +112,7 @@ const FoundScertificateCard = ({
                         })}
                     </ScrollView>
                 ) : (
-                    <ScrollView contentContainerStyle={searchResultStyles.singleContainer}>
+                    <ScrollView contentContainerStyle={[searchResultStyles.singleContainer, { paddingBottom: insets.bottom + TAB_BAR_HEIGHT + EXTRA_SPACE }]}>
                         {foundScertificate && !Array.isArray(foundScertificate) && (
                             <View style={searchResultStyles.detailCard}>
                                 <Text style={searchResultStyles.cardTitle}>Certificate Type: {toTitleCase(String(foundScertificate.certificateType || 'NA'))} </Text>

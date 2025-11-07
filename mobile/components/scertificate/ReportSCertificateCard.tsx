@@ -1,6 +1,5 @@
 import React from 'react';
 import { Text } from 'react-native';
-import { Feather } from '@expo/vector-icons';
 import { tabStyles } from '@/styles/tabStyles';
 import ReportSCertificateModal from './ReportSCertificateModal';
 import { useSCertificate } from '@/hooks/useSCertificate';
@@ -20,8 +19,7 @@ const ReportSCertificateCard = () => {
     return (
         <>
             <CardWrapper onPress={openSCertificateModal} accessibilityLabel="Report lost school certificate">
-                <Feather name='plus' size={24} color={"black"} />
-                <Text className="ml-2 text-gray-600 font-bold text-lg">Report Lost School Certificate</Text>
+                <Text className="text-gray-600 font-bold text-lg">Report Lost School Certificate</Text>
             </CardWrapper>
 
             <ReportSCertificateModal

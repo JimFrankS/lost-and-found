@@ -5,6 +5,7 @@ import NothingFound from "../NothingFound";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { searchResultStyles } from "@/styles/searchResultStyles";
 import { toTitleCase } from "@/utils/string.utility";
+import { TAB_BAR_HEIGHT, EXTRA_SPACE } from "@/styles/tabStyles";
 
 interface FoundPassportCardProps {
     searchFound: boolean;
@@ -91,7 +92,7 @@ const FoundPassportCard: React.FC<FoundPassportCardProps> = ({
                 </View>
 
                 {isMultipleResults ? (
-                    <ScrollView contentContainerStyle={searchResultStyles.resultsContainer}>
+                    <ScrollView contentContainerStyle={[searchResultStyles.resultsContainer, { paddingBottom: insets.bottom + TAB_BAR_HEIGHT + EXTRA_SPACE }]}>
                         {foundPassport.map((passport: any, index: number) => {
                             if (!passport || typeof passport !== 'object' || !passport._id) return null;
                             return (
@@ -111,7 +112,7 @@ const FoundPassportCard: React.FC<FoundPassportCardProps> = ({
                         })}
                     </ScrollView>
                 ) : (
-                    <ScrollView contentContainerStyle={searchResultStyles.singleContainer}>
+                    <ScrollView contentContainerStyle={[searchResultStyles.singleContainer, { paddingBottom: insets.bottom + TAB_BAR_HEIGHT + EXTRA_SPACE }]}>
                         {foundPassport && !Array.isArray(foundPassport) && (
                             <View style={searchResultStyles.detailCard}>
                                 <Text style={searchResultStyles.cardTitle}>Passport Number: {String(foundPassport.passportNumber || 'NA')}</Text>

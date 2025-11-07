@@ -52,26 +52,25 @@ export const useBCertificate = () => {
         },
     });
 
-    const searchBcertificateMutation = useMutation({
-        mutationFn: async (searchParams: BirthCertificateSearchParams) => {
+    const searchBcertificateMutation = useMutation<Bcertificate[], unknown, BirthCertificateSearchParams>({
+        mutationFn: async (searchParams) => {
             try {
-                return await bcertificateApi.searchbCertificate(searchParams);
+                const response = await bcertificateApi.searchbCertificate(searchParams);
+                return response.data;
             } catch (error: any) {
                 if (error?.response?.status === 404) {
-                    return { data: [] };
+                    return [];
                 }
                 throw error;
             }
         },
-    onSuccess: (response: any) => {
-        setViewedBcertificate(null);
-        const data = response.data;
-        const results = data == null ? [] : Array.isArray(data) ? data : [data];
-        setSearchResults(results);
-        setSearchFound(results.length > 0);
-        setSearchPerformed(true);
-        closeSearchModal();
-    },
+        onSuccess: (data: Bcertificate[]) => {
+            setViewedBcertificate(null);
+            setSearchResults(data);
+            setSearchFound(data.length > 0);
+            setSearchPerformed(true);
+            closeSearchModal();
+        },
         onError: (error: any) => {
             const message = extractErrorMessage(error, "An error occurred whilst searching for the certificate");
             if (__DEV__) console.error("Birth Certificate search error: ", message);
@@ -110,29 +109,14 @@ export const useBCertificate = () => {
         setSearchFormData((prevData) => ({ ...prevData, [field]: value }));
     };
 
-    const reportBCertificate = async (): Promise<boolean> => {
-        try {
-            await enterBCertificateMutation.mutateAsync(formData);
-            return true;
-        } catch {
-            return false;
-        }
+    const reportBCertificate = async (): Promise<void> => {
+        await enterBCertificateMutation.mutateAsync(formData);
     };
-    const searchBcertificate = async (params: BirthCertificateSearchParams): Promise<boolean> => {
-        try {
-            await searchBcertificateMutation.mutateAsync(params);
-            return true;
-        } catch {
-            return false;
-        }
+    const searchBcertificate = async (params: BirthCertificateSearchParams): Promise<Bcertificate[]> => {
+        return await searchBcertificateMutation.mutateAsync(params);
     };
-    const viewBcertificate = async (bcertificateId: string): Promise<boolean> => {
-        try {
-            await viewBcertificateMutation.mutateAsync(bcertificateId);
-            return true;
-        } catch {
-            return false;
-        }
+    const viewBcertificate = async (bcertificateId: string): Promise<void> => {
+        await viewBcertificateMutation.mutateAsync(bcertificateId);
     };
 
     const resetSearch = () => {

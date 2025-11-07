@@ -6,6 +6,7 @@ import { searchResultStyles } from "@/styles/searchResultStyles";
 import NothingFound from "../NothingFound";
 import { Baggage } from "@/types";
 import { toTitleCase } from "@/utils/string.utility";
+import { TAB_BAR_HEIGHT, EXTRA_SPACE } from "@/styles/tabStyles";
 
 interface FoundBaggageCardProps {
     searchFound: boolean;
@@ -104,7 +105,7 @@ const FoundBaggageCard = ({
                 </View>
 
                 {isMultipleResults ? (
-                    <ScrollView contentContainerStyle={searchResultStyles.resultsContainer}>
+                    <ScrollView contentContainerStyle={[searchResultStyles.resultsContainer, { paddingBottom: insets.bottom + TAB_BAR_HEIGHT + EXTRA_SPACE }]}>
                         {foundBaggage.map((baggage: Baggage, index: number) => {
                             if (!baggage?._id) return null;
                             return (
@@ -127,7 +128,7 @@ const FoundBaggageCard = ({
                         })}
                     </ScrollView>
                 ) : (
-                    <ScrollView contentContainerStyle={searchResultStyles.singleContainer}>
+                    <ScrollView contentContainerStyle={[searchResultStyles.singleContainer, { paddingBottom: insets.bottom + TAB_BAR_HEIGHT + EXTRA_SPACE }]}>
                         {foundBaggage && !Array.isArray(foundBaggage) && (
                             <View style={searchResultStyles.detailCard}>
                                 <Text style={searchResultStyles.cardText}>

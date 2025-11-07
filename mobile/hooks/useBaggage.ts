@@ -22,6 +22,7 @@ export const useBaggage = () => {
     });
 
     const [searchFound, setSearchFound] = useState(false); // whether search yielded results
+    const [searchPerformed, setSearchPerformed] = useState(false); // whether a search has been performed
     const [viewedBaggage, setViewedBaggage] = useState<Baggage | null>(null); // viewed baggage details
     const [viewingBaggageId, setViewingBaggageId] = useState<string | null>(null); // currently viewing baggage ID
     const [searchResults, setSearchResults] = useState<Baggage[]>([]); // store search results list
@@ -63,7 +64,8 @@ export const useBaggage = () => {
             const results = data ?? [];
             setSearchResults(results);
 
-            setSearchFound(true);
+            setSearchFound(results.length > 0);
+            setSearchPerformed(true);
             closeBaggageModal();
         },
         onError: (error: any) => {
@@ -71,6 +73,7 @@ export const useBaggage = () => {
             if (__DEV__) console.error("Baggage search error:", message);
             showErrorToast(message);
             setSearchFound(false);
+            setSearchPerformed(true);
             setSearchResults([]);
         },
     });
@@ -129,12 +132,12 @@ export const useBaggage = () => {
             return false;
         }
     };
-    const searchBaggage = async (params: BaggageSearchParams): Promise<boolean> => {
+    const searchBaggage = async (params: BaggageSearchParams): Promise<Baggage[]> => {
         try {
-            await searchBaggageMutation.mutateAsync(params);
-            return true;
-        } catch {
-            return false;
+            return await searchBaggageMutation.mutateAsync(params);
+        } catch (error) {
+            // Re-throw the error to be handled by the caller
+            throw error;
         }
     };
     const viewBaggage = async (baggageId: string): Promise<boolean> => {
@@ -156,6 +159,7 @@ export const useBaggage = () => {
 
     const resetSearch = () => {
         setSearchFound(false);
+        setSearchPerformed(false);
         setViewedBaggage(null);
         setSearchResults([]);
         setViewingBaggageId(null);
@@ -181,6 +185,7 @@ export const useBaggage = () => {
         isViewing: viewBaggageMutation.isPending,
         isClaiming: claimBaggageMutation.isPending,
         searchFound,
+        searchPerformed,
         viewedBaggage,
         viewingBaggageId,
         searchResults,

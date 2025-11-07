@@ -5,6 +5,7 @@ import NothingFound from "../NothingFound";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { searchResultStyles } from "@/styles/searchResultStyles";
 import { toTitleCase } from "@/utils/string.utility";
+import { TAB_BAR_HEIGHT, EXTRA_SPACE } from "@/styles/tabStyles";
 
 interface FoundDLicenceCardProps {
     searchFound: boolean;
@@ -93,7 +94,7 @@ const FoundDLicenceCard: React.FC<FoundDLicenceCardProps> = ({
                 </View>
 
                 {isMultipleResults ? (
-                    <ScrollView contentContainerStyle={searchResultStyles.resultsContainer}>
+                    <ScrollView contentContainerStyle={[searchResultStyles.resultsContainer, { paddingBottom: insets.bottom + TAB_BAR_HEIGHT + EXTRA_SPACE }]}>
                         {foundDLicence.map((dlicence: any, index: number) => {
                             if (!dlicence || typeof dlicence !== 'object' || !dlicence._id) return null;
                             return (
@@ -113,7 +114,7 @@ const FoundDLicenceCard: React.FC<FoundDLicenceCardProps> = ({
                         })}
                     </ScrollView>
                 ) : (
-                    <ScrollView contentContainerStyle={searchResultStyles.singleContainer}>
+                    <ScrollView contentContainerStyle={[searchResultStyles.singleContainer, { paddingBottom: insets.bottom + TAB_BAR_HEIGHT + EXTRA_SPACE }]}>
                         {foundDLicence && !Array.isArray(foundDLicence) && (
                             <View style={searchResultStyles.detailCard}>
                                 <Text style={searchResultStyles.cardTitle}>Licence Number: {String(foundDLicence.licenceNumber || 'NA')}</Text>

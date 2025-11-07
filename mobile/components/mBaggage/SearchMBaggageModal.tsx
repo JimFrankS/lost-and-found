@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { MBAGGAGE_TYPES, gatheringTypes, PROVINCES, PROVINCE_DISTRICT_MAP } from "@/constants/allowedValues";
 import { OptionPicker, SelectField, toTitleCase } from "../FormsHelper";
 import { showAlerts } from "@/utils/alerts";
-import { MBaggageSearchParams } from "@/types";
+import { MBaggageSearchParams, MBaggageListItem } from "@/types";
 import ModalWrapper from "../ModalWrapper";
 
 interface SearchBaggageModalProps {
@@ -18,7 +18,7 @@ interface SearchBaggageModalProps {
         destinationProvince: string;
         destinationDistrict: string;
     };
-    searchBaggage: (params: MBaggageSearchParams) => Promise<boolean>;
+    searchBaggage: (params: MBaggageSearchParams) => Promise<MBaggageListItem[]>;
     updateFormData: (field: string, value: string) => void;
     isSearching: boolean;
     resetSearch: () => void;
@@ -49,12 +49,7 @@ const SearchBaggageModal = ({ isVisible, onClose, formData, searchBaggage, updat
         }
         // Reset previous search results before searching
         resetSearch();
-        try {
-            await searchBaggage(formData);
-        } catch (error) {
-            showAlerts("Error", "Failed to search for the lost items. Please try again.");
-            console.error("Search error:", error);
-        }
+        await searchBaggage(formData);
     };
 
     const renderSelect = (label: string, value: string, onPress: () => void, placeholder: string, displayValue?: string) => (

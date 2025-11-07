@@ -5,6 +5,7 @@ import NothingFound from '../NothingFound';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { searchResultStyles } from '@/styles/searchResultStyles';
 import { toTitleCase } from '@/utils/string.utility';
+import { TAB_BAR_HEIGHT, EXTRA_SPACE } from '@/styles/tabStyles';
 
 interface FoundBCertificateCardProps {
     searchFound: boolean;
@@ -12,7 +13,7 @@ interface FoundBCertificateCardProps {
     foundBcertificate: Bcertificate | Bcertificate[] | null;
     resetSearch: () => void;
     goBackToResults?: () => void;
-    viewBcertificate?: (bcertificateId: string) => void;
+    viewBcertificate?: (bcertificateId: string) => Promise<void>;
     isViewing?: boolean;
     viewingBcertificateId?: string | null;
     searchResults?: Bcertificate[];
@@ -66,9 +67,13 @@ const FoundBCertificateCard: React.FC<FoundBCertificateCardProps> = ({
 
     const isViewingSingleItem = !isMultipleResults && !!searchResults && searchResults.length > 0;
 
-    const handleViewDetails = (id?: string) => {
+    const handleViewDetails = async (id?: string) => {
         if (!id || !viewBcertificate) return;
-        viewBcertificate(id);
+        try {
+            await viewBcertificate(id);
+        } catch {
+            // mutation handles alert
+        }
     };
 
     return (
@@ -93,7 +98,7 @@ const FoundBCertificateCard: React.FC<FoundBCertificateCardProps> = ({
                 </View>
 
                 {isMultipleResults ? (
-                    <ScrollView contentContainerStyle={searchResultStyles.resultsContainer}>
+                    <ScrollView contentContainerStyle={[searchResultStyles.resultsContainer, { paddingBottom: insets.bottom + TAB_BAR_HEIGHT + EXTRA_SPACE }]}>
                         {foundBcertificate.map((bcertificate: any, index: number) => {
                             if (!bcertificate || typeof bcertificate !== 'object' || !bcertificate._id) return null;
                             return (
@@ -112,7 +117,7 @@ const FoundBCertificateCard: React.FC<FoundBCertificateCardProps> = ({
                         })}
                     </ScrollView>
                 ) : (
-                    <ScrollView contentContainerStyle={searchResultStyles.singleContainer}>
+                    <ScrollView contentContainerStyle={[searchResultStyles.singleContainer, { paddingBottom: insets.bottom + TAB_BAR_HEIGHT + EXTRA_SPACE }]}>
                         {foundBcertificate && !Array.isArray(foundBcertificate) && (
                             <View style={searchResultStyles.detailCard}>
                                 <Text style={searchResultStyles.cardTitle}>First Name: {toTitleCase(String(foundBcertificate.firstName || 'NA'))}</Text>

@@ -1,6 +1,5 @@
  import React from "react";
 import { Text } from "react-native";
-import { Feather } from "@expo/vector-icons";
 import SearchPassportModal from "@/components/passport/SearchPassportModal";
 import CardWrapper from "@/styles/CardWrapper";
 import { PassportSearchParams, Passport } from "@/types";
@@ -33,8 +32,7 @@ const SearchPassportCard = ({
     return (
         <>
             <CardWrapper onPress={openPassportModal} accessibilityLabel="Search Lost Passport">
-                <Feather name="search" size={24} color="black" />
-                <Text className="ml-2 text-gray-600 font-bold text-lg">Search Lost Passport</Text>
+                <Text className="text-gray-600 font-bold text-lg">Search Lost Passport</Text>
             </CardWrapper>
 
             <SearchPassportModal

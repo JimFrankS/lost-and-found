@@ -24,6 +24,7 @@ export const useSCertificate = () => {
     }); // State for holding the search form data.
 
     const [searchFound, setSearchFound] = useState(false); // Whether or not search yeilded results.
+    const [searchPerformed, setSearchPerformed] = useState(false); // Whether a search has been performed
 
     const [viewedScertificate, setViewedScertificate] = useState<Scertificate | null>(null); // viewed certificate details
 
@@ -54,17 +55,24 @@ export const useSCertificate = () => {
         },
     }); // end of the mutation for reporting found school certificate.
 
-    const searchScertificateMutation = useMutation({
-        mutationFn: async (searchParams: SCertificateSearchParams) => {
-            return await scertificateApi.searchScertificate(searchParams);
+    const searchScertificateMutation = useMutation<Scertificate[], unknown, SCertificateSearchParams>({
+        mutationFn: async (searchParams) => {
+            try {
+                const response = await scertificateApi.searchScertificate(searchParams);
+                return response.data;
+            } catch (error: any) {
+                if (error?.response?.status === 404) {
+                    return [];
+                }
+                throw error;
+            }
         },
-    onSuccess: (response: any) => {
-            const data = response.data;
-
-            const results = data === null ? [] : Array.isArray(data) ? data : [data];
+        onSuccess: (data: Scertificate[]) => {
+            setViewedScertificate(null);
+            const results = data == null ? [] : Array.isArray(data) ? data : [data];
             setSearchResults(results);
-
-            setSearchFound(true);
+            setSearchFound(results.length > 0);
+            setSearchPerformed(true);
             closeSCertificateModal();
         },
 
@@ -73,6 +81,7 @@ export const useSCertificate = () => {
             if (__DEV__) console.error("Certificate search error: ", message);
             showError(message);
             setSearchFound(false);
+            setSearchPerformed(true);
             setSearchResults([]);
         },
     });
@@ -119,12 +128,12 @@ export const useSCertificate = () => {
             return false;
         }
     };
-    const searchScertificate = async (params: SCertificateSearchParams): Promise<boolean> => {
+    const searchScertificate = async (params: SCertificateSearchParams): Promise<Scertificate[]> => {
         try {
-            await searchScertificateMutation.mutateAsync(params);
-            return true;
-        } catch {
-            return false;
+            return await searchScertificateMutation.mutateAsync(params); 
+        } catch (error) {
+            // Re-throw the error to be handled by the caller
+            throw error;
         }
     };
     const viewScertificate = async (scertificateId: string): Promise<boolean> => {
@@ -138,6 +147,7 @@ export const useSCertificate = () => {
 
     const resetSearch = () => {
         setSearchFound(false);
+        setSearchPerformed(false);
         setViewedScertificate(null);
         setSearchResults([]);
         setViewingScertificateId(null);
@@ -162,6 +172,7 @@ export const useSCertificate = () => {
         isSearching: searchScertificateMutation.isPending,
         isViewing: viewScertificateMutation.isPending,
         searchFound,
+        searchPerformed,
         viewedScertificate,
         viewingScertificateId,
         searchResults,

@@ -1,9 +1,8 @@
 import React from 'react';
 import { Text } from 'react-native';
-import { Feather } from '@expo/vector-icons';
 import SearchMBaggageModal from './SearchMBaggageModal';
 import CardWrapper from '@/styles/CardWrapper';
-import { MBaggageSearchParams } from '@/types';
+import { MBaggageSearchParams, MBaggageListItem } from '@/types';
 
 interface SearchBaggageCardProps {
   isBaggageModalVisible: boolean;
@@ -15,7 +14,7 @@ interface SearchBaggageCardProps {
   };
   openBaggageModal: () => void;
   closeBaggageModal: () => void;
-  searchBaggage: (params: MBaggageSearchParams) => Promise<boolean>;
+  searchBaggage: (params: MBaggageSearchParams) => Promise<MBaggageListItem[]>;
   updateFormData: (field: string, value: string) => void;
   isSearching: boolean;
   resetSearch: () => void;
@@ -35,8 +34,7 @@ const SearchBaggageCard = ({
   return (
     <>
       <CardWrapper onPress={openBaggageModal} accessibilityLabel="Search lost baggage">
-        <Feather name="search" size={24} color="black" />
-        <Text className="ml-2 text-gray-600 font-bold text-lg">Search Lost Items</Text>
+        <Text className="text-gray-600 font-bold text-lg">Search Lost Items</Text>
       </CardWrapper>
       <SearchMBaggageModal
         isVisible={isBaggageModalVisible}

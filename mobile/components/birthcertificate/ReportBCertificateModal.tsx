@@ -17,7 +17,7 @@ interface ReportBCertificateModalProps {
         docLocation: string;
         finderContact: string
     };
-    reportBCertificate: () => void;
+    reportBCertificate: () => Promise<void>;
     updateFormData: (field: string, value: string) => void;
     isReporting: boolean;
 } // Props to be used in the modal and their data types and arguments. 
@@ -36,7 +36,7 @@ const ReportBCertificateModal = ({ isVisible, onClose, formData, reportBCertific
         formData.docLocation
     ); // define the compulsory fields that must be filled before the form can be submitable.
 
-    const handleSave = () => {
+    const handleSave = async () => {
         if (!isFormComplete) {
             showAlerts("Error", "Please fill in all the required fields.");
             return;
@@ -46,7 +46,11 @@ const ReportBCertificateModal = ({ isVisible, onClose, formData, reportBCertific
             showAlerts("Error", "Invalid phone number format. Example: 0719729537");
             return;
         }
-        reportBCertificate();
+        try {
+            await reportBCertificate();
+        } catch {
+            // mutation handles alert
+        }
     };
 
     return (

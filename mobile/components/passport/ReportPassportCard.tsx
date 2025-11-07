@@ -1,6 +1,5 @@
 import React from 'react';
 import { Text } from 'react-native';
-import { Feather } from '@expo/vector-icons';
 import { tabStyles } from '@/styles/tabStyles';
 import ReportPassportModal from './ReportPassportModal';
 import { usePassport } from '@/hooks/usePassport';
@@ -20,8 +19,7 @@ const ReportPassportCard = () => {
     return (
         <>
             <CardWrapper onPress={openPassportModal} accessibilityLabel="Report lost passport">
-                <Feather name='plus' size={24} color={"black"} />
-                <Text className="ml-2 text-gray-600 font-bold text-lg">Report Lost Passport</Text>
+                <Text className="text-gray-600 font-bold text-lg">Report Lost Passport</Text>
             </CardWrapper>
 
             <ReportPassportModal

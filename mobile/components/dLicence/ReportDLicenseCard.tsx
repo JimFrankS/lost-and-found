@@ -1,6 +1,5 @@
 import React from 'react';
 import { Text } from 'react-native';
-import { Feather } from '@expo/vector-icons';
 import ReportDLicenseModal from './ReportDLicenseModal';
 import { useDLicense } from '@/hooks/useDLicense';
 import CardWrapper from '@/styles/CardWrapper';
@@ -19,8 +18,7 @@ const ReportDLicenseCard = () => {
     return (
         <>
             <CardWrapper onPress={openDLicenseModal} accessibilityLabel="Report lost driving licence">
-                <Feather name='plus' size={24} color={"black"} />
-                <Text className="ml-2 text-gray-600 font-bold text-lg">Report Lost Driving Licence</Text>
+                <Text className="text-gray-600 font-bold text-lg">Report Lost Driving Licence</Text>
             </CardWrapper>
 
             <ReportDLicenseModal

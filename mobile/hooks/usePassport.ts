@@ -25,6 +25,7 @@ export const usePassport = () => {
     }); // State for holding the search form data.
 
     const [searchFound, setSearchFound] = useState(false); // Whether or not search yielded results.
+    const [searchPerformed, setSearchPerformed] = useState(false); // Whether a search has been performed
 
     const [viewedPassport, setViewedPassport] = useState<Passport | null>(null); // viewed passport details
 
@@ -50,24 +51,24 @@ export const usePassport = () => {
         },
     }); // end of the mutation for reporting lost passport.
 
-    const searchPassportMutation = useMutation({
-        mutationFn: async (searchParams: PassportSearchParams) => {
+    const searchPassportMutation = useMutation<Passport[], unknown, PassportSearchParams>({
+        mutationFn: async (searchParams) => {
             try {
-                return await passportApi.searchPassport(searchParams);
+                const response = await passportApi.searchPassport(searchParams);
+                return response.data;
             } catch (error: any) {
                 if (error?.response?.status === 404) {
-                    return { data: [] };
+                    return [];
                 }
                 throw error;
             }
         },
-        onSuccess: (response: any) => {
-            const data = response.data;
-
-            const results = data === null ? [] : Array.isArray(data) ? data : [data];
+        onSuccess: (data: Passport[]) => {
+            setViewedPassport(null);
+            const results = data == null ? [] : Array.isArray(data) ? data : [data];
             setSearchResults(results);
-
-            setSearchFound(true);
+            setSearchFound(results.length > 0);
+            setSearchPerformed(true);
         },
 
         onError: (error: any) => {
@@ -75,6 +76,7 @@ export const usePassport = () => {
             if (__DEV__) console.error("Passport search error: ", message);
             setSearchResults([]);
             setSearchFound(false);
+            setSearchPerformed(true);
             showError(message);
         },
     });
@@ -134,12 +136,11 @@ export const usePassport = () => {
             return false;
         }
     };
-    const searchPassport = async (params: PassportSearchParams): Promise<boolean> => {
+    const searchPassport = async (params: PassportSearchParams): Promise<Passport[]> => {
         try {
-            await searchPassportMutation.mutateAsync(params);
-            return true;
+            return await searchPassportMutation.mutateAsync(params);
         } catch {
-            return false;
+            return [];
         }
     };
     const viewPassport = async (passportId: string): Promise<boolean> => {
@@ -154,6 +155,7 @@ export const usePassport = () => {
 
     const resetSearch = () => {
         setSearchFound(false);
+        setSearchPerformed(false);
         setViewedPassport(null);
         setSearchResults([]);
         setViewingPassportId(null);
@@ -178,6 +180,7 @@ export const usePassport = () => {
         isSearching: searchPassportMutation.isPending,
         isViewing: viewPassportMutation.isPending,
         searchFound,
+        searchPerformed,
         viewedPassport,
         viewingPassportId,
         searchResults,
