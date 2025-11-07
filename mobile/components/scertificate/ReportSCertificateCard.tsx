@@ -1,6 +1,5 @@
 import React from 'react';
 import { Text } from 'react-native';
-import { useTabStyles } from '@/styles/tabStyles';
 import ReportSCertificateModal from './ReportSCertificateModal';
 import { useSCertificate } from '@/hooks/useSCertificate';
 import CardWrapper from '@/styles/CardWrapper';

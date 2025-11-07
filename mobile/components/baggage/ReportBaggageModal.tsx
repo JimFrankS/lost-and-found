@@ -1,4 +1,4 @@
-import { Text, View, ScrollView, Alert, TouchableOpacity, TextInput, ActivityIndicator, Dimensions, Platform } from "react-native";
+import { Text, View, ScrollView, TouchableOpacity, TextInput, ActivityIndicator } from "react-native";
 import React, { useMemo, useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -6,9 +6,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BAGGAGE_TYPES, TRANSPORT_TYPES, ROUTE_TYPES, PROVINCES, PROVINCE_DISTRICT_MAP, PHONE_NUMBER_REGEX, PHONE_EXAMPLE } from "@/constants/allowedValues";
 import { OptionPicker, SelectField, toTitleCase } from "../FormsHelper";
 import { showAlerts } from "@/utils/alerts";
-import { searchResultStyles } from "@/styles/searchResultStyles";
 import ModalWrapper from "../ModalWrapper";
-import ReportedSuccessfully from "../ReportedSuccessfullyCard";
+import SuccessView from "../SuccessView";
 
 interface ReportBaggageModalProps {
     isVisible: boolean;
@@ -71,7 +70,7 @@ const ReportBaggageModal = ({ isVisible, onClose, formData, reportBaggage, updat
         try {
             await reportBaggage();
             setReportedSuccessfully(true);
-        } catch (error) {
+        } catch {
             // Error is handled by the hook
         }
     };
@@ -84,25 +83,7 @@ const ReportBaggageModal = ({ isVisible, onClose, formData, reportBaggage, updat
         <ModalWrapper visible={isVisible} onClose={onClose}>
             <View className="flex-1">
                 {reportedSuccessfully ? (
-                    <View style={{ flex: 1, position: "relative" }}>
-                        <View
-                            style={[
-                                { flex: 1, zIndex: 1, paddingTop: insets.top, paddingBottom: 0 },
-                            ]}
-                        >
-                            <View style={searchResultStyles.header}>
-                                <TouchableOpacity
-                                    onPress={onClose}
-                                    style={searchResultStyles.backButton}
-                                >
-                                    <Text style={searchResultStyles.backText}>Back</Text>
-                                </TouchableOpacity>
-                                <Text style={searchResultStyles.headerTitle}>Success</Text>
-                                <View style={searchResultStyles.headerSpacer} />
-                            </View>
-                            <ReportedSuccessfully hookname="Baggage" />
-                        </View>
-                    </View>
+                    <SuccessView onClose={onClose} documentType="Baggage" insets={insets} />
                 ) : (
                     <View className="flex-1">
                         {/* Header */}

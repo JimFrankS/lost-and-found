@@ -24,7 +24,7 @@ const ModalWrapper: React.FC<{
       visible={visible}
       animationType={isLargeScreen ? "fade" : "slide"}
       transparent={transparent}
-      onRequestClose={() => onClose?.()}
+      onRequestClose={() => { if (!transparent) onClose?.(); }}
     >
       {transparent ? (
         <View style={styles.transparentContainer}>

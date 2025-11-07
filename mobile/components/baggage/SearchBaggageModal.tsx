@@ -1,4 +1,4 @@
-import { Text, View, ScrollView, Alert, TouchableOpacity, ActivityIndicator, Dimensions, Platform } from "react-native";
+import { Text, View, ScrollView, TouchableOpacity, ActivityIndicator, Platform } from "react-native";
 import React, { useMemo, useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -28,8 +28,6 @@ interface SearchBaggageModalProps {
 
 const SearchBaggageModal = ({ isVisible, onClose, formData, searchBaggage, updateFormData, isSearching, resetSearch }: SearchBaggageModalProps) => {
     const [openPicker, setOpenPicker] = useState<null | 'baggageType' | 'transportType' | 'routeType' | 'destinationProvince' | 'destinationDistrict'>(null);
-
-    const insets = useSafeAreaInsets();
 
     const districts = useMemo(() => {
         const prov = formData.destinationProvince as keyof typeof PROVINCE_DISTRICT_MAP;

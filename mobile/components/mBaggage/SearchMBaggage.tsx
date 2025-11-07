@@ -14,7 +14,6 @@ const SearchMBaggage = ({ baggageHook }: SearchMBaggageProps) => {
     <View style={styles.container}>
       {showingResults ? (
         <FoundMBaggageCard
-          searchFound={baggageHook.searchFound}
           foundBaggage={baggageHook.viewedBaggage || baggageHook.searchResults}
           resetSearch={baggageHook.resetSearch}
           goBackToResults={baggageHook.goBackToResults}

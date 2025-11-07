@@ -1,13 +1,11 @@
-import { Text, View, ScrollView, Alert, TouchableOpacity, TextInput, ActivityIndicator, Dimensions, Platform } from "react-native";
+import { Text, View, ScrollView, TouchableOpacity, TextInput, ActivityIndicator, Platform } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { PHONE_NUMBER_REGEX, passportNumberRegex, escapeRegex } from "@/constants/allowedValues";
 import { isValidZimbabweIdNumber, sanitizeZimbabweIdNumber } from "@/utils/idValidator";
 import { showAlerts } from "@/utils/alerts";
-import { searchResultStyles } from "@/styles/searchResultStyles";
 import ModalWrapper from "../ModalWrapper";
-import ReportedSuccessfully from "../ReportedSuccessfullyCard";
-import BackToHomeButton from "../BackToHomeButton";
+import SuccessView from "../SuccessView";
 
 interface ReportPassportModalProps {
     isVisible: boolean;
@@ -20,7 +18,7 @@ interface ReportPassportModalProps {
         docLocation: string;
         finderContact: string;
     };
-    reportPassport: () => void;
+    reportPassport: () => Promise<boolean>;
     updateFormData: (field: string, value: string) => void;
     isReporting: boolean;
 } // Props to be used in the modal and their data types and arguments.
@@ -69,37 +67,15 @@ const ReportPassportModal = ({ isVisible, onClose, formData, reportPassport, upd
             showAlerts("Error", "Invalid phone number format. Example: 0719729537");
             return;
         }
-        try {
-            await reportPassport();
-            setReportedSuccessfully(true);
-        } catch (error) {
-            // Error is handled by the hook
-        }
+        const success = await reportPassport();
+        if (success) setReportedSuccessfully(true);
     };
 
     return (
         <ModalWrapper visible={isVisible} onClose={onClose}>
             <View className="flex-1">
                 {reportedSuccessfully && !isReporting ? (
-                    <View style={{ flex: 1, position: "relative" }}>
-                        <View
-                            style={[
-                                { flex: 1, zIndex: 1, paddingTop: insets.top, paddingBottom: 0 },
-                            ]}
-                        >
-                            <View style={searchResultStyles.header}>
-                                <TouchableOpacity
-                                    onPress={onClose}
-                                    style={searchResultStyles.backButton}
-                                >
-                                    <Text style={searchResultStyles.backText}>Back</Text>
-                                </TouchableOpacity>
-                                <Text style={searchResultStyles.headerTitle}>Success</Text>
-                                <View style={searchResultStyles.headerSpacer} />
-                            </View>
-                            <ReportedSuccessfully hookname="Passport" />
-                        </View>
-                    </View>
+                    <SuccessView onClose={onClose} documentType="Passport" insets={insets} />
                 ) : (
                     <View className="flex-1">
                         {/* Header */}

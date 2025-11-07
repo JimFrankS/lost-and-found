@@ -1,13 +1,11 @@
-import { Text, View, ScrollView, Alert, TouchableOpacity, TextInput, ActivityIndicator, Dimensions, Platform } from "react-native";
+import { Text, View, ScrollView, TouchableOpacity, TextInput, ActivityIndicator, Platform } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { PHONE_NUMBER_REGEX } from "@/constants/allowedValues";
 import { isValidZimbabweIdNumber, sanitizeZimbabweIdNumber } from "@/utils/idValidator";
 import { showAlerts } from "@/utils/alerts";
-import { searchResultStyles } from "@/styles/searchResultStyles";
 import ModalWrapper from "../ModalWrapper";
-import ReportedSuccessfully from "../ReportedSuccessfullyCard";
-import BackToHomeButton from "../BackToHomeButton";
+import SuccessView from "../SuccessView";
 
 interface ReportNatIdModalProps {
     isVisible: boolean;
@@ -64,7 +62,7 @@ const ReportNatIdModal = ({ isVisible, onClose, formData, reportNatID, updateFor
         try {
             await reportNatID();
             setReportedSuccessfully(true);
-        } catch (error) {
+        } catch {
             // Error is handled by the hook
         }
     };
@@ -73,25 +71,7 @@ const ReportNatIdModal = ({ isVisible, onClose, formData, reportNatID, updateFor
         <ModalWrapper visible={isVisible} onClose={onClose}>
             <View className="flex-1">
                 {reportedSuccessfully && !isReporting ? (
-                    <View style={{ flex: 1, position: "relative" }}>
-                        <View
-                            style={[
-                                { flex: 1, zIndex: 1, paddingTop: insets.top, paddingBottom: 0 },
-                            ]}
-                        >
-                            <View style={searchResultStyles.header}>
-                                <TouchableOpacity
-                                    onPress={onClose}
-                                    style={searchResultStyles.backButton}
-                                >
-                                    <Text style={searchResultStyles.backText}>Back</Text>
-                                </TouchableOpacity>
-                                <Text style={searchResultStyles.headerTitle}>Success</Text>
-                                <View style={searchResultStyles.headerSpacer} />
-                            </View>
-                            <ReportedSuccessfully hookname="National ID" />
-                        </View>
-                    </View>
+                    <SuccessView onClose={onClose} documentType="National ID" insets={insets} />
                 ) : (
                     <View className="flex-1">
                         {/* Header */}

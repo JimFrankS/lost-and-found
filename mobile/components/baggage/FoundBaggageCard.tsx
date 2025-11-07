@@ -9,7 +9,6 @@ import { toTitleCase } from "@/utils/string.utility";
 import { TAB_BAR_HEIGHT, EXTRA_SPACE } from "@/styles/tabStyles";
 
 interface FoundBaggageCardProps {
-    searchFound: boolean;
     foundBaggage: Baggage | Baggage[] | null;
     resetSearch: () => void;
     goBackToResults?: () => void;
@@ -20,7 +19,6 @@ interface FoundBaggageCardProps {
 }
 
 const FoundBaggageCard = ({
-    searchFound,
     foundBaggage,
     goBackToResults,
     resetSearch,

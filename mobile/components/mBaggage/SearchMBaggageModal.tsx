@@ -28,8 +28,6 @@ interface SearchBaggageModalProps {
 const SearchBaggageModal = ({ isVisible, onClose, formData, searchBaggage, updateFormData, isSearching, resetSearch }: SearchBaggageModalProps) => {
     const [openPicker, setOpenPicker] = useState<null | 'baggageType' | 'gatheringType' | 'destinationProvince' | 'destinationDistrict'>(null);
 
-    const insets = useSafeAreaInsets();
-
     const districts = useMemo(() => {
         const prov = formData.destinationProvince as keyof typeof PROVINCE_DISTRICT_MAP;
         return prov ? (PROVINCE_DISTRICT_MAP[prov] ?? []) : [];

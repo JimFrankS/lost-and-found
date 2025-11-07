@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { Text } from 'react-native';
 import ReportBaggageModal from '@/components/baggage/ReportBaggageModal';
 import { useBaggage } from '@/hooks/useBaggage';
 import CardWrapper from '@/styles/CardWrapper';

@@ -1,9 +1,8 @@
-import { Text, View, ScrollView, TouchableOpacity, ActivityIndicator, Dimensions, Platform, TextInput } from "react-native";
+import { Text, View, ScrollView, TouchableOpacity, ActivityIndicator, Platform, TextInput } from "react-native";
 import React, { useState } from "react";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { SCERTIFICATE_TYPES } from "@/constants/allowedValues";
-import { OptionPicker, SelectField, toTitleCase } from "../FormsHelper";
+import { OptionPicker, SelectField } from "../FormsHelper";
 import { showAlerts } from "@/utils/alerts";
 import ModalWrapper from "../ModalWrapper";
 
@@ -22,7 +21,6 @@ interface SearchScertificateModalProps {
 
 const SearchScertificateModal = ({ isVisible, onClose, formData, searchScertificate, updateFormData, isSearching, resetSearch }: SearchScertificateModalProps) => {
     const [openPicker, setOpenPicker] = useState<null | 'certificateType'>(null);
-    const insets = useSafeAreaInsets();
 
     const isFormComplete = Boolean(
         formData.certificateType && formData.lastName
@@ -37,7 +35,7 @@ const SearchScertificateModal = ({ isVisible, onClose, formData, searchScertific
         resetSearch();
         try {
             await searchScertificate(formData);
-        } catch (error) {
+        } catch {
             showAlerts("Error", "Failed to search school certificate. Please try again.");
         }
     };

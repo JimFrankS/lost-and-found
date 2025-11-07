@@ -1,6 +1,5 @@
-import { Text, View, ScrollView, TouchableOpacity, ActivityIndicator, Dimensions, Platform, TextInput } from "react-native";
+import { Text, View, ScrollView, TouchableOpacity, ActivityIndicator, Platform, TextInput } from "react-native";
 import React from "react";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { showAlerts } from "@/utils/alerts";
 import { BirthCertificateSearchParams, Bcertificate } from "@/types";
 import ModalWrapper from "../ModalWrapper";
@@ -20,7 +19,6 @@ interface SearchBCertificateModalProps {
 };
 
 const SearchBCertificateModal = ({ isVisible, onClose, formData, searchBCertificate, updateFormData, isSearching, resetSearch }: SearchBCertificateModalProps) => {
-    const insets = useSafeAreaInsets();
 
     const isFormComplete = Boolean(
         formData.motherLastName && formData.lastName && formData.firstName

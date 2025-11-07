@@ -1,12 +1,10 @@
-import { Text, View, ScrollView, Alert, TouchableOpacity, TextInput, ActivityIndicator, Dimensions, Platform } from "react-native";
-import React, { useState } from "react";
+import { Text, View, ScrollView, TouchableOpacity, TextInput, ActivityIndicator, Platform } from "react-native";
+import React, { useState, useEffect } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { PHONE_NUMBER_REGEX } from "@/constants/allowedValues";
 import { showAlerts } from "@/utils/alerts";
-import { searchResultStyles } from "@/styles/searchResultStyles";
 import ModalWrapper from "../ModalWrapper";
-import ReportedSuccessfully from "../ReportedSuccessfullyCard";
-import BackToHomeButton from "../BackToHomeButton";
+import SuccessView from "../SuccessView";
 
 
 interface ReportBCertificateModalProps {
@@ -27,6 +25,10 @@ interface ReportBCertificateModalProps {
 
 const ReportBCertificateModal = ({ isVisible, onClose, formData, reportBCertificate, updateFormData, isReporting }: ReportBCertificateModalProps) => {
     const [reportedSuccessfully, setReportedSuccessfully] = useState(false);
+
+    useEffect(() => {
+        if (!isVisible) setReportedSuccessfully(false);
+    }, [isVisible]);
 
     const insets = useSafeAreaInsets();
 
@@ -53,7 +55,7 @@ const ReportBCertificateModal = ({ isVisible, onClose, formData, reportBCertific
         try {
             await reportBCertificate();
             setReportedSuccessfully(true);
-        } catch (error) {
+        } catch {
             // Error is handled by the hook
         }
     };
@@ -62,25 +64,7 @@ const ReportBCertificateModal = ({ isVisible, onClose, formData, reportBCertific
         <ModalWrapper visible={isVisible} onClose={onClose}>
             <View className="flex-1">
                 {reportedSuccessfully ? (
-                    <View style={{ flex: 1, position: "relative" }}>
-                        <View
-                            style={[
-                                { flex: 1, zIndex: 1, paddingTop: insets.top, paddingBottom: 0 },
-                            ]}
-                        >
-                            <View style={searchResultStyles.header}>
-                                <TouchableOpacity
-                                    onPress={onClose}
-                                    style={searchResultStyles.backButton}
-                                >
-                                    <Text style={searchResultStyles.backText}>Back</Text>
-                                </TouchableOpacity>
-                                <Text style={searchResultStyles.headerTitle}>Success</Text>
-                                <View style={searchResultStyles.headerSpacer} />
-                            </View>
-                            <ReportedSuccessfully hookname="Birth Certificate" />
-                        </View>
-                    </View>
+                    <SuccessView onClose={onClose} documentType="Birth Certificate" insets={insets} />
                 ) : (
                     <View className="flex-1">
                         {/* Header */}

@@ -1,5 +1,5 @@
 import React from "react";
-import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 
 import { searchResultStyles } from "@/styles/searchResultStyles";
