@@ -5,6 +5,7 @@ import NothingFound from '../NothingFound';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { searchResultStyles } from '@/styles/searchResultStyles';
 import { toTitleCase } from '@/utils/string.utility';
+import { TAB_BAR_HEIGHT, EXTRA_SPACE } from '@/styles/tabStyles';
 
 interface FoundBCertificateCardProps {
     searchFound: boolean;
@@ -79,7 +80,7 @@ const FoundBCertificateCard: React.FC<FoundBCertificateCardProps> = ({
         <View style={{ flex: 1, position: "relative" }}>
             <View
                 style={[
-                    { flex: 1, zIndex: 1, paddingTop: insets.top, paddingBottom: insets.bottom },
+                    { flex: 1, zIndex: 1, paddingTop: insets.top, paddingBottom: 0 },
                 ]}
             >
                 <View style={searchResultStyles.header}>
@@ -97,7 +98,7 @@ const FoundBCertificateCard: React.FC<FoundBCertificateCardProps> = ({
                 </View>
 
                 {isMultipleResults ? (
-                    <ScrollView contentContainerStyle={[searchResultStyles.resultsContainer, { paddingBottom: insets.bottom }]}>
+                    <ScrollView contentContainerStyle={[searchResultStyles.resultsContainer, { paddingBottom: Math.max(insets.bottom, TAB_BAR_HEIGHT + EXTRA_SPACE) }]}>
                         {foundBcertificate.map((bcertificate: any, index: number) => {
                             if (!bcertificate || typeof bcertificate !== 'object' || !bcertificate._id) return null;
                             return (
@@ -116,7 +117,7 @@ const FoundBCertificateCard: React.FC<FoundBCertificateCardProps> = ({
                         })}
                     </ScrollView>
                 ) : (
-                    <ScrollView contentContainerStyle={[searchResultStyles.singleContainer, { paddingBottom: insets.bottom }]}>
+                    <ScrollView contentContainerStyle={[searchResultStyles.singleContainer, { paddingBottom: Math.max(insets.bottom, TAB_BAR_HEIGHT + EXTRA_SPACE) }]}>
                         {foundBcertificate && !Array.isArray(foundBcertificate) && (
                             <View style={searchResultStyles.detailCard}>
                                 <Text style={searchResultStyles.cardTitle}>First Name: {toTitleCase(String(foundBcertificate.firstName || 'NA'))}</Text>

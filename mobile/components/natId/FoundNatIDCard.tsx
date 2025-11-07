@@ -5,6 +5,7 @@ import NothingFound from "../NothingFound";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { searchResultStyles } from "@/styles/searchResultStyles";
 import { toTitleCase } from "@/utils/string.utility";
+import { TAB_BAR_HEIGHT, EXTRA_SPACE } from "@/styles/tabStyles";
 
 interface FoundNatIDCardProps {
     searchFound: boolean;
@@ -73,7 +74,7 @@ const FoundNatIDCard: React.FC<FoundNatIDCardProps> = ({
         <View style={{ flex: 1, position: "relative" }}>
             <View
                 style={[
-                    { flex: 1, zIndex: 1, paddingTop: insets.top, paddingBottom: insets.bottom },
+                    { flex: 1, zIndex: 1, paddingTop: insets.top, paddingBottom: 0 },
                 ]}
             >
                 <View style={searchResultStyles.header}>
@@ -91,7 +92,7 @@ const FoundNatIDCard: React.FC<FoundNatIDCardProps> = ({
                 </View>
 
                 {isMultipleResults ? (
-                    <ScrollView contentContainerStyle={[searchResultStyles.resultsContainer, { paddingBottom: insets.bottom }]}>
+                    <ScrollView contentContainerStyle={[searchResultStyles.resultsContainer, { paddingBottom: Math.max(insets.bottom, TAB_BAR_HEIGHT + EXTRA_SPACE) }]}>
                         {foundNatId.map((natId: any, index: number) => {
                             if (!natId || typeof natId !== 'object' || !natId._id) return null;
                             return (
@@ -111,7 +112,7 @@ const FoundNatIDCard: React.FC<FoundNatIDCardProps> = ({
                         })}
                     </ScrollView>
                 ) : (
-                    <ScrollView contentContainerStyle={[searchResultStyles.singleContainer, { paddingBottom: insets.bottom }]}>
+                    <ScrollView contentContainerStyle={[searchResultStyles.singleContainer, { paddingBottom: Math.max(insets.bottom, TAB_BAR_HEIGHT + EXTRA_SPACE) }]}>
                         {foundNatId && !Array.isArray(foundNatId) && (
                             <View style={searchResultStyles.detailCard}>
                                 <Text style={searchResultStyles.cardTitle}>First Name: {toTitleCase(String(foundNatId.firstName || 'NA'))}</Text>
