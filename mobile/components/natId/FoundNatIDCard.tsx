@@ -92,7 +92,7 @@ const FoundNatIDCard: React.FC<FoundNatIDCardProps> = ({
                 </View>
 
                 {isMultipleResults ? (
-                    <ScrollView contentContainerStyle={[searchResultStyles.resultsContainer, { paddingBottom: Math.max(insets.bottom, TAB_BAR_HEIGHT + EXTRA_SPACE) }]}>
+                    <ScrollView contentContainerStyle={[searchResultStyles.resultsContainer, { paddingBottom: insets.bottom + TAB_BAR_HEIGHT + EXTRA_SPACE }]}>
                         {foundNatId.map((natId: any, index: number) => {
                             if (!natId || typeof natId !== 'object' || !natId._id) return null;
                             return (
@@ -112,7 +112,7 @@ const FoundNatIDCard: React.FC<FoundNatIDCardProps> = ({
                         })}
                     </ScrollView>
                 ) : (
-                    <ScrollView contentContainerStyle={[searchResultStyles.singleContainer, { paddingBottom: Math.max(insets.bottom, TAB_BAR_HEIGHT + EXTRA_SPACE) }]}>
+                    <ScrollView contentContainerStyle={[searchResultStyles.singleContainer, { paddingBottom: insets.bottom + TAB_BAR_HEIGHT + EXTRA_SPACE }]}>
                         {foundNatId && !Array.isArray(foundNatId) && (
                             <View style={searchResultStyles.detailCard}>
                                 <Text style={searchResultStyles.cardTitle}>First Name: {toTitleCase(String(foundNatId.firstName || 'NA'))}</Text>

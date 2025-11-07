@@ -98,7 +98,7 @@ const FoundBCertificateCard: React.FC<FoundBCertificateCardProps> = ({
                 </View>
 
                 {isMultipleResults ? (
-                    <ScrollView contentContainerStyle={[searchResultStyles.resultsContainer, { paddingBottom: Math.max(insets.bottom, TAB_BAR_HEIGHT + EXTRA_SPACE) }]}>
+                    <ScrollView contentContainerStyle={[searchResultStyles.resultsContainer, { paddingBottom: insets.bottom + TAB_BAR_HEIGHT + EXTRA_SPACE }]}>
                         {foundBcertificate.map((bcertificate: any, index: number) => {
                             if (!bcertificate || typeof bcertificate !== 'object' || !bcertificate._id) return null;
                             return (
@@ -117,7 +117,7 @@ const FoundBCertificateCard: React.FC<FoundBCertificateCardProps> = ({
                         })}
                     </ScrollView>
                 ) : (
-                    <ScrollView contentContainerStyle={[searchResultStyles.singleContainer, { paddingBottom: Math.max(insets.bottom, TAB_BAR_HEIGHT + EXTRA_SPACE) }]}>
+                    <ScrollView contentContainerStyle={[searchResultStyles.singleContainer, { paddingBottom: insets.bottom + TAB_BAR_HEIGHT + EXTRA_SPACE }]}>
                         {foundBcertificate && !Array.isArray(foundBcertificate) && (
                             <View style={searchResultStyles.detailCard}>
                                 <Text style={searchResultStyles.cardTitle}>First Name: {toTitleCase(String(foundBcertificate.firstName || 'NA'))}</Text>

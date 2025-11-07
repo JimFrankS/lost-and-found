@@ -93,7 +93,7 @@ const FoundScertificateCard = ({
                 </View>
 
                 {isMultipleResults ? (
-                    <ScrollView contentContainerStyle={[searchResultStyles.resultsContainer, { paddingBottom: Math.max(insets.bottom, TAB_BAR_HEIGHT + EXTRA_SPACE) }]}>
+                    <ScrollView contentContainerStyle={[searchResultStyles.resultsContainer, { paddingBottom: insets.bottom + TAB_BAR_HEIGHT + EXTRA_SPACE }]}>
                         {foundScertificate.map((scertificate: Scertificate, index: number) => {
                             if (!scertificate || typeof scertificate !== 'object' || !scertificate._id) return null;
                             return (
@@ -112,7 +112,7 @@ const FoundScertificateCard = ({
                         })}
                     </ScrollView>
                 ) : (
-                    <ScrollView contentContainerStyle={[searchResultStyles.singleContainer, { paddingBottom: Math.max(insets.bottom, TAB_BAR_HEIGHT + EXTRA_SPACE) }]}>
+                    <ScrollView contentContainerStyle={[searchResultStyles.singleContainer, { paddingBottom: insets.bottom + TAB_BAR_HEIGHT + EXTRA_SPACE }]}>
                         {foundScertificate && !Array.isArray(foundScertificate) && (
                             <View style={searchResultStyles.detailCard}>
                                 <Text style={searchResultStyles.cardTitle}>Certificate Type: {toTitleCase(String(foundScertificate.certificateType || 'NA'))} </Text>
