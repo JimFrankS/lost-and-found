@@ -105,7 +105,7 @@ const FoundBaggageCard = ({
                 </View>
 
                 {isMultipleResults ? (
-                    <ScrollView contentContainerStyle={[searchResultStyles.resultsContainer, { paddingBottom: Math.max(insets.bottom, TAB_BAR_HEIGHT + EXTRA_SPACE) }]}>
+                    <ScrollView contentContainerStyle={[searchResultStyles.resultsContainer, { paddingBottom: insets.bottom + TAB_BAR_HEIGHT + EXTRA_SPACE }]}>
                         {foundBaggage.map((baggage: Baggage, index: number) => {
                             if (!baggage?._id) return null;
                             return (
@@ -128,7 +128,7 @@ const FoundBaggageCard = ({
                         })}
                     </ScrollView>
                 ) : (
-                    <ScrollView contentContainerStyle={[searchResultStyles.singleContainer, { paddingBottom: Math.max(insets.bottom, TAB_BAR_HEIGHT + EXTRA_SPACE) }]}>
+                    <ScrollView contentContainerStyle={[searchResultStyles.singleContainer, { paddingBottom: insets.bottom + TAB_BAR_HEIGHT + EXTRA_SPACE }]}>
                         {foundBaggage && !Array.isArray(foundBaggage) && (
                             <View style={searchResultStyles.detailCard}>
                                 <Text style={searchResultStyles.cardText}>
