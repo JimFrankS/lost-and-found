@@ -9,9 +9,10 @@ const TabsLayout = () => {
 
     const insets = useSafeAreaInsets(); // get the safe area insets
     const [showDonateModal, setShowDonateModal] = useState(false);
+    const [invoiceRef, setInvoiceRef] = useState('Donation001');
 
     const handleContactDeveloper = () => {
-        const email = 'jimmakayikayi@gmail.com';
+        const email = 'info@ibantu.tech';
         const url = `mailto:${email}`;
         Linking.openURL(url).catch(err => {
             console.error('Failed to open email client:', err);
@@ -22,14 +23,39 @@ const TabsLayout = () => {
         });
     };
 
-    const handleDonate = () => {
-        if (Platform.OS === 'web') {
+    const handleDonate = async () => {
+        const email = 'jimmakayikayi@gmail.com';
+        const now = new Date();
+        const pad = (n) => n.toString().padStart(2, '0');
+        const y = now.getFullYear();
+        const m = pad(now.getMonth() + 1);
+        const d = pad(now.getDate());
+        const hh = pad(now.getHours());
+        const mm = pad(now.getMinutes());
+        const ss = pad(now.getSeconds());
+        const generatedRef = `DON-${y}${m}${d}-${hh}${mm}${ss}`;
+        setInvoiceRef(generatedRef);
+        const paynowUrl = `https://www.paynow.co.zw/Payment/Find?search=${encodeURIComponent(email)}&invoice=${encodeURIComponent(generatedRef)}`;
+
+        try {
+            const supported = await Linking.canOpenURL(paynowUrl);
+            if (supported) {
+                await Linking.openURL(paynowUrl);
+                setShowDonateModal(false);
+            } else {
+                setShowDonateModal(true);
+                Alert.alert(
+                    'Unable to open payment link',
+                    'Your device cannot open the payment link. Please use the details below.'
+                );
+            }
+        } catch (err) {
+            console.error('Failed to open PayNow URL:', err);
             setShowDonateModal(true);
-        } else {
-            const phoneNumber = '*153*1*1*0779729537#';
-            const encodedPhoneNumber = encodeURIComponent(phoneNumber);
-            const url = `tel:${encodedPhoneNumber}`;
-            Linking.openURL(url).catch(err => console.error('Failed to open dialer:', err));
+            Alert.alert(
+                'Unable to open payment link',
+                'Please try again or copy the payment details from the donate modal.'
+            );
         }
     };
 
@@ -93,10 +119,30 @@ const TabsLayout = () => {
                     <View style={styles.modalContent}>
                         <Text style={styles.modalTitle}>Donate</Text>
                         <Text style={styles.modalText}>
-                            Ecocash: 0779729537{'\n'}
-                            Inbucks: 0719729537{'\n'}
-                            Name: Jim-Frank S. Makayikayi
+                            Ecocash: 0779729537{ '\n' }
+                            Inbucks: 0719729537{ '\n' }
+                            Name: Jim-Frank S. Makayikayi{ '\n' }
+                            Invoice/Reference: {invoiceRef}
                         </Text>
+                        <TouchableOpacity
+                            onPress={async () => {
+                                const url = `https://www.paynow.co.zw/Payment/Find?search=jimmakayikayi%40gmail.com&invoice=${encodeURIComponent(invoiceRef)}`;
+                                try {
+                                    const supported = await Linking.canOpenURL(url);
+                                    if (supported) {
+                                        await Linking.openURL(url);
+                                        setShowDonateModal(false);
+                                    } else {
+                                        Alert.alert('Unable to open payment link', 'Your device cannot open the payment link.');
+                                    }
+                                } catch (err) {
+                                    console.error('Failed to open PayNow URL:', err);
+                                }
+                            }}
+                            style={[styles.closeButton, { marginTop: 8 }]}
+                        >
+                            <Text style={styles.closeButtonText}>Open PayNow Link</Text>
+                        </TouchableOpacity>
                         <TouchableOpacity
                             onPress={() => setShowDonateModal(false)}
                             style={styles.closeButton}

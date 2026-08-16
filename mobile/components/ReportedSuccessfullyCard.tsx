@@ -8,7 +8,6 @@ const ReportedSuccessfully = ({ hookname }: { hookname: string }) => {
             <View className="items-center">
                 <Feather name="check-circle" size={80} color="green" />
                 <Text className="text-center text-2xl font-bold text-gray-900 mt-6 mb-3.5">{hookname} Reported Successfully</Text>
-                <Text className="text-center font-bold text-gray-600 text-base leading-6 max-w-xs">Thank you, you have successfully reported a lost {hookname}. If you find other lost items, please, continue to report them so that hopefully, the owners can find them</Text>
             </View>
         </View>
     );

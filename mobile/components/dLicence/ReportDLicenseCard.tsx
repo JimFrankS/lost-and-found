@@ -18,7 +18,7 @@ const ReportDLicenseCard = () => {
     return (
         <>
             <CardWrapper onPress={openDLicenseModal} accessibilityLabel="Report lost driving licence">
-                <Text className="text-gray-600 font-bold text-lg">Report Lost Driving Licence</Text>
+                <Text className="text-gray-600 font-bold text-lg">Report Lost Driver's Licence</Text>
             </CardWrapper>
 
             <ReportDLicenseModal

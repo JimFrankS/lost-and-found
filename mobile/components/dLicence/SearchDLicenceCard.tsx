@@ -32,7 +32,7 @@ const SearchDLicenceCard = ({
     return (
         <>
             <CardWrapper onPress={openDLicenceModal} accessibilityLabel="Search Lost Driving Licence">
-                <Text className="text-gray-600 font-bold text-lg">Search Lost Driving Licence</Text>
+                <Text className="text-gray-600 font-bold text-lg">Search Lost Driver's License</Text>
             </CardWrapper>
 
             <SearchDLicenceModal
