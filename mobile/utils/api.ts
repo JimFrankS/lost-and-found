@@ -11,7 +11,7 @@ import {
     MBaggageSearchParams
 } from "../types";
 
-const DEFAULT_BASE_URL = "https://lost-and-found-opal.vercel.app/";
+const DEFAULT_BASE_URL = "https://api.lostandfoundzim.org/";
 let API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || DEFAULT_BASE_URL;
 
 // In web development, when running on localhost and no explicit API URL is set,
