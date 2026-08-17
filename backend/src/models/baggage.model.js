@@ -98,7 +98,7 @@ baggageSchema.index({
   destinationDistrict: 1
 });
 
-baggageSchema.index({ claimedAt: 1 }, { expireAfterSeconds: 60 }); // 60 seconds for found items
+baggageSchema.index({ claimedAt: 1 }, { expireAfterSeconds: 8035200 }); // ~93 days for found items
 
 const Baggage = mongoose.model("Baggage", baggageSchema);
 

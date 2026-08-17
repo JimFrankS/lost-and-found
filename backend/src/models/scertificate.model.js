@@ -55,7 +55,7 @@ const scertificateSchema = new mongoose.Schema({
 );
 
 scertificateSchema.index({ lastName:1, certificateType: 1}); // Create a compound index for efficient lookups
-scertificateSchema.index({ claimedAt: 1 }, { expireAfterSeconds: 60 }); // Add TTL index to auto-delete claimed documents after 60 seconds
+scertificateSchema.index({ claimedAt: 1 }, { expireAfterSeconds: 8035200 }); // ~93 days for found items
 
 const Scertificate = mongoose.model("Scertificate", scertificateSchema);
 

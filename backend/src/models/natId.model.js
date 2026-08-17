@@ -55,7 +55,7 @@ const natIdSchema = new mongoose.Schema({
 
 }, {timestamps: true});
 
-natIdSchema.index({ claimedAt: 1 }, { expireAfterSeconds: 60 }); // Add TTL index to auto-delete claimed documents after 60 seconds
+natIdSchema.index({ claimedAt: 1 }, { expireAfterSeconds: 8035200 }); // ~93 days for found items
 
 const NatId = mongoose.model("NatId", natIdSchema);
 
