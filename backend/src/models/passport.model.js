@@ -65,7 +65,7 @@ idNumber: {
 },  {timestamps: true},
 );
 
-passportSchema.index({ claimedAt: 1 }, { expireAfterSeconds: 60 }); // Add TTL index to auto-delete claimed documents after 60 seconds
+passportSchema.index({ claimedAt: 1 }, { expireAfterSeconds: 8035200 }); // ~93 days for found items
 
 const Passport = mongoose.model("Passport", passportSchema);
 

@@ -58,7 +58,7 @@ const bcertificateSchema = new mongoose.Schema({
 
 bcertificateSchema.index({ lastName: 1, motherLastName: 1 }); // Create a compound index for efficient lookups
 // Add TTL index to auto-delete claimed documents after 60 seconds
-bcertificateSchema.index({ claimedAt: 1 }, { expireAfterSeconds: 60 });
+bcertificateSchema.index({ claimedAt: 1 }, { expireAfterSeconds: 8035200 }); // ~93 days for found items
 
 const BCertificate = mongoose.model("BCertificate", bcertificateSchema);
 

@@ -34,7 +34,7 @@ app.use(helmet());
 // Load allowed origins from environment variable ALLOWED_ORIGINS (comma-separated URLs) or fallback to placeholder
 const allowedOrigins = process.env.ALLOWED_ORIGINS
     ? process.env.ALLOWED_ORIGINS.split(',').map(url => url.trim())
-    : ['https://your-frontend-app.com']; // Placeholder for development
+    : ['https://lostandfoundzim.org/']; // Placeholder for development
 
 const corsOptions = {
     origin: (origin, callback) => {
