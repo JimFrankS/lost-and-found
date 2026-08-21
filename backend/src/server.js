@@ -25,6 +25,9 @@ import logger, { loggerStream } from "./utility/logger.utility.js";
 import swaggerDocs from "./config/swagger.js";
 
 const app = express();
+
+app.set("trust proxy", 1);
+
 app.use(attachRequestId); 
 
 
