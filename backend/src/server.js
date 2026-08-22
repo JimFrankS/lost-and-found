@@ -71,6 +71,40 @@ app.use(express.json({ limit: '10kb' })); // Limit request body size
 
 app.get("/", (req, res) => res.send("Hello Smank, from server")) 
 
+// Health check endpoint - deliberately placed BEFORE the DB-connection gate below,
+// so it stays useful (e.g. for the cron warm-up ping) even if the database is having issues.
+app.get("/health", (req, res) => res.status(200).json({ 
+    status: "ok", 
+    uptime: process.uptime() 
+}));
+
+// Cache the stats-initialization attempt per warm instance, so it only actually
+// runs once per cold start rather than on every single request.
+let statsInitPromise = null;
+const ensureStatsReady = () => {
+    if (!statsInitPromise) {
+        statsInitPromise = ensureStatsInitialized().catch((err) => {
+            statsInitPromise = null; // allow the next request to retry if this attempt failed
+            throw err;
+        });
+    }
+    return statsInitPromise;
+};
+
+// Ensure both the DB connection AND stats initialization are genuinely ready
+// before any /api route runs. Without this, a cold-start request could reach a
+// route handler before either was ready, causing Mongoose to "buffer" the query
+// and eventually fail with a timeout, or routes to run against uninitialized stats.
+app.use("/api", async (req, res, next) => {
+    try {
+        await connectDB(); // cheap no-op if already connected, thanks to the readyState check inside it
+        await ensureStatsReady();
+        next();
+    } catch (error) {
+        next(error); // forwarded to errorHandler below
+    }
+});
+
 app.use("/api/passport", passportRoutes);
 app.use("/api/natId", natIdRoutes);
 app.use("/api/dLicence", dLicenceRoutes);
@@ -78,12 +112,6 @@ app.use("/api/sCertificate", sCertificateRoutes);
 app.use("/api/bCertificate", bCertificateRoutes);
 app.use("/api/baggage", baggageRoutes);
 app.use("/api/mBaggage", mBaggageRoutes);
-
-// Health check endpoint
-app.get("/health", (req, res) => res.status(200).json({ 
-    status: "ok", 
-    uptime: process.uptime() 
-}));
 
 // Initialize Swagger documentation
 swaggerDocs(app, ENV.PORT);
@@ -150,19 +178,10 @@ const gracefulShutdown = (signal) => {
 process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
 process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 
-// Only start the server locally; on Vercel, perform cold-start initialization.
-if (process.env.VERCEL) {
-  // Initialize DB and stats once per cold start
-  void (async () => {
-    try {
-      await connectDB();
-      await ensureStatsInitialized();
-      logger.info('Serverless initialization complete');
-    } catch (err) {
-      logger.error('Error during serverless initialization:', err);
-    }
-  })();
-} else if (process.env.JEST_WORKER_ID === undefined) {
+// Only start the server locally with the traditional long-running listen() flow.
+// On Vercel, the "/api" middleware above now handles connecting and initializing
+// stats on-demand per request, so no separate fire-and-forget task is needed at module load time.
+if (process.env.JEST_WORKER_ID === undefined && !process.env.VERCEL) {
   startServer();
 }
 
